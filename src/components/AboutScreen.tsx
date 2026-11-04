@@ -25,7 +25,11 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
   };
 
   const handleGoBack = () => {
-    navigate(-1);
+    if (window.history.length > 1 && window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate('/', { replace: true });
+    }
   };
 
   return (
