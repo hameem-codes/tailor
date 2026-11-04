@@ -1,0 +1,561 @@
+{
+  "_disclaimer": "SAMPLE DATA for portfolio/illustration purposes only. Not official brand size charts.",
+  "_description": "Tailor cross-brand sizing database with standardized body and garment dimensions in cm.",
+  "brands": [
+    {
+      "id": "hm",
+      "brand": "H&M",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "H&M Size Guide (Sample Data)",
+      "sourceUrl": "https://www2.hm.com/en_us/customer-service/sizeguide.html",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www2.hm.com",
+      "sizes": [
+        { "label": "XS", "chest": [80, 87], "waist": [70, 75], "garmentChest": [88, 95] },
+        { "label": "S", "chest": [88, 95], "waist": [76, 81], "garmentChest": [96, 103] },
+        { "label": "M", "chest": [96, 103], "waist": [82, 89], "garmentChest": [104, 111] },
+        { "label": "L", "chest": [104, 111], "waist": [90, 97], "garmentChest": [112, 119] },
+        { "label": "XL", "chest": [112, 119], "waist": [98, 105], "garmentChest": [120, 127] },
+        { "label": "XXL", "chest": [120, 128], "waist": [106, 114], "garmentChest": [128, 136] }
+      ]
+    },
+    {
+      "id": "zara",
+      "brand": "ZARA",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "ZARA Sizing System (Sample Data)",
+      "sourceUrl": "https://www.zara.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.zara.com",
+      "sizes": [
+        { "label": "S", "chest": [92, 99], "waist": [78, 85], "garmentChest": [98, 105] },
+        { "label": "M", "chest": [100, 107], "waist": [86, 93], "garmentChest": [106, 113] },
+        { "label": "L", "chest": [108, 115], "waist": [94, 101], "garmentChest": [114, 121] },
+        { "label": "XL", "chest": [116, 123], "waist": [102, 109], "garmentChest": [122, 129] }
+      ]
+    },
+    {
+      "id": "uniqlo",
+      "brand": "UNIQLO",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Uniqlo Fit Guide (Sample Data)",
+      "sourceUrl": "https://www.uniqlo.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.uniqlo.com",
+      "sizes": [
+        { "label": "XS", "chest": [82, 89], "waist": [68, 74], "garmentChest": [90, 97] },
+        { "label": "S", "chest": [90, 95], "waist": [75, 81], "garmentChest": [98, 103] },
+        { "label": "M", "chest": [97, 104], "waist": [82, 89], "garmentChest": [105, 112] },
+        { "label": "L", "chest": [105, 112], "waist": [90, 97], "garmentChest": [113, 120] },
+        { "label": "XL", "chest": [113, 120], "waist": [98, 105], "garmentChest": [121, 128] }
+      ]
+    },
+    {
+      "id": "gap",
+      "brand": "GAP",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "relaxed",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "GAP Size Chart (Sample Data)",
+      "sourceUrl": "https://www.gap.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.gap.com",
+      "sizes": [
+        { "label": "XS", "chest": [86, 93], "waist": [71, 78], "garmentChest": [96, 103] },
+        { "label": "S", "chest": [94, 101], "waist": [79, 86], "garmentChest": [104, 111] },
+        { "label": "M", "chest": [102, 109], "waist": [87, 94], "garmentChest": [112, 119] },
+        { "label": "L", "chest": [110, 117], "waist": [95, 102], "garmentChest": [120, 127] },
+        { "label": "XL", "chest": [118, 125], "waist": [103, 110], "garmentChest": [128, 135] }
+      ]
+    },
+    {
+      "id": "nike",
+      "brand": "Nike",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Nike Standard Apparel (Sample Data)",
+      "sourceUrl": "https://www.nike.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.nike.com",
+      "sizes": [
+        { "label": "S", "chest": [88, 96], "waist": [73, 81], "garmentChest": [98, 106] },
+        { "label": "M", "chest": [96, 104], "waist": [81, 89], "garmentChest": [106, 114] },
+        { "label": "L", "chest": [104, 112], "waist": [89, 97], "garmentChest": [114, 122] },
+        { "label": "XL", "chest": [112, 124], "waist": [97, 109], "garmentChest": [122, 134] }
+      ]
+    },
+    {
+      "id": "cos",
+      "brand": "COS",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "relaxed",
+      "chartType": "garment",
+      "unit": "cm",
+      "source": "COS Studio Specs (Sample Data)",
+      "sourceUrl": "https://www.cos.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.cos.com",
+      "sizes": [
+        { "label": "S", "chest": [90, 97], "waist": [78, 84], "garmentChest": [100, 107] },
+        { "label": "M", "chest": [98, 105], "waist": [85, 91], "garmentChest": [108, 115] },
+        { "label": "L", "chest": [106, 113], "waist": [92, 98], "garmentChest": [116, 123] },
+        { "label": "XL", "chest": [114, 121], "waist": [99, 105], "garmentChest": [124, 131] }
+      ]
+    },
+    {
+      "id": "levis",
+      "brand": "Levi's",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Levi Strauss Fit Matrix (Sample Data)",
+      "sourceUrl": "https://www.levi.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.levi.com",
+      "sizes": [
+        { "label": "S", "chest": [89, 96], "waist": [75, 82], "garmentChest": [97, 104] },
+        { "label": "M", "chest": [97, 104], "waist": [83, 90], "garmentChest": [105, 112] },
+        { "label": "L", "chest": [105, 112], "waist": [91, 98], "garmentChest": [113, 120] },
+        { "label": "XL", "chest": [113, 122], "waist": [99, 107], "garmentChest": [121, 130] }
+      ]
+    },
+    {
+      "id": "asos",
+      "brand": "ASOS Design",
+      "region": "local",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "ASOS UK Size Guide (Sample Data)",
+      "sourceUrl": "https://www.asos.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.asos.com",
+      "sizes": [
+        { "label": "XS", "chest": [81, 86], "waist": [66, 71], "garmentChest": [89, 94] },
+        { "label": "S", "chest": [86, 91], "waist": [71, 76], "garmentChest": [94, 99] },
+        { "label": "M", "chest": [91, 96], "waist": [76, 81], "garmentChest": [99, 104] },
+        { "label": "L", "chest": [96, 101], "waist": [81, 86], "garmentChest": [104, 109] },
+        { "label": "XL", "chest": [101, 106], "waist": [86, 91], "garmentChest": [109, 114] }
+      ]
+    },
+    {
+      "id": "ralph_lauren",
+      "brand": "Ralph Lauren",
+      "region": "global",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Polo Ralph Lauren Fit Guide (Sample Data)",
+      "sourceUrl": "https://www.ralphlauren.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.ralphlauren.com",
+      "sizes": [
+        { "label": "S", "chest": [86, 94], "waist": [71, 79], "garmentChest": [98, 106] },
+        { "label": "M", "chest": [97, 104], "waist": [81, 89], "garmentChest": [109, 116] },
+        { "label": "L", "chest": [107, 114], "waist": [91, 99], "garmentChest": [119, 126] },
+        { "label": "XL", "chest": [117, 124], "waist": [102, 110], "garmentChest": [129, 136] }
+      ]
+    },
+    {
+      "id": "mango",
+      "brand": "Mango",
+      "region": "local",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Mango Man Fit Specifications (Sample Data)",
+      "sourceUrl": "https://shop.mango.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://shop.mango.com",
+      "sizes": [
+        { "label": "S", "chest": [91, 97], "waist": [78, 83], "garmentChest": [99, 105] },
+        { "label": "M", "chest": [98, 103], "waist": [84, 89], "garmentChest": [106, 111] },
+        { "label": "L", "chest": [104, 109], "waist": [90, 95], "garmentChest": [112, 117] },
+        { "label": "XL", "chest": [110, 115], "waist": [96, 101], "garmentChest": [118, 123] }
+      ]
+    },
+    {
+      "id": "muji",
+      "brand": "MUJI",
+      "region": "local",
+      "gender": "men",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "MUJI Daily Wear Standards (Sample Data)",
+      "sourceUrl": "https://www.muji.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.muji.com",
+      "sizes": [
+        { "label": "S", "chest": [80, 88], "waist": [68, 76], "garmentChest": [92, 100] },
+        { "label": "M", "chest": [88, 96], "waist": [76, 84], "garmentChest": [100, 108] },
+        { "label": "L", "chest": [96, 104], "waist": [84, 92], "garmentChest": [108, 116] },
+        { "label": "XL", "chest": [104, 112], "waist": [92, 100], "garmentChest": [116, 124] }
+      ]
+    },
+
+    {
+      "id": "hm_shirt",
+      "brand": "H&M",
+      "region": "global",
+      "gender": "men",
+      "category": "shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "H&M Formal & Casual Shirts (Sample Data)",
+      "sourceUrl": "https://www2.hm.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www2.hm.com",
+      "sizes": [
+        { "label": "S", "chest": [88, 95], "waist": [76, 81], "garmentChest": [98, 105] },
+        { "label": "M", "chest": [96, 103], "waist": [82, 89], "garmentChest": [106, 113] },
+        { "label": "L", "chest": [104, 111], "waist": [90, 97], "garmentChest": [114, 121] },
+        { "label": "XL", "chest": [112, 119], "waist": [98, 105], "garmentChest": [122, 129] }
+      ]
+    },
+    {
+      "id": "zara_shirt",
+      "brand": "ZARA",
+      "region": "global",
+      "gender": "men",
+      "category": "shirt",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "ZARA Shirts (Sample Data)",
+      "sourceUrl": "https://www.zara.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.zara.com",
+      "sizes": [
+        { "label": "S", "chest": [90, 97], "waist": [76, 83], "garmentChest": [98, 105] },
+        { "label": "M", "chest": [98, 105], "waist": [84, 91], "garmentChest": [106, 113] },
+        { "label": "L", "chest": [106, 113], "waist": [92, 99], "garmentChest": [114, 121] },
+        { "label": "XL", "chest": [114, 121], "waist": [100, 107], "garmentChest": [122, 129] }
+      ]
+    },
+    {
+      "id": "uniqlo_shirt",
+      "brand": "UNIQLO",
+      "region": "global",
+      "gender": "men",
+      "category": "shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Uniqlo Oxford Shirts (Sample Data)",
+      "sourceUrl": "https://www.uniqlo.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.uniqlo.com",
+      "sizes": [
+        { "label": "S", "chest": [88, 94], "waist": [74, 80], "garmentChest": [100, 106] },
+        { "label": "M", "chest": [95, 102], "waist": [81, 88], "garmentChest": [107, 114] },
+        { "label": "L", "chest": [103, 110], "waist": [89, 96], "garmentChest": [115, 122] },
+        { "label": "XL", "chest": [111, 118], "waist": [97, 104], "garmentChest": [123, 130] }
+      ]
+    },
+
+    {
+      "id": "levis_pants",
+      "brand": "Levi's",
+      "region": "global",
+      "gender": "men",
+      "category": "pants",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Levi's Denim & Trousers (Sample Data)",
+      "sourceUrl": "https://www.levi.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.levi.com",
+      "sizes": [
+        { "label": "29", "waist": [72, 75], "hips": [86, 90], "chest": [84, 88] },
+        { "label": "30", "waist": [75, 78], "hips": [89, 93], "chest": [86, 90] },
+        { "label": "31", "waist": [78, 81], "hips": [92, 96], "chest": [89, 93] },
+        { "label": "32", "waist": [81, 84], "hips": [95, 99], "chest": [92, 96] },
+        { "label": "33", "waist": [84, 87], "hips": [98, 102], "chest": [95, 99] },
+        { "label": "34", "waist": [87, 91], "hips": [101, 105], "chest": [98, 102] },
+        { "label": "36", "waist": [92, 96], "hips": [106, 110], "chest": [103, 107] }
+      ]
+    },
+    {
+      "id": "hm_pants",
+      "brand": "H&M",
+      "region": "global",
+      "gender": "men",
+      "category": "pants",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "H&M Pants & Chinos (Sample Data)",
+      "sourceUrl": "https://www2.hm.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www2.hm.com",
+      "sizes": [
+        { "label": "S (30)", "waist": [76, 80], "hips": [90, 94], "chest": [88, 95] },
+        { "label": "M (32)", "waist": [81, 86], "hips": [95, 100], "chest": [96, 103] },
+        { "label": "L (34)", "waist": [87, 92], "hips": [101, 106], "chest": [104, 111] },
+        { "label": "XL (36)", "waist": [93, 98], "hips": [107, 112], "chest": [112, 119] }
+      ]
+    },
+    {
+      "id": "zara_pants",
+      "brand": "ZARA",
+      "region": "global",
+      "gender": "men",
+      "category": "pants",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "ZARA Trousers (Sample Data)",
+      "sourceUrl": "https://www.zara.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.zara.com",
+      "sizes": [
+        { "label": "38 (EU)", "waist": [74, 78], "hips": [88, 92], "chest": [86, 92] },
+        { "label": "40 (EU)", "waist": [79, 83], "hips": [93, 97], "chest": [93, 98] },
+        { "label": "42 (EU)", "waist": [84, 88], "hips": [98, 102], "chest": [99, 104] },
+        { "label": "44 (EU)", "waist": [89, 93], "hips": [103, 107], "chest": [105, 110] }
+      ]
+    },
+    {
+      "id": "uniqlo_pants",
+      "brand": "UNIQLO",
+      "region": "global",
+      "gender": "men",
+      "category": "pants",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Uniqlo Smart Pants (Sample Data)",
+      "sourceUrl": "https://www.uniqlo.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.uniqlo.com",
+      "sizes": [
+        { "label": "S", "waist": [73, 79], "hips": [89, 95], "chest": [88, 94] },
+        { "label": "M", "waist": [80, 86], "hips": [96, 102], "chest": [95, 102] },
+        { "label": "L", "waist": [87, 93], "hips": [103, 109], "chest": [103, 110] },
+        { "label": "XL", "waist": [94, 100], "hips": [110, 116], "chest": [111, 118] }
+      ]
+    },
+
+    {
+      "id": "hm_jacket",
+      "brand": "H&M",
+      "region": "global",
+      "gender": "men",
+      "category": "jacket",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "H&M Outerwear (Sample Data)",
+      "sourceUrl": "https://www2.hm.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www2.hm.com",
+      "sizes": [
+        { "label": "S", "chest": [88, 95], "waist": [76, 82], "garmentChest": [104, 111] },
+        { "label": "M", "chest": [96, 103], "waist": [83, 90], "garmentChest": [112, 119] },
+        { "label": "L", "chest": [104, 111], "waist": [91, 98], "garmentChest": [120, 127] },
+        { "label": "XL", "chest": [112, 120], "waist": [99, 106], "garmentChest": [128, 136] }
+      ]
+    },
+    {
+      "id": "zara_jacket",
+      "brand": "ZARA",
+      "region": "global",
+      "gender": "men",
+      "category": "jacket",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "ZARA Outerwear (Sample Data)",
+      "sourceUrl": "https://www.zara.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.zara.com",
+      "sizes": [
+        { "label": "S", "chest": [90, 97], "waist": [77, 84], "garmentChest": [102, 109] },
+        { "label": "M", "chest": [98, 105], "waist": [85, 92], "garmentChest": [110, 117] },
+        { "label": "L", "chest": [106, 113], "waist": [93, 100], "garmentChest": [118, 125] },
+        { "label": "XL", "chest": [114, 122], "waist": [101, 108], "garmentChest": [126, 134] }
+      ]
+    },
+    {
+      "id": "uniqlo_jacket",
+      "brand": "UNIQLO",
+      "region": "global",
+      "gender": "men",
+      "category": "jacket",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Uniqlo Parkas & Blazers (Sample Data)",
+      "sourceUrl": "https://www.uniqlo.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.uniqlo.com",
+      "sizes": [
+        { "label": "S", "chest": [88, 94], "waist": [74, 80], "garmentChest": [104, 110] },
+        { "label": "M", "chest": [95, 102], "waist": [81, 88], "garmentChest": [111, 118] },
+        { "label": "L", "chest": [103, 110], "waist": [89, 96], "garmentChest": [119, 126] },
+        { "label": "XL", "chest": [111, 118], "waist": [97, 104], "garmentChest": [127, 134] }
+      ]
+    },
+
+    {
+      "id": "zara_women_tshirt",
+      "brand": "ZARA",
+      "region": "global",
+      "gender": "women",
+      "category": "t-shirt",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "ZARA Woman Guide (Sample Data)",
+      "sourceUrl": "https://www.zara.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.zara.com",
+      "sizes": [
+        { "label": "XS", "chest": [80, 84], "waist": [60, 64], "hips": [88, 92] },
+        { "label": "S", "chest": [85, 89], "waist": [65, 69], "hips": [93, 97] },
+        { "label": "M", "chest": [90, 94], "waist": [70, 74], "hips": [98, 102] },
+        { "label": "L", "chest": [95, 100], "waist": [75, 80], "hips": [103, 108] }
+      ]
+    },
+    {
+      "id": "hm_women_tshirt",
+      "brand": "H&M",
+      "region": "global",
+      "gender": "women",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "H&M Ladies (Sample Data)",
+      "sourceUrl": "https://www2.hm.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www2.hm.com",
+      "sizes": [
+        { "label": "XS", "chest": [78, 83], "waist": [62, 67], "hips": [86, 91] },
+        { "label": "S", "chest": [84, 89], "waist": [68, 73], "hips": [92, 97] },
+        { "label": "M", "chest": [90, 96], "waist": [74, 80], "hips": [98, 104] },
+        { "label": "L", "chest": [97, 103], "waist": [81, 87], "hips": [105, 111] }
+      ]
+    },
+    {
+      "id": "uniqlo_women_tshirt",
+      "brand": "UNIQLO",
+      "region": "global",
+      "gender": "women",
+      "category": "t-shirt",
+      "fit": "regular",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Uniqlo Women Fit Guide (Sample Data)",
+      "sourceUrl": "https://www.uniqlo.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.uniqlo.com",
+      "sizes": [
+        { "label": "XS", "chest": [77, 83], "waist": [60, 66], "hips": [85, 91] },
+        { "label": "S", "chest": [80, 86], "waist": [63, 69], "hips": [88, 94] },
+        { "label": "M", "chest": [86, 92], "waist": [69, 75], "hips": [94, 100] },
+        { "label": "L", "chest": [92, 98], "waist": [75, 81], "hips": [100, 106] }
+      ]
+    },
+    {
+      "id": "mango_women_tshirt",
+      "brand": "Mango",
+      "region": "local",
+      "gender": "women",
+      "category": "t-shirt",
+      "fit": "slim",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Mango Woman Fitting (Sample Data)",
+      "sourceUrl": "https://shop.mango.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://shop.mango.com",
+      "sizes": [
+        { "label": "XS", "chest": [82, 86], "waist": [62, 66], "hips": [90, 94] },
+        { "label": "S", "chest": [86, 90], "waist": [66, 70], "hips": [94, 98] },
+        { "label": "M", "chest": [90, 94], "waist": [70, 74], "hips": [98, 102] },
+        { "label": "L", "chest": [95, 100], "waist": [75, 80], "hips": [103, 108] }
+      ]
+    },
+
+    {
+      "id": "unisex_tee_uniqlo",
+      "brand": "UNIQLO U",
+      "region": "global",
+      "gender": "unisex",
+      "category": "t-shirt",
+      "fit": "relaxed",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "Uniqlo U Genderless Collection (Sample Data)",
+      "sourceUrl": "https://www.uniqlo.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.uniqlo.com",
+      "sizes": [
+        { "label": "XXS", "chest": [76, 83], "waist": [64, 70] },
+        { "label": "XS", "chest": [82, 89], "waist": [70, 76] },
+        { "label": "S", "chest": [88, 95], "waist": [76, 82] },
+        { "label": "M", "chest": [96, 103], "waist": [82, 89] },
+        { "label": "L", "chest": [104, 111], "waist": [90, 97] },
+        { "label": "XL", "chest": [112, 119], "waist": [98, 105] }
+      ]
+    },
+    {
+      "id": "unisex_tee_cos",
+      "brand": "COS",
+      "region": "global",
+      "gender": "unisex",
+      "category": "t-shirt",
+      "fit": "relaxed",
+      "chartType": "body",
+      "unit": "cm",
+      "source": "COS Relaxed Unisex Tee (Sample Data)",
+      "sourceUrl": "https://www.cos.com",
+      "updated": "Nov 2026",
+      "brandUrl": "https://www.cos.com",
+      "sizes": [
+        { "label": "XS", "chest": [84, 91], "waist": [72, 78] },
+        { "label": "S", "chest": [90, 97], "waist": [78, 84] },
+        { "label": "M", "chest": [98, 105], "waist": [85, 91] },
+        { "label": "L", "chest": [106, 113], "waist": [92, 98] }
+      ]
+    }
+  ]
+}

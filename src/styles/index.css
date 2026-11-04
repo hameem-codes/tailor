@@ -1,0 +1,325 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-dark: #0a0a0b;
+    --bg-mid: #141517;
+    --bg-light: #454b52;
+    --card-bg: rgba(32, 32, 35, 0.82);
+    --card-border: rgba(255, 255, 255, 0.12);
+    --primary-green: #1DA84A;
+    --accent-green: #4ADE80;
+    --ruler-green: #34C759;
+    --amber: #FBBF24;
+    --red: #F87171;
+    --sec-text: #D6D6DC;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(120% 55% at 85% 0, #454b52, #141517 55%, #0a0a0b);
+    background-attachment: fixed;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Accessibility focus outline */
+  :focus-visible {
+    outline: 2px solid #4ADE80;
+    outline-offset: 2px;
+  }
+}
+
+/* Glass Card */
+.glass-card {
+  background: rgba(32, 32, 35, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  animation: fadeIn 0.5s both;
+}
+
+/* Barlow Condensed Typography */
+.font-barlow {
+  font-family: 'Barlow Condensed', sans-serif;
+  line-height: 1;
+}
+
+/* Touch Targets & Micro-interactions */
+.btn-press:active {
+  transform: scale(0.96);
+  filter: brightness(1.25);
+  transition: transform 0.08s ease, filter 0.08s ease;
+}
+
+/* Circular Icon Button (44x44px minimum touch target) */
+.circle-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.circle-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* Pill Button */
+.pill-btn {
+  min-height: 44px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 0 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.pill-btn:hover:not(.pill-active):not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.pill-active {
+  background: #ffffff !important;
+  color: #111111 !important;
+  border-color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Primary Action Button */
+.primary-btn {
+  min-height: 56px;
+  border-radius: 28px;
+  border: 0;
+  background: #1DA84A;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: #17933f;
+}
+
+.primary-btn:disabled {
+  background: #4A4F55;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* Secondary Solid White Button */
+.secondary-btn {
+  min-height: 56px;
+  border-radius: 28px;
+  border: 0;
+  background: #ffffff;
+  color: #111111;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.secondary-btn:hover {
+  background: #e6e6ea;
+}
+
+/* Stepper Input Field Container */
+.field-container {
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 18px;
+  padding: 10px 10px 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field-container:focus-within {
+  border-color: #4ADE80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
+}
+
+.field-container-error {
+  border-color: #F87171 !important;
+}
+
+.field-container-error:focus-within {
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.3) !important;
+}
+
+/* Large Number Input */
+.number-input {
+  background: none;
+  border: 0;
+  color: #ffffff;
+  width: 58px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500;
+  font-size: 32px;
+  padding: 0;
+  outline: 0;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Range Ruler Styles */
+.ruler-track {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.18);
+  margin-top: 38px;
+}
+
+.ruler-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 5px;
+  animation: growBar 0.8s 0.2s both;
+}
+
+.ruler-dot {
+  position: absolute;
+  top: -4px;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  animation: slideDot 0.9s 0.2s both;
+}
+
+.ruler-dot-label {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #ffffff;
+}
+
+/* Skeleton Shimmer */
+.shimmer-block {
+  height: 16px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Progress bar */
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transform-origin: left;
+  background: linear-gradient(90deg, #FF3B30, #FFCC00, #34C759);
+  animation: progressBar 2.2s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes growBar {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDot {
+  from {
+    left: 0;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes progressBar {
+  0% {
+    transform: scaleX(0);
+  }
+  50% {
+    transform: scaleX(0.7);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
