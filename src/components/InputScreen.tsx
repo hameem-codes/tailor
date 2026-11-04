@@ -487,25 +487,25 @@ export const InputScreen: React.FC<InputScreenProps> = ({
       <div className="hidden lg:grid max-w-7xl mx-auto px-6 lg:px-8 py-6 lg:py-10 grid-cols-12 gap-12 xl:gap-16 items-center min-h-[calc(100vh-140px)]">
         {/* Left Column: Hero & Value Proposition */}
         <section className="col-span-5 flex flex-col justify-center">
-          <h1 className="font-barlow text-[80px] xl:text-[96px] font-semibold text-white leading-[0.93] tracking-tight">
+          <h1 className="font-barlow text-[80px] xl:text-[96px] font-semibold text-white leading-[0.93] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]">
             Find<br />your fit.
           </h1>
 
-          <p className="text-lg xl:text-xl text-[#D6D6DC] max-w-md mt-5 leading-relaxed">
+          <p className="text-lg xl:text-xl text-[#E2E8F0] max-w-md mt-5 leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
             Enter your measurements once. See the right size across brands.
           </p>
 
-          <ul className="space-y-3.5 mt-8 text-base text-white/95">
+          <ul className="space-y-3.5 mt-8 text-base text-white/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
             <li className="flex items-center gap-3">
-              <span className="text-[#4ADE80] font-bold text-xl">✓</span>
+              <span className="text-[#4ADE80] font-bold text-xl drop-shadow">✓</span>
               <span>Compare 10+ brands at once</span>
             </li>
             <li className="flex items-center gap-3">
-              <span className="text-[#4ADE80] font-bold text-xl">✓</span>
+              <span className="text-[#4ADE80] font-bold text-xl drop-shadow">✓</span>
               <span>Matched from real size charts</span>
             </li>
             <li className="flex items-center gap-3">
-              <span className="text-[#4ADE80] font-bold text-xl">✓</span>
+              <span className="text-[#4ADE80] font-bold text-xl drop-shadow">✓</span>
               <span>Stays on your device</span>
             </li>
           </ul>

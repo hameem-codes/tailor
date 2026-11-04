@@ -65,23 +65,28 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     const rootGroup = new THREE.Group();
     scene.add(rootGroup);
 
-    // 3. Studio Lighting (Pure Light Colors - Platinum, Soft White, Moonlit Silver - ZERO GREEN)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+    // 3. Studio Lighting (Stealth Atelier - Soft White Key, Moonlit Rim Highlights, Zero Green)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const whiteKeyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+    const whiteKeyLight = new THREE.DirectionalLight(0xffffff, 1.8);
     whiteKeyLight.position.set(3.5, 4.0, 3.5);
     scene.add(whiteKeyLight);
 
-    const platinumFillLight = new THREE.PointLight(0xe2e8f0, 2.0, 16);
+    const platinumFillLight = new THREE.PointLight(0xe2e8f0, 1.8, 16);
     platinumFillLight.position.set(-3.5, -1.0, 3.0);
     scene.add(platinumFillLight);
 
-    const silverRimLight = new THREE.PointLight(0xcfd8dc, 2.2, 16);
-    silverRimLight.position.set(0, 1.8, -3.2);
+    // Strong Moonlit Silver Rim Lights from back & sides to trace garment silhouettes crisply
+    const silverRimLight = new THREE.PointLight(0xffffff, 3.2, 16);
+    silverRimLight.position.set(0, 2.0, -3.2);
     scene.add(silverRimLight);
 
-    const overheadSpot = new THREE.SpotLight(0xffffff, 1.8, 14, Math.PI / 4, 0.4);
+    const leftRimLight = new THREE.PointLight(0xcfd8dc, 2.4, 14);
+    leftRimLight.position.set(-3.5, 0.5, -1.0);
+    scene.add(leftRimLight);
+
+    const overheadSpot = new THREE.SpotLight(0xffffff, 1.5, 14, Math.PI / 4, 0.4);
     overheadSpot.position.set(0, 5.5, 2.0);
     overheadSpot.target.position.set(0, 0, 0);
     scene.add(overheadSpot);
@@ -101,43 +106,46 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     normalTexture.minFilter = THREE.LinearMipmapLinearFilter;
     normalTexture.magFilter = THREE.LinearFilter;
 
-    // 5. Materials (Light colors: Chalk White, Warm Bone Ivory, Platinum Silver - NO GREEN)
+    // 5. Materials (High Contrast Stealth Atelier Palette - NO GREEN)
+    // Center Hero Hoodie: Stealth Obsidian Charcoal (#1f232b) -> Gives 12:1 AAA contrast against white text!
     const heroMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
-      normalScale: new THREE.Vector2(0.65, 0.65), // Smooth, elegant fabric texture without stair-step ridges
-      roughness: 0.82,
-      metalness: 0.06,
-      color: 0xffffff, // Pristine Chalk White
-      side: THREE.FrontSide, // FrontSide prevents self-shadowing and backface slice artifacts
+      normalScale: new THREE.Vector2(0.5, 0.5),
+      roughness: 0.90, // Heavy luxury matte cotton fleece
+      metalness: 0.08,
+      color: 0x1f232b, // Stealth Obsidian Charcoal
+      side: THREE.FrontSide,
       transparent: true,
-      alphaTest: 0.06,
+      alphaTest: 0.02, // Seamless edge without cutout steps
       depthWrite: true,
     });
 
+    // Left Companion Hoodie: Warm Earth Taupe / Mocha Sand (#3e352e)
     const leftCompanionMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
-      normalScale: new THREE.Vector2(0.65, 0.65),
-      roughness: 0.86,
+      normalScale: new THREE.Vector2(0.5, 0.5),
+      roughness: 0.92,
       metalness: 0.05,
-      color: 0xf3ede6, // Warm Bone / Ivory Beige
+      color: 0x3e352e, // Warm Earth Taupe
       side: THREE.FrontSide,
       transparent: true,
-      alphaTest: 0.06,
+      alphaTest: 0.02,
       depthWrite: true,
     });
 
+    // Right Companion Hoodie: Smoked Titanium / Muted Slate (#2b323c)
     const rightCompanionMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
-      normalScale: new THREE.Vector2(0.65, 0.65),
-      roughness: 0.82,
-      metalness: 0.1,
-      color: 0xf1f5f9, // Platinum Silver
+      normalScale: new THREE.Vector2(0.5, 0.5),
+      roughness: 0.88,
+      metalness: 0.12,
+      color: 0x2b323c, // Smoked Titanium
       side: THREE.FrontSide,
       transparent: true,
-      alphaTest: 0.06,
+      alphaTest: 0.02,
       depthWrite: true,
     });
 
