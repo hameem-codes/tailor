@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Routes,
   Route,
@@ -22,6 +22,8 @@ import {
   toggleSavedBrand,
   isTipDismissed,
   setTipDismissed,
+  decodeShareData,
+  DEFAULT_MEASUREMENTS,
 } from './lib/storage';
 import { getInitialBrands, fetchBrandSizes } from './lib/data';
 import { matchAllBrands, matchBrand } from './lib/matching/engine';
@@ -106,6 +108,7 @@ const ResultsScreenRoute: React.FC<{
   setRegionFilter: (r: RegionFilter) => void;
   sortBy: SortOption;
   setSortBy: (s: SortOption) => void;
+  isLoading?: boolean;
 }> = (props) => {
   const navigate = useNavigate();
 
@@ -225,11 +228,23 @@ export const App: React.FC = () => {
 
   // Fetch updated brand data if available
   useEffect(() => {
-    fetchBrandSizes().then((loaded) => {
-      if (loaded && loaded.length > 0) {
-        setBrands(loaded);
-      }
-    });
+    let mounted = true;
+    fetchBrandSizes()
+      .then((loaded) => {
+        if (mounted && loaded && loaded.length > 0) {
+          setBrands(loaded);
+        }
+      })
+      .catch((err) => {
+        console.warn('[Tailor] fetchBrandSizes background fetch error:', err);
+      })
+      .finally(() => {
+      });
+
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // Sync measurements to localStorage
@@ -255,6 +270,32 @@ export const App: React.FC = () => {
     return matchAllBrands(brands, measurements, searchQuery, regionFilter, sortBy);
   }, [brands, measurements, searchQuery, regionFilter, sortBy]);
 
+  // Handle share URL param on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('m');
+    if (encoded) {
+      const decoded = decodeShareData(encoded);
+      if (decoded) {
+        const merged: UserMeasurements = {
+          ...DEFAULT_MEASUREMENTS,
+          ...decoded,
+          gender: decoded.gender || DEFAULT_MEASUREMENTS.gender,
+          category: decoded.category || DEFAULT_MEASUREMENTS.category,
+          unit: decoded.unit || DEFAULT_MEASUREMENTS.unit,
+          height: typeof decoded.height === 'number' ? decoded.height : DEFAULT_MEASUREMENTS.height,
+          weight: typeof decoded.weight === 'number' ? decoded.weight : DEFAULT_MEASUREMENTS.weight,
+          fitPreference: decoded.fitPreference || DEFAULT_MEASUREMENTS.fitPreference,
+        };
+        setMeasurements(merged);
+        saveStoredMeasurements(merged);
+        // Clear the param from URL without reload
+        window.history.replaceState({}, document.title, window.location.pathname);
+        navigate('/results');
+      }
+    }
+  }, [navigate]);
+
   // Stepper state
   const currentStep: 1 | 2 | 3 = location.pathname.startsWith('/brand/')
     ? 3
@@ -269,6 +310,18 @@ export const App: React.FC = () => {
     searchedInSession = false;
   }
   const canGoToResults = hasStoredMeasurements() || searchedInSession;
+
+  const prevStepRef = useRef<1 | 2 | 3>(currentStep);
+  const [slideDirection, setSlideDirection] = useState<'forward' | 'backward'>('forward');
+
+  useEffect(() => {
+    if (currentStep > prevStepRef.current) {
+      setSlideDirection('forward');
+    } else if (currentStep < prevStepRef.current) {
+      setSlideDirection('backward');
+    }
+    prevStepRef.current = currentStep;
+  }, [currentStep]);
 
   return (
     <div className="min-h-screen text-white relative w-full overflow-x-hidden flex flex-col">
@@ -290,7 +343,12 @@ export const App: React.FC = () => {
         showHips={measurements.category === 'pants'}
       />
 
-      <main className="flex-1 w-full">
+      <main
+        className={`flex-1 w-full relative z-10 ${
+          slideDirection === 'forward' ? 'page-transition-forward' : 'page-transition-backward'
+        }`}
+        key={location.pathname}
+      >
         <Routes>
           <Route
             path="/"

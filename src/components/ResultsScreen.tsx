@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BrandMatchResult, UserMeasurements, RegionFilter, SortOption } from '../types';
 import { BrandCard } from './BrandCard';
-import { SearchIcon, FilterIcon, HangerIcon, CheckIcon, WarningTriangleIcon, CrossCircleIcon } from './Icons';
+import { SearchIcon, FilterIcon, HangerIcon, CheckIcon, WarningTriangleIcon, CrossCircleIcon, ShareIcon } from './Icons';
 import { formatDimension } from '../lib/matching/helpers';
 import { SlidingTabs, SlidingTabOption } from './SlidingTabs';
+import { BrandComparisonModal } from './BrandComparisonModal';
 
 const regionOptions: SlidingTabOption<RegionFilter>[] = [
   { id: 'all', label: 'All' },
@@ -26,6 +27,8 @@ interface ResultsScreenProps {
   setRegionFilter: (r: RegionFilter) => void;
   sortBy: SortOption;
   setSortBy: (s: SortOption) => void;
+  isLoading?: boolean;
+  onShare?: () => void;
 }
 
 export const ResultsScreen: React.FC<ResultsScreenProps> = ({
@@ -43,9 +46,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   setRegionFilter,
   sortBy,
   setSortBy,
+  isLoading = false,
+  onShare,
 }) => {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showMatchLevels, setShowMatchLevels] = useState(false);
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
+  const [comparedBrandIds, setComparedBrandIds] = useState<string[]>([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
 
   const isPants = measurements.category === 'pants';
   const primaryDim = isPants
@@ -54,6 +62,29 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
   const genderLabel = measurements.gender.charAt(0).toUpperCase() + measurements.gender.slice(1);
   const categoryLabel = measurements.category.charAt(0).toUpperCase() + measurements.category.slice(1);
+
+  const filteredResults = useMemo(() => {
+    if (showSavedOnly && savedBrandIds.length > 0) {
+      return results.filter(r => savedBrandIds.includes(r.brandChart.id));
+    }
+    return results;
+  }, [results, savedBrandIds, showSavedOnly]);
+
+  const comparedMatches = useMemo(() => {
+    return results.filter((r) => comparedBrandIds.includes(r.brandChart.id));
+  }, [results, comparedBrandIds]);
+
+  const handleToggleCompare = (brandId: string) => {
+    setComparedBrandIds((prev) => {
+      if (prev.includes(brandId)) {
+        return prev.filter((id) => id !== brandId);
+      }
+      if (prev.length >= 3) {
+        return [...prev.slice(1), brandId];
+      }
+      return [...prev, brandId];
+    });
+  };
 
   const cycleSort = () => {
     if (sortBy === 'match') setSortBy('brand-asc');
@@ -103,8 +134,18 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           <h1 className="font-barlow text-4xl sm:text-5xl lg:text-[54px] font-semibold text-white tracking-wide leading-none">
             Your sizes
           </h1>
-          <div className="text-sm sm:text-base text-[#D6D6DC] mt-1.5">
-            {genderLabel} · {categoryLabel} · {primaryDim} · {results.length} brands
+          <div className="text-sm sm:text-base text-[#D6D6DC] mt-1.5 flex items-center gap-2 flex-wrap">
+            <span>{genderLabel} · {categoryLabel} · {primaryDim} · {filteredResults.length} brands</span>
+            {isLoading && (
+              <span
+                role="status"
+                aria-live="polite"
+                className="inline-flex items-center gap-1.5 text-xs text-accent/90 bg-accent/10 px-2 py-0.5 rounded-full border border-accent/20"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                Updating size charts...
+              </span>
+            )}
           </div>
         </div>
 
@@ -161,6 +202,20 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
         {/* Right Toolbar group */}
         <div className="flex items-center gap-2 self-end sm:self-auto">
+          {/* Saved toggle */}
+          {savedBrandIds.length > 0 && (
+            <button
+              onClick={() => setShowSavedOnly(!showSavedOnly)}
+              className={`pill-btn btn-press flex-none text-xs sm:text-sm font-medium !min-h-[40px] !px-4 ${
+                showSavedOnly ? '!bg-[#1DA84A] text-white' : ''
+              }`}
+              aria-label={showSavedOnly ? 'Show all brands' : 'Show saved brands only'}
+              aria-pressed={showSavedOnly}
+            >
+              {showSavedOnly ? 'All' : 'Saved'}
+            </button>
+          )}
+
           {/* Sort button */}
           <button
             onClick={cycleSort}
@@ -168,6 +223,16 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             aria-label={`Sort: ${getSortLabel()}. Click to change`}
           >
             {getSortLabel()}
+          </button>
+
+          {/* Share button */}
+          <button
+            onClick={onShare}
+            className="pill-btn btn-press flex-none !min-h-[40px] !px-4 text-xs sm:text-sm font-medium"
+            aria-label="Share results"
+          >
+            <ShareIcon size={16} className="mr-1" />
+            Share
           </button>
 
           {/* Filter icon button */}
@@ -298,8 +363,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           - Mobile (<md:): 1 column
          ========================================================================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
-        {results.length > 0 ? (
-          results.map((match) => (
+        {filteredResults.length > 0 ? (
+          filteredResults.map((match) => (
             <BrandCard
               key={match.brandChart.id}
               matchResult={match}
@@ -307,6 +372,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               isSaved={savedBrandIds.includes(match.brandChart.id)}
               onToggleSave={onToggleSave}
               onOpenDetail={onOpenDetail}
+              isComparing={comparedBrandIds.includes(match.brandChart.id)}
+              onToggleCompare={handleToggleCompare}
             />
           ))
         ) : (
@@ -338,6 +405,68 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </div>
         )}
       </div>
+
+      {/* Floating Bottom Comparison Bar */}
+      {comparedBrandIds.length > 0 && (
+        <aside
+          role="region"
+          aria-label="Brand comparison bar"
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-xl glass-card border border-[#4ADE80]/50 p-2.5 sm:p-3 rounded-full shadow-[0_10px_35px_rgba(0,0,0,0.7)] backdrop-blur-xl flex items-center justify-between gap-3 animate-fade-in"
+        >
+          <div className="flex items-center gap-2 overflow-x-auto min-w-0 pl-2">
+            <span className="text-xs sm:text-sm font-semibold text-white whitespace-nowrap">
+              Compare ({comparedBrandIds.length}/3):
+            </span>
+            <div className="flex items-center gap-1.5 flex-nowrap">
+              {comparedMatches.map((m) => (
+                <span
+                  key={m.brandChart.id}
+                  className="inline-flex items-center gap-1 text-xs bg-white/10 text-white px-2.5 py-0.5 rounded-full whitespace-nowrap border border-white/10"
+                >
+                  {m.brandChart.brand}
+                  <button
+                    type="button"
+                    onClick={() => setComparedBrandIds((prev) => prev.filter((id) => id !== m.brandChart.id))}
+                    className="text-secText hover:text-white ml-0.5"
+                    aria-label={`Remove ${m.brandChart.brand}`}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-none pr-1">
+            <button
+              type="button"
+              onClick={() => setShowComparisonModal(true)}
+              disabled={comparedBrandIds.length < 2}
+              className="primary-btn btn-press !min-h-[36px] !px-4 !py-1 text-xs sm:text-sm font-bold whitespace-nowrap disabled:opacity-50"
+            >
+              {comparedBrandIds.length < 2 ? 'Pick 2+ to compare' : 'Compare side-by-side →'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setComparedBrandIds([])}
+              className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] text-xs text-secText hover:text-white"
+              aria-label="Clear all compared brands"
+            >
+              ×
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* Brand Comparison Modal */}
+      <BrandComparisonModal
+        isOpen={showComparisonModal}
+        onClose={() => setShowComparisonModal(false)}
+        matches={comparedMatches}
+        measurements={measurements}
+        onRemoveBrand={(id) => setComparedBrandIds((prev) => prev.filter((item) => item !== id))}
+        onOpenDetail={onOpenDetail}
+      />
 
       {/* =========================================================================
           6. FOOTER DISCLAIMER
