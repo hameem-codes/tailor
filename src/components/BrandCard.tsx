@@ -11,6 +11,8 @@ interface BrandCardProps {
   isSaved: boolean;
   onToggleSave: (brandId: string) => void;
   onOpenDetail: (matchResult: BrandMatchResult) => void;
+  isComparing?: boolean;
+  onToggleCompare?: (brandId: string) => void;
 }
 
 export function renderBrandSizeBadge(sizeStr: string) {
@@ -49,6 +51,8 @@ export const BrandCard: React.FC<BrandCardProps> = ({
   isSaved,
   onToggleSave,
   onOpenDetail,
+  isComparing = false,
+  onToggleCompare,
 }) => {
   const {
     brandChart,
@@ -86,6 +90,21 @@ export const BrandCard: React.FC<BrandCardProps> = ({
           <BrandLogo brand={brandChart.brand} />
         </h3>
         <div className="flex items-center gap-1.5 relative z-10">
+          {onToggleCompare && (
+            <button
+              type="button"
+              onClick={() => onToggleCompare(brandChart.id)}
+              className={`pill-btn btn-press !text-[11px] sm:!text-xs !min-h-[30px] !px-2.5 rounded-full transition-all ${
+                isComparing
+                  ? '!bg-[#1DA84A] !border-[#4ADE80] text-white font-bold'
+                  : '!bg-transparent text-secText hover:text-white border-white/20 hover:border-white/40'
+              }`}
+              aria-label={isComparing ? `Remove ${brandChart.brand} from comparison` : `Compare ${brandChart.brand}`}
+              aria-pressed={isComparing}
+            >
+              {isComparing ? '✓ Comparing' : '+ Compare'}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onOpenDetail(matchResult)}
