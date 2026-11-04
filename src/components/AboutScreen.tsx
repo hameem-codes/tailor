@@ -29,7 +29,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
   };
 
   return (
-    <div className="w-full max-w-[520px] mx-auto min-h-screen flex flex-col gap-4 p-4 sm:p-6 pb-20 page-transition">
+    <div className="w-full max-w-[640px] mx-auto min-h-screen flex flex-col gap-4 p-4 sm:p-6 lg:p-8 pb-20 page-transition">
       {/* Header */}
       <div className="flex items-center gap-3">
         <button
@@ -39,7 +39,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
         >
           ←
         </button>
-        <h1 className="font-barlow text-3xl font-semibold text-white tracking-wide">
+        <h1 className="font-barlow text-3xl sm:text-4xl font-semibold text-white tracking-wide">
           About Tailor
         </h1>
       </div>

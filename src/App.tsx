@@ -32,6 +32,7 @@ import { ResultsScreen } from './components/ResultsScreen';
 import { BrandDetail } from './components/BrandDetail';
 import { AboutScreen } from './components/AboutScreen';
 import { HowToMeasureModal } from './components/HowToMeasureModal';
+import { HangerIcon } from './components/Icons';
 
 // Route wrapper: Screen 1 (Input)
 const InputScreenRoute: React.FC<{
@@ -175,12 +176,22 @@ const BrandDetailRoute: React.FC<{
 
   if (!brandChart) {
     return (
-      <div className="w-full max-w-[520px] mx-auto min-h-screen flex flex-col items-center justify-center p-6 text-center page-transition">
-        <h2 className="font-barlow text-3xl font-semibold mb-2">Brand not found</h2>
-        <p className="text-secText mb-4">We couldn't locate this brand's size guide.</p>
-        <button onClick={() => navigate('/results')} className="primary-btn btn-press px-6">
-          Back to results
-        </button>
+      <div className="w-full max-w-[560px] mx-auto min-h-[calc(100vh-140px)] flex flex-col items-center justify-center p-6 text-center page-transition">
+        <div className="glass-card p-8 flex flex-col items-center text-center gap-3 border border-white/12 w-full max-w-md shadow-2xl">
+          <HangerIcon size={48} className="text-[#D6D6DC] my-1" />
+          <h2 className="font-barlow text-3xl sm:text-4xl font-semibold text-white">
+            Brand not found
+          </h2>
+          <p className="text-secText text-sm sm:text-base leading-relaxed mb-2">
+            We couldn't locate this brand's size guide or it might have been removed.
+          </p>
+          <button
+            onClick={() => navigate('/results')}
+            className="primary-btn btn-press w-full !min-h-[48px] text-base font-semibold"
+          >
+            Back to results
+          </button>
+        </div>
       </div>
     );
   }
@@ -261,7 +272,7 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen text-white relative w-full overflow-x-hidden flex flex-col">
       {/* Universal Desktop & Responsive Top Navbar matching design export */}
-      {location.pathname !== '/about' && location.pathname !== '/loading' && (
+      {location.pathname !== '/loading' && (
         <TopNavbar
           currentStep={currentStep}
           canGoToResults={canGoToResults}
