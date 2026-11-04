@@ -261,7 +261,7 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen text-white relative w-full overflow-x-hidden flex flex-col">
       {/* Universal Desktop & Responsive Top Navbar matching design export */}
-      {location.pathname !== '/about' && (
+      {location.pathname !== '/about' && location.pathname !== '/loading' && (
         <TopNavbar
           currentStep={currentStep}
           canGoToResults={canGoToResults}

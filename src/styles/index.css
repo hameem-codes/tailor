@@ -255,11 +255,11 @@
 
 /* Skeleton Shimmer */
 .shimmer-block {
-  height: 16px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 255, 255, 0.06) 100%);
   background-size: 200% 100%;
-  animation: shimmer 1.4s linear infinite;
+  animation: shimmer 1.5s ease-in-out infinite;
 }
 
 /* Progress bar */
@@ -267,8 +267,8 @@
   height: 100%;
   border-radius: 4px;
   transform-origin: left;
-  background: linear-gradient(90deg, #FF3B30, #FFCC00, #34C759);
-  animation: progressBar 2.2s ease-in-out infinite;
+  background: linear-gradient(90deg, #FF3B30 0%, #FF9500 30%, #FFCC00 65%, #34C759 100%);
+  animation: progressBar 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Animations */
@@ -323,8 +323,11 @@
   0% {
     transform: scaleX(0);
   }
-  50% {
-    transform: scaleX(0.7);
+  30% {
+    transform: scaleX(0.4);
+  }
+  65% {
+    transform: scaleX(0.78);
   }
   100% {
     transform: scaleX(1);
