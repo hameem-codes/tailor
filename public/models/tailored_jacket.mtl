@@ -1,0 +1,27 @@
+# Material definition for Tailored Luxury Jacket
+newmtl JacketFrontMaterial
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.250 0.250 0.250
+Ns 45.0
+d 1.0
+illum 2
+map_Kd ../apparel/tailored_jacket_diffuse.png
+map_Bump ../apparel/tailored_jacket_normal.png
+
+newmtl JacketBackMaterial
+Ka 0.850 0.850 0.850
+Kd 0.120 0.130 0.150
+Ks 0.150 0.150 0.150
+Ns 25.0
+d 1.0
+illum 2
+map_Kd ../apparel/tailored_jacket_diffuse.png
+
+newmtl JacketSeamMaterial
+Ka 0.100 0.100 0.100
+Kd 0.080 0.080 0.100
+Ks 0.100 0.100 0.100
+Ns 10.0
+d 1.0
+illum 1

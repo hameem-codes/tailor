@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailor Atelier - 3D Apparel Interactive Experience</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            atelier: {
+              950: '#07080a',
+              900: '#0c0e12',
+              850: '#12151b',
+              800: '#181c24',
+              700: '#262d3a',
+              emerald: '#34d399',
+              accent: '#4ade80'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background: #08090b;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    .glass-panel {
+      background: rgba(18, 21, 27, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    }
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(74, 222, 128, 0.4);
+    }
+    .glass-pill.active {
+      background: rgba(74, 222, 128, 0.16);
+      border-color: rgba(74, 222, 128, 0.6);
+      color: #4ade80;
+    }
+    .canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .glow-dot {
+      box-shadow: 0 0 12px #4ade80;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+      border-radius: 3px;
+    }
+  </style>
+  <!-- Three.js + Addons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body class="w-screen h-screen overflow-hidden flex flex-col justify-between">
+
+  <!-- 3D WebGL Canvas Layer -->
+  <div id="webgl-container" class="canvas-container cursor-grab active:cursor-grabbing"></div>
+
+  <!-- Top Navigation & Header Bar -->
+  <header class="relative z-20 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-atelier-950/80 backdrop-blur-md">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-sm font-semibold tracking-wider uppercase text-white">Tailor 3D Atelier</h1>
+          <span class="px-2 py-0.5 text-[11px] font-medium tracking-wide uppercase bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/40">Real-Time Model</span>
+        </div>
+        <p class="text-xs text-slate-400">AI-Synthesized Tailored Outerwear &bull; 3D Cloth Physics &bull; Studio Turntable</p>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="flex items-center space-x-2">
+      <button id="btn-camera-reset" class="glass-pill px-3 py-1.5 rounded-lg text-xs text-slate-300 flex items-center space-x-1.5">
+        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Reset View</span>
+      </button>
+
+      <a href="models/tailored_jacket.glb" download="tailored_jacket.glb" class="glass-pill px-3 py-1.5 rounded-lg text-xs text-slate-200 flex items-center space-x-1.5 hover:text-emerald-300">
+        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        <span>Download GLB</span>
+      </a>
+
+      <a href="models/tailored_jacket.obj" download="tailored_jacket.obj" class="glass-pill px-3 py-1.5 rounded-lg text-xs text-slate-300 flex items-center space-x-1.5">
+        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>OBJ</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Left Floating Specs & Information Overlay -->
+  <aside class="relative z-20 pointer-events-none p-6 flex flex-col justify-between max-w-sm">
+    <div class="pointer-events-auto glass-panel rounded-2xl p-5 space-y-4 mb-4">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <span class="text-xs uppercase tracking-widest text-emerald-400 font-semibold">Garment Profile</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 glow-dot animate-pulse"></span>
+      </div>
+
+      <div class="space-y-1">
+        <h2 class="text-base font-bold text-white tracking-tight">Technical Slate Tailored Jacket</h2>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Front-facing luxury architectural silhouette with structured shoulder caps, continuous seamline contours, and precision zip detailing.
+        </p>
+      </div>
+
+      <!-- Specs Grid -->
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="bg-black/30 rounded-lg p-2.5 border border-white/5">
+          <div class="text-[10px] text-slate-500 uppercase tracking-wider">Fabric</div>
+          <div class="text-slate-200 font-medium mt-0.5">Slate Tech-Wool</div>
+        </div>
+        <div class="bg-black/30 rounded-lg p-2.5 border border-white/5">
+          <div class="text-[10px] text-slate-500 uppercase tracking-wider">Polygons</div>
+          <div class="text-emerald-400 font-mono font-medium mt-0.5">17,800 tris</div>
+        </div>
+        <div class="bg-black/30 rounded-lg p-2.5 border border-white/5">
+          <div class="text-[10px] text-slate-500 uppercase tracking-wider">PBR Texture</div>
+          <div class="text-slate-200 font-medium mt-0.5">2K Tangent Normal</div>
+        </div>
+        <div class="bg-black/30 rounded-lg p-2.5 border border-white/5">
+          <div class="text-[10px] text-slate-500 uppercase tracking-wider">Animation</div>
+          <div class="text-emerald-400 font-medium mt-0.5">Cloth + Turntable</div>
+        </div>
+      </div>
+
+      <!-- Colorway Swatches -->
+      <div class="pt-2 border-t border-white/10">
+        <div class="text-[10px] text-slate-400 uppercase tracking-wider mb-2">Colorways</div>
+        <div class="flex items-center space-x-2">
+          <button class="color-swatch active w-6 h-6 rounded-full border-2 border-emerald-400 bg-[#23272e] transition transform hover:scale-110" data-color="#ffffff" title="Original Slate Charcoal"></button>
+          <button class="color-swatch w-6 h-6 rounded-full border border-white/20 bg-[#162130] transition transform hover:scale-110" data-color="#3d5a80" title="Atelier Navy"></button>
+          <button class="color-swatch w-6 h-6 rounded-full border border-white/20 bg-[#1b2b20] transition transform hover:scale-110" data-color="#2d6a4f" title="Emerald Olive"></button>
+          <button class="color-swatch w-6 h-6 rounded-full border border-white/20 bg-[#0d0f12] transition transform hover:scale-110" data-color="#181a1f" title="Obsidian Noir"></button>
+          <button class="color-swatch w-6 h-6 rounded-full border border-white/20 bg-[#543d2b] transition transform hover:scale-110" data-color="#b08968" title="Desert Camel"></button>
+          <button class="color-swatch w-6 h-6 rounded-full border border-white/20 bg-[#3d1822] transition transform hover:scale-110" data-color="#6a1b29" title="Royal Burgundy"></button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Control Deck -->
+  <footer class="relative z-20 p-6 flex flex-wrap items-center justify-between gap-4 pointer-events-none">
+    
+    <!-- Shading & View Modes -->
+    <div class="pointer-events-auto glass-panel rounded-2xl px-4 py-3 flex items-center space-x-2">
+      <span class="text-[11px] uppercase tracking-wider text-slate-400 mr-2 font-medium">Render:</span>
+      <button class="view-mode-btn active glass-pill px-3 py-1.5 rounded-lg text-xs text-slate-200" data-mode="pbr">Realistic PBR</button>
+      <button class="view-mode-btn glass-pill px-3 py-1.5 rounded-lg text-xs text-slate-400" data-mode="normal">Normals</button>
+      <button class="view-mode-btn glass-pill px-3 py-1.5 rounded-lg text-xs text-slate-400" data-mode="wireframe">Wireframe</button>
+      <button class="view-mode-btn glass-pill px-3 py-1.5 rounded-lg text-xs text-slate-400" data-mode="clay">Clay Sculpt</button>
+    </div>
+
+    <!-- Animation & Physics Deck -->
+    <div class="pointer-events-auto glass-panel rounded-2xl px-5 py-3 flex items-center space-x-6">
+      
+      <!-- Turntable Toggle -->
+      <div class="flex items-center space-x-2">
+        <button id="toggle-turntable" class="glass-pill active px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 text-emerald-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+          <span id="label-turntable">360° Turntable</span>
+        </button>
+      </div>
+
+      <!-- Cloth Breathing Toggle -->
+      <div class="flex items-center space-x-2">
+        <button id="toggle-cloth-breathing" class="glass-pill active px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 text-emerald-400">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+          <span>Cloth Breathing</span>
+        </button>
+      </div>
+
+      <!-- Speed Slider -->
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-slate-400">Speed:</span>
+        <input id="slider-speed" type="range" min="0.1" max="2.5" step="0.1" value="1.0" class="w-20 accent-emerald-400 cursor-pointer">
+        <span id="speed-val" class="text-xs font-mono text-emerald-400">1.0x</span>
+      </div>
+
+      <!-- Studio Lighting Presets -->
+      <div class="flex items-center space-x-1 pl-2 border-l border-white/10">
+        <span class="text-xs text-slate-400 mr-1">Light:</span>
+        <button class="light-preset-btn glass-pill active px-2.5 py-1 rounded text-[11px]" data-light="atelier">Atelier</button>
+        <button class="light-preset-btn glass-pill px-2.5 py-1 rounded text-[11px]" data-light="neon">Cyber</button>
+        <button class="light-preset-btn glass-pill px-2.5 py-1 rounded text-[11px]" data-light="daylight">Studio</button>
+      </div>
+    </div>
+
+    <!-- Camera Angles -->
+    <div class="pointer-events-auto glass-panel rounded-2xl px-3 py-2 flex items-center space-x-1.5">
+      <button class="cam-angle-btn glass-pill px-2.5 py-1 rounded text-xs text-slate-300" data-angle="front">Front</button>
+      <button class="cam-angle-btn glass-pill px-2.5 py-1 rounded text-xs text-slate-300" data-angle="quarter">3/4 View</button>
+      <button class="cam-angle-btn glass-pill px-2.5 py-1 rounded text-xs text-slate-300" data-angle="side">Side</button>
+      <button class="cam-angle-btn glass-pill px-2.5 py-1 rounded text-xs text-slate-300" data-angle="back">Back</button>
+      <button class="cam-angle-btn glass-pill px-2.5 py-1 rounded text-xs text-slate-300" data-angle="detail">Collar</button>
+    </div>
+
+  </footer>
+
+  <!-- Three.js Setup & Interactive Scripts -->
+  <script>
+    const container = document.getElementById('webgl-container');
+
+    // 1. Scene, Camera, Renderer
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x08090b, 0.04);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 100);
+    camera.position.set(0, 0, 2.2);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.35;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    // Orbit Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 0.6;
+    controls.maxDistance = 4.5;
+    controls.target.set(0, 0.02, 0);
+
+    // 2. Lighting Rig
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+    scene.add(ambientLight);
+
+    // Atelier Key Light
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    keyLight.position.set(2.5, 3.5, 3.0);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 1024;
+    keyLight.shadow.mapSize.height = 1024;
+    scene.add(keyLight);
+
+    // Soft Rim Light Left (Emerald Atelier glow)
+    const emeraldRimLight = new THREE.PointLight(0x4ade80, 2.8, 12);
+    emeraldRimLight.position.set(-2.8, -0.2, 1.8);
+    scene.add(emeraldRimLight);
+
+    // Fill Light Right (Warm studio fill)
+    const fillLight = new THREE.DirectionalLight(0xbdd4f5, 0.8);
+    fillLight.position.set(-3.0, 1.5, -2.0);
+    scene.add(fillLight);
+
+    // Studio Back Rim Spotlight
+    const backRimLight = new THREE.SpotLight(0x38bdf8, 2.0, 10, Math.PI / 4, 0.5);
+    backRimLight.position.set(0, 2.8, -2.5);
+    backRimLight.target.position.set(0, 0, 0);
+    scene.add(backRimLight);
+    scene.add(backRimLight.target);
+
+    // Studio Circular Mirror Pedestal
+    const pedestalGeo = new THREE.CylinderGeometry(0.7, 0.75, 0.04, 64);
+    const pedestalMat = new THREE.MeshStandardMaterial({
+      color: 0x0f1217,
+      metalness: 0.85,
+      roughness: 0.25
+    });
+    const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+    pedestal.position.set(0, -0.62, 0);
+    pedestal.receiveShadow = true;
+    scene.add(pedestal);
+
+    // Pedestal Neon Rim Ring
+    const ringGeo = new THREE.RingGeometry(0.68, 0.71, 64);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x4ade80, side: THREE.DoubleSide });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.rotation.x = -Math.PI / 2;
+    ringMesh.position.set(0, -0.598, 0);
+    scene.add(ringMesh);
+
+    // 3. Garment Root Group
+    const garmentGroup = new THREE.Group();
+    scene.add(garmentGroup);
+
+    // Textures
+    const textureLoader = new THREE.TextureLoader();
+    const diffuseTex = textureLoader.load('apparel/tailored_jacket_diffuse.png', () => renderer.render(scene, camera));
+    const normalTex = textureLoader.load('apparel/tailored_jacket_normal.png');
+    const roughnessTex = textureLoader.load('apparel/tailored_jacket_roughness.png');
+    const metalnessTex = textureLoader.load('apparel/tailored_jacket_metalness.png');
+    const depthTex = textureLoader.load('apparel/tailored_jacket_depth.png');
+
+    diffuseTex.encoding = THREE.sRGBEncoding;
+
+    // Materials
+    const pbrMaterial = new THREE.MeshStandardMaterial({
+      map: diffuseTex,
+      normalMap: normalTex,
+      normalScale: new THREE.Vector2(1.2, 1.2),
+      roughnessMap: roughnessTex,
+      roughness: 0.82,
+      metalnessMap: metalnessTex,
+      metalness: 0.2,
+      side: THREE.DoubleSide,
+      shadowSide: THREE.DoubleSide
+    });
+
+    const normalViewMaterial = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
+    const wireframeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x4ade80,
+      wireframe: true,
+      emissive: 0x144620
+    });
+    const clayMaterial = new THREE.MeshStandardMaterial({
+      color: 0xd8dcd6,
+      roughness: 0.7,
+      metalness: 0.05,
+      side: THREE.DoubleSide
+    });
+
+    let currentMaterial = pbrMaterial;
+    let garmentMesh = null;
+    let originalPositions = null;
+
+    // Load OBJ 3D Model
+    const objLoader = new THREE.OBJLoader();
+    objLoader.load(
+      'models/tailored_jacket.obj',
+      (obj) => {
+        // Calculate bounds and center model perfectly
+        const box = new THREE.Box3().setFromObject(obj);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        obj.position.sub(center);
+
+        obj.traverse((child) => {
+          if (child.isMesh) {
+            garmentMesh = child;
+            child.material = pbrMaterial;
+            child.castShadow = true;
+            child.receiveShadow = true;
+
+            // Cache original vertex positions for cloth breathing dynamics
+            if (child.geometry) {
+              child.geometry.computeVertexNormals();
+              const pos = child.geometry.attributes.position;
+              originalPositions = new Float32Array(pos.array);
+            }
+          }
+        });
+
+        garmentGroup.add(obj);
+        console.log('Jacket 3D model loaded successfully.');
+      },
+      (xhr) => {
+        console.log(`Loading 3D: ${(xhr.loaded / xhr.total * 100).toFixed(0)}%`);
+      },
+      (err) => {
+        console.error('Error loading OBJ, falling back to procedural garment mesh:', err);
+        createProceduralGarmentFallback();
+      }
+    );
+
+    // Procedural Fallback in case local file loading needs immediate display
+    function createProceduralGarmentFallback() {
+      const geo = new THREE.PlaneGeometry(0.72, 0.88, 70, 90);
+      const pos = geo.attributes.position;
+      originalPositions = new Float32Array(pos.array);
+      
+      // Curve plane into 3D anatomical jacket shell
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const z = Math.cos(x * 3.8) * 0.16 + (y > 0.1 ? 0.04 : 0);
+        pos.setZ(i, z);
+      }
+      geo.computeVertexNormals();
+      garmentMesh = new THREE.Mesh(geo, pbrMaterial);
+      garmentMesh.castShadow = true;
+      garmentGroup.add(garmentMesh);
+    }
+
+    // 4. Animation Dynamics State
+    let isTurntableActive = true;
+    let isClothBreathingActive = true;
+    let animSpeed = 1.0;
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime() * animSpeed;
+
+      // Turntable 360 Studio Rotation
+      if (isTurntableActive) {
+        garmentGroup.rotation.y += 0.007 * animSpeed;
+      }
+
+      // Floating Studio Breathing Motion
+      garmentGroup.position.y = Math.sin(time * 1.5) * 0.025;
+      garmentGroup.rotation.z = Math.cos(time * 1.1) * 0.008;
+
+      // Cloth Breathing & Dynamic Wave Simulation
+      if (isClothBreathingActive && garmentMesh && originalPositions) {
+        const positions = garmentMesh.geometry.attributes.position;
+        const count = positions.count;
+
+        for (let i = 0; i < count; i++) {
+          const origX = originalPositions[i * 3];
+          const origY = originalPositions[i * 3 + 1];
+          const origZ = originalPositions[i * 3 + 2];
+
+          // Gentle cloth flutter / breathing flex
+          const wave = Math.sin(time * 2.2 + origY * 4.5 + origX * 3.0) * 0.0035;
+          const chestBreath = Math.sin(time * 1.4) * 0.004 * (origY > -0.1 ? 1 : 0.3);
+
+          positions.setZ(i, origZ + wave + chestBreath);
+        }
+        positions.needsUpdate = true;
+        garmentMesh.geometry.computeVertexNormals();
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // 5. Responsive Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // 6. UI Event Listeners
+
+    // Turntable Toggle
+    const toggleTurntableBtn = document.getElementById('toggle-turntable');
+    const labelTurntable = document.getElementById('label-turntable');
+    toggleTurntableBtn.addEventListener('click', () => {
+      isTurntableActive = !isTurntableActive;
+      toggleTurntableBtn.classList.toggle('active', isTurntableActive);
+      labelTurntable.textContent = isTurntableActive ? '360° Turntable' : 'Turntable Paused';
+    });
+
+    // Cloth Breathing Toggle
+    const toggleClothBtn = document.getElementById('toggle-cloth-breathing');
+    toggleClothBtn.addEventListener('click', () => {
+      isClothBreathingActive = !isClothBreathingActive;
+      toggleClothBtn.classList.toggle('active', isClothBreathingActive);
+      // Reset vertex positions when turned off
+      if (!isClothBreathingActive && garmentMesh && originalPositions) {
+        const positions = garmentMesh.geometry.attributes.position;
+        positions.array.set(originalPositions);
+        positions.needsUpdate = true;
+        garmentMesh.geometry.computeVertexNormals();
+      }
+    });
+
+    // Speed Slider
+    const speedSlider = document.getElementById('slider-speed');
+    const speedVal = document.getElementById('speed-val');
+    speedSlider.addEventListener('input', (e) => {
+      animSpeed = parseFloat(e.target.value);
+      speedVal.textContent = animSpeed.toFixed(1) + 'x';
+    });
+
+    // Camera Reset
+    document.getElementById('btn-camera-reset').addEventListener('click', () => {
+      gsapAnimateCamera(0, 0, 2.2, 0, 0.02, 0);
+    });
+
+    // Camera Presets
+    document.querySelectorAll('.cam-angle-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.cam-angle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const angle = btn.getAttribute('data-angle');
+        isTurntableActive = false;
+        toggleTurntableBtn.classList.remove('active');
+        labelTurntable.textContent = 'Turntable Paused';
+
+        if (angle === 'front') {
+          gsapAnimateCamera(0, 0, 2.2, 0, 0.02, 0);
+          garmentGroup.rotation.y = 0;
+        } else if (angle === 'quarter') {
+          gsapAnimateCamera(1.5, 0.3, 1.8, 0, 0.02, 0);
+          garmentGroup.rotation.y = 0;
+        } else if (angle === 'side') {
+          gsapAnimateCamera(2.2, 0, 0.2, 0, 0.02, 0);
+          garmentGroup.rotation.y = 0;
+        } else if (angle === 'back') {
+          gsapAnimateCamera(0, 0, -2.2, 0, 0.02, 0);
+          garmentGroup.rotation.y = 0;
+        } else if (angle === 'detail') {
+          gsapAnimateCamera(0, 0.28, 0.95, 0, 0.22, 0);
+          garmentGroup.rotation.y = 0;
+        }
+      });
+    });
+
+    // Smooth Camera Transition Helper
+    function gsapAnimateCamera(px, py, pz, tx, ty, tz) {
+      const startPos = camera.position.clone();
+      const endPos = new THREE.Vector3(px, py, pz);
+      const startTarget = controls.target.clone();
+      const endTarget = new THREE.Vector3(tx, ty, tz);
+      let progress = 0;
+
+      function step() {
+        progress += 0.06;
+        if (progress <= 1) {
+          camera.position.lerpVectors(startPos, endPos, progress);
+          controls.target.lerpVectors(startTarget, endTarget, progress);
+          requestAnimationFrame(step);
+        } else {
+          camera.position.copy(endPos);
+          controls.target.copy(endTarget);
+        }
+      }
+      step();
+    }
+
+    // View Modes
+    document.querySelectorAll('.view-mode-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.view-mode-btn').forEach(b => {
+          b.classList.remove('active', 'text-slate-200');
+          b.classList.add('text-slate-400');
+        });
+        btn.classList.add('active', 'text-slate-200');
+        btn.classList.remove('text-slate-400');
+
+        const mode = btn.getAttribute('data-mode');
+        let newMat = pbrMaterial;
+        if (mode === 'normal') newMat = normalViewMaterial;
+        else if (mode === 'wireframe') newMat = wireframeMaterial;
+        else if (mode === 'clay') newMat = clayMaterial;
+
+        if (garmentMesh) garmentMesh.material = newMat;
+      });
+    });
+
+    // Lighting Presets
+    document.querySelectorAll('.light-preset-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.light-preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const light = btn.getAttribute('data-light');
+
+        if (light === 'atelier') {
+          scene.fog.color.setHex(0x08090b);
+          renderer.setClearColor(0x000000, 0);
+          ambientLight.intensity = 0.45;
+          keyLight.color.setHex(0xffffff);
+          keyLight.intensity = 1.4;
+          emeraldRimLight.color.setHex(0x4ade80);
+          emeraldRimLight.intensity = 2.8;
+          fillLight.intensity = 0.8;
+          ringMat.color.setHex(0x4ade80);
+        } else if (light === 'neon') {
+          ambientLight.intensity = 0.25;
+          keyLight.color.setHex(0xa855f7); // Purple key
+          keyLight.intensity = 2.0;
+          emeraldRimLight.color.setHex(0x06b6d4); // Cyan rim
+          emeraldRimLight.intensity = 3.5;
+          fillLight.color.setHex(0xec4899); // Pink fill
+          fillLight.intensity = 1.2;
+          ringMat.color.setHex(0x06b6d4);
+        } else if (light === 'daylight') {
+          ambientLight.intensity = 0.85;
+          keyLight.color.setHex(0xfff7ed);
+          keyLight.intensity = 1.8;
+          emeraldRimLight.color.setHex(0xffffff);
+          emeraldRimLight.intensity = 1.2;
+          fillLight.intensity = 1.2;
+          ringMat.color.setHex(0x94a3b8);
+        }
+      });
+    });
+
+    // Color Swatches
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', (e) => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('border-2', 'border-emerald-400', 'scale-110'));
+        swatch.classList.add('border-2', 'border-emerald-400', 'scale-110');
+        const colorHex = swatch.getAttribute('data-color');
+        pbrMaterial.color.setStyle(colorHex);
+      });
+    });
+  </script>
+</body>
+</html>
+

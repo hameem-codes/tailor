@@ -26,4 +26,5 @@ coverage
 *.log
 screenshot_*.png
 reference/
+nvidia-bench/
 
