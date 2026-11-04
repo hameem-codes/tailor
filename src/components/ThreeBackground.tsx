@@ -65,28 +65,28 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     const rootGroup = new THREE.Group();
     scene.add(rootGroup);
 
-    // 3. Studio Lighting (Stealth Atelier - Soft White Key, Moonlit Rim Highlights, Zero Green)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    // 3. Studio Lighting (Crisp Studio Lighting - Pure White Key, Moonlit Rim Highlights, Zero Green)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
     scene.add(ambientLight);
 
-    const whiteKeyLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    const whiteKeyLight = new THREE.DirectionalLight(0xffffff, 2.6);
     whiteKeyLight.position.set(3.5, 4.0, 3.5);
     scene.add(whiteKeyLight);
 
-    const platinumFillLight = new THREE.PointLight(0xe2e8f0, 1.8, 16);
-    platinumFillLight.position.set(-3.5, -1.0, 3.0);
+    const platinumFillLight = new THREE.PointLight(0xe2e8f0, 2.2, 16);
+    platinumFillLight.position.set(-3.5, -0.5, 3.0);
     scene.add(platinumFillLight);
 
     // Strong Moonlit Silver Rim Lights from back & sides to trace garment silhouettes crisply
-    const silverRimLight = new THREE.PointLight(0xffffff, 3.2, 16);
+    const silverRimLight = new THREE.PointLight(0xffffff, 3.0, 16);
     silverRimLight.position.set(0, 2.0, -3.2);
     scene.add(silverRimLight);
 
-    const leftRimLight = new THREE.PointLight(0xcfd8dc, 2.4, 14);
+    const leftRimLight = new THREE.PointLight(0xe2e8f0, 2.6, 14);
     leftRimLight.position.set(-3.5, 0.5, -1.0);
     scene.add(leftRimLight);
 
-    const overheadSpot = new THREE.SpotLight(0xffffff, 1.5, 14, Math.PI / 4, 0.4);
+    const overheadSpot = new THREE.SpotLight(0xffffff, 1.8, 14, Math.PI / 4, 0.4);
     overheadSpot.position.set(0, 5.5, 2.0);
     overheadSpot.target.position.set(0, 0, 0);
     scene.add(overheadSpot);
@@ -106,43 +106,43 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     normalTexture.minFilter = THREE.LinearMipmapLinearFilter;
     normalTexture.magFilter = THREE.LinearFilter;
 
-    // 5. Materials (High Contrast Stealth Atelier Palette - NO GREEN)
-    // Center Hero Hoodie: Stealth Obsidian Charcoal (#1f232b) -> Gives 12:1 AAA contrast against white text!
+    // 5. Materials (Distinct, Highly Visible Studio Colorway - NO GREEN)
+    // Center Hero Hoodie: Sculptural Studio Heather Silver (#d8dfe8) -> Bright, detailed, and 100% visible!
     const heroMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
-      roughness: 0.90, // Heavy luxury matte cotton fleece
+      roughness: 0.82,
       metalness: 0.08,
-      color: 0x1f232b, // Stealth Obsidian Charcoal
-      side: THREE.FrontSide,
-      transparent: true,
-      alphaTest: 0.02, // Seamless edge without cutout steps
-      depthWrite: true,
-    });
-
-    // Left Companion Hoodie: Warm Earth Taupe / Mocha Sand (#3e352e)
-    const leftCompanionMaterial = new THREE.MeshStandardMaterial({
-      map: diffuseTexture,
-      normalMap: normalTexture,
-      normalScale: new THREE.Vector2(0.5, 0.5),
-      roughness: 0.92,
-      metalness: 0.05,
-      color: 0x3e352e, // Warm Earth Taupe
+      color: 0xd8dfe8, // Bright Studio Heather Silver / Moonlit Platinum
       side: THREE.FrontSide,
       transparent: true,
       alphaTest: 0.02,
       depthWrite: true,
     });
 
-    // Right Companion Hoodie: Smoked Titanium / Muted Slate (#2b323c)
+    // Left Companion Hoodie: Warm Desert Sand / Earth Taupe (#c8b6a6)
+    const leftCompanionMaterial = new THREE.MeshStandardMaterial({
+      map: diffuseTexture,
+      normalMap: normalTexture,
+      normalScale: new THREE.Vector2(0.5, 0.5),
+      roughness: 0.86,
+      metalness: 0.05,
+      color: 0xc8b6a6, // Warm Desert Sand
+      side: THREE.FrontSide,
+      transparent: true,
+      alphaTest: 0.02,
+      depthWrite: true,
+    });
+
+    // Right Companion Hoodie: Smoked Titanium / Slate (#b4bcc8)
     const rightCompanionMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
-      roughness: 0.88,
+      roughness: 0.84,
       metalness: 0.12,
-      color: 0x2b323c, // Smoked Titanium
+      color: 0xb4bcc8, // Platinum Titanium
       side: THREE.FrontSide,
       transparent: true,
       alphaTest: 0.02,
@@ -301,15 +301,15 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         // TAB 1: Input / Landing ('/')
         // Make model ENLARGED and fit the left hero space prominently so user sees it clearly!
         if (isDesktop) {
-          targetGroupPos.set(-2.2, -0.05, 0.15);
+          targetGroupPos.set(-0.95, 0.05, 0.1);
           targetGroupScale.set(2.25, 2.25, 2.25);
-          targetBaseRotationY = 0.18;
-          targetLeftPos.set(-2.3, -0.08, -0.9);
-          targetRightPos.set(2.3, -0.08, -0.9);
+          targetBaseRotationY = 0.12;
+          targetLeftPos.set(-2.4, -0.08, -0.9);
+          targetRightPos.set(2.4, -0.08, -0.9);
         } else if (isTablet) {
-          targetGroupPos.set(-1.2, 0.1, -0.2);
+          targetGroupPos.set(-0.6, 0.1, -0.2);
           targetGroupScale.set(1.85, 1.85, 1.85);
-          targetBaseRotationY = 0.1;
+          targetBaseRotationY = 0.08;
           targetLeftPos.set(-2.2, -0.08, -0.9);
           targetRightPos.set(2.2, -0.08, -0.9);
         } else {
