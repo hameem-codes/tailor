@@ -9,6 +9,31 @@ import {
   lbsToKg,
   validateHeightWeight
 } from '../lib/matching/helpers';
+import { SlidingTabs, SlidingTabOption } from './SlidingTabs';
+
+const genderOptions: SlidingTabOption<Gender>[] = [
+  { id: 'men', label: 'Men' },
+  { id: 'women', label: 'Women' },
+  { id: 'unisex', label: 'Unisex' },
+];
+
+const categoryOptions: SlidingTabOption<ClothingCategory>[] = [
+  { id: 't-shirt', label: 'T-shirt' },
+  { id: 'shirt', label: 'Shirt' },
+  { id: 'pants', label: 'Pants' },
+  { id: 'jacket', label: 'Jacket' },
+];
+
+const unitOptions: SlidingTabOption<'metric' | 'imperial'>[] = [
+  { id: 'metric', label: 'cm · kg' },
+  { id: 'imperial', label: 'in · lb' },
+];
+
+const fitOptions: SlidingTabOption<FitPreference>[] = [
+  { id: 'snug', label: 'Snug' },
+  { id: 'regular', label: 'Regular' },
+  { id: 'loose', label: 'Loose' },
+];
 
 interface InputScreenProps {
   measurements: UserMeasurements;
@@ -156,52 +181,23 @@ export const InputScreen: React.FC<InputScreenProps> = ({
         {/* Card 1: Who and what */}
         <fieldset className="glass-card p-4 sm:p-5 flex flex-col gap-3 border border-white/12">
           <legend className="text-base font-semibold text-[#D6D6DC] px-1">Who and what</legend>
-          <div
-            role="radiogroup"
-            aria-label="Gender selection"
+          <SlidingTabs<Gender>
+            ariaLabel="Gender selection"
             className="grid grid-cols-3 gap-2"
-          >
-            {(['men', 'women', 'unisex'] as Gender[]).map((g) => (
-              <button
-                key={g}
-                type="button"
-                role="radio"
-                aria-checked={measurements.gender === g}
-                onClick={() => updateMeasurement('gender', g)}
-                className={`pill-btn btn-press w-full text-center capitalize ${
-                  measurements.gender === g ? 'pill-active' : ''
-                }`}
-              >
-                {g}
-              </button>
-            ))}
-          </div>
+            buttonClassName="w-full text-center capitalize"
+            value={measurements.gender}
+            onChange={(g) => updateMeasurement('gender', g)}
+            options={genderOptions}
+          />
 
-          <div
-            role="radiogroup"
-            aria-label="Clothing category selection"
+          <SlidingTabs<ClothingCategory>
+            ariaLabel="Clothing category selection"
             className="grid grid-cols-4 gap-1.5 sm:gap-2"
-          >
-            {([
-              { id: 't-shirt', label: 'T-shirt' },
-              { id: 'shirt', label: 'Shirt' },
-              { id: 'pants', label: 'Pants' },
-              { id: 'jacket', label: 'Jacket' },
-            ] as { id: ClothingCategory; label: string }[]).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                role="radio"
-                aria-checked={measurements.category === c.id}
-                onClick={() => updateMeasurement('category', c.id)}
-                className={`pill-btn btn-press w-full !px-1 sm:!px-3 !text-[13px] sm:!text-sm text-center justify-center truncate ${
-                  measurements.category === c.id ? 'pill-active' : ''
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
+            buttonClassName="w-full !px-1 sm:!px-3 !text-[13px] sm:!text-sm text-center justify-center truncate"
+            value={measurements.category}
+            onChange={(c) => updateMeasurement('category', c)}
+            options={categoryOptions}
+          />
         </fieldset>
 
         {/* Card 2: Measurements */}
@@ -214,30 +210,14 @@ export const InputScreen: React.FC<InputScreenProps> = ({
             >
               How to measure
             </button>
-            <div className="flex gap-1.5" role="radiogroup" aria-label="Unit of measurement">
-              <button
-                type="button"
-                role="radio"
-                aria-checked={!isImperial}
-                onClick={() => handleUnitToggle('metric')}
-                className={`pill-btn btn-press !min-h-[38px] !px-3 text-xs sm:text-sm ${
-                  !isImperial ? 'pill-active' : ''
-                }`}
-              >
-                cm · kg
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={isImperial}
-                onClick={() => handleUnitToggle('imperial')}
-                className={`pill-btn btn-press !min-h-[38px] !px-3 text-xs sm:text-sm ${
-                  isImperial ? 'pill-active' : ''
-                }`}
-              >
-                in · lb
-              </button>
-            </div>
+            <SlidingTabs<'metric' | 'imperial'>
+              ariaLabel="Unit of measurement"
+              className="flex gap-1.5"
+              buttonClassName="!min-h-[38px] !px-3 text-xs sm:text-sm"
+              value={isImperial ? 'imperial' : 'metric'}
+              onChange={(u) => handleUnitToggle(u)}
+              options={unitOptions}
+            />
           </div>
 
           {/* Height Stepper */}
@@ -435,26 +415,14 @@ export const InputScreen: React.FC<InputScreenProps> = ({
           {/* Preferred Fit */}
           <div className="space-y-2 mt-1">
             <div className="text-base font-semibold text-white">Preferred fit</div>
-            <div
-              role="radiogroup"
-              aria-label="Preferred fit"
+            <SlidingTabs<FitPreference>
+              ariaLabel="Preferred fit"
               className="grid grid-cols-3 gap-2"
-            >
-              {(['snug', 'regular', 'loose'] as FitPreference[]).map((f) => (
-                <button
-                  key={f}
-                  type="button"
-                  role="radio"
-                  aria-checked={measurements.fitPreference === f}
-                  onClick={() => updateMeasurement('fitPreference', f)}
-                  className={`pill-btn btn-press w-full text-center capitalize ${
-                    measurements.fitPreference === f ? 'pill-active' : ''
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
+              buttonClassName="w-full text-center capitalize"
+              value={measurements.fitPreference}
+              onChange={(f) => updateMeasurement('fitPreference', f)}
+              options={fitOptions}
+            />
             <div className="text-sm sm:text-[15px] text-[#D6D6DC] leading-snug pt-0.5">
               {fitDescriptions[measurements.fitPreference]}
             </div>
@@ -528,53 +496,24 @@ export const InputScreen: React.FC<InputScreenProps> = ({
               </div>
 
               {/* Gender Segment */}
-              <div
-                role="radiogroup"
-                aria-label="Gender selection"
+              <SlidingTabs<Gender>
+                ariaLabel="Gender selection"
                 className="grid grid-cols-3 gap-2"
-              >
-                {(['men', 'women', 'unisex'] as Gender[]).map((g) => (
-                  <button
-                    key={g}
-                    type="button"
-                    role="radio"
-                    aria-checked={measurements.gender === g}
-                    onClick={() => updateMeasurement('gender', g)}
-                    className={`pill-btn btn-press w-full text-center capitalize ${
-                      measurements.gender === g ? 'pill-active' : ''
-                    }`}
-                  >
-                    {g}
-                  </button>
-                ))}
-              </div>
+                buttonClassName="w-full text-center capitalize"
+                value={measurements.gender}
+                onChange={(g) => updateMeasurement('gender', g)}
+                options={genderOptions}
+              />
 
               {/* Category Segment */}
-              <div
-                role="radiogroup"
-                aria-label="Clothing category selection"
+              <SlidingTabs<ClothingCategory>
+                ariaLabel="Clothing category selection"
                 className="grid grid-cols-4 gap-1.5 sm:gap-2"
-              >
-                {([
-                  { id: 't-shirt', label: 'T-shirt' },
-                  { id: 'shirt', label: 'Shirt' },
-                  { id: 'pants', label: 'Pants' },
-                  { id: 'jacket', label: 'Jacket' },
-                ] as { id: ClothingCategory; label: string }[]).map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={measurements.category === c.id}
-                    onClick={() => updateMeasurement('category', c.id)}
-                    className={`pill-btn btn-press w-full !px-2 !text-sm text-center justify-center truncate ${
-                      measurements.category === c.id ? 'pill-active' : ''
-                    }`}
-                  >
-                    {c.label}
-                  </button>
-                ))}
-              </div>
+                buttonClassName="w-full !px-2 !text-sm text-center justify-center truncate"
+                value={measurements.category}
+                onChange={(c) => updateMeasurement('category', c)}
+                options={categoryOptions}
+              />
             </div>
 
             {/* Your Measurements Header Row */}
@@ -582,30 +521,14 @@ export const InputScreen: React.FC<InputScreenProps> = ({
               <span className="text-xs sm:text-sm font-semibold text-[#D6D6DC]">
                 Your measurements
               </span>
-              <div className="flex gap-1.5" role="radiogroup" aria-label="Unit of measurement">
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={!isImperial}
-                  onClick={() => handleUnitToggle('metric')}
-                  className={`pill-btn btn-press !min-h-[36px] !px-3.5 text-xs sm:text-sm ${
-                    !isImperial ? 'pill-active' : ''
-                  }`}
-                >
-                  cm · kg
-                </button>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={isImperial}
-                  onClick={() => handleUnitToggle('imperial')}
-                  className={`pill-btn btn-press !min-h-[36px] !px-3.5 text-xs sm:text-sm ${
-                    isImperial ? 'pill-active' : ''
-                  }`}
-                >
-                  in · lb
-                </button>
-              </div>
+              <SlidingTabs<'metric' | 'imperial'>
+                ariaLabel="Unit of measurement"
+                className="flex gap-1.5"
+                buttonClassName="!min-h-[36px] !px-3.5 text-xs sm:text-sm"
+                value={isImperial ? 'imperial' : 'metric'}
+                onChange={(u) => handleUnitToggle(u)}
+                options={unitOptions}
+              />
             </div>
 
             {/* Side-by-Side Height and Weight Controls */}
@@ -805,26 +728,14 @@ export const InputScreen: React.FC<InputScreenProps> = ({
 
             {/* Preferred Fit */}
             <div className="space-y-1.5 pt-0.5">
-              <div
-                role="radiogroup"
-                aria-label="Preferred fit"
+              <SlidingTabs<FitPreference>
+                ariaLabel="Preferred fit"
                 className="grid grid-cols-3 gap-2"
-              >
-                {(['snug', 'regular', 'loose'] as FitPreference[]).map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    role="radio"
-                    aria-checked={measurements.fitPreference === f}
-                    onClick={() => updateMeasurement('fitPreference', f)}
-                    className={`pill-btn btn-press w-full text-center capitalize ${
-                      measurements.fitPreference === f ? 'pill-active' : ''
-                    }`}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
+                buttonClassName="w-full text-center capitalize"
+                value={measurements.fitPreference}
+                onChange={(f) => updateMeasurement('fitPreference', f)}
+                options={fitOptions}
+              />
               <div className="text-xs sm:text-sm text-[#D6D6DC] leading-snug pt-0.5">
                 {fitDescriptions[measurements.fitPreference]}
               </div>

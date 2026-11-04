@@ -3,6 +3,13 @@ import { BrandMatchResult, UserMeasurements, RegionFilter, SortOption } from '..
 import { BrandCard } from './BrandCard';
 import { SearchIcon, FilterIcon, HangerIcon, CheckIcon, WarningTriangleIcon, CrossCircleIcon } from './Icons';
 import { formatDimension } from '../lib/matching/helpers';
+import { SlidingTabs, SlidingTabOption } from './SlidingTabs';
+
+const regionOptions: SlidingTabOption<RegionFilter>[] = [
+  { id: 'all', label: 'All' },
+  { id: 'global', label: 'Global' },
+  { id: 'local', label: 'Local' },
+];
 
 interface ResultsScreenProps {
   results: BrandMatchResult[];
@@ -142,26 +149,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </label>
 
           {/* Desktop-only Segmented Region Pills: [ All ] [ Global ] [ Local ] */}
-          <div
-            role="radiogroup"
-            aria-label="Brand region filter"
+          <SlidingTabs<RegionFilter>
+            ariaLabel="Brand region filter"
             className="hidden sm:inline-flex items-center gap-1.5"
-          >
-            {(['all', 'global', 'local'] as RegionFilter[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                role="radio"
-                aria-checked={regionFilter === r}
-                onClick={() => setRegionFilter(r)}
-                className={`pill-btn btn-press !min-h-[38px] !px-4 text-xs sm:text-sm capitalize transition-all ${
-                  regionFilter === r ? 'pill-active' : ''
-                }`}
-              >
-                {r === 'all' ? 'All' : r}
-              </button>
-            ))}
-          </div>
+            buttonClassName="!min-h-[38px] !px-4 text-xs sm:text-sm capitalize"
+            value={regionFilter}
+            onChange={(r) => setRegionFilter(r)}
+            options={regionOptions}
+          />
         </div>
 
         {/* Right Toolbar group */}

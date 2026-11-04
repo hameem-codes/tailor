@@ -4,6 +4,17 @@ import { RangeRuler } from './RangeRuler';
 import { CheckIcon, WarningTriangleIcon, CrossCircleIcon, LockIcon } from './Icons';
 import { formatDimension, formatRange } from '../lib/matching/helpers';
 import { BrandLogo } from './BrandLogo';
+import { SlidingTabs, SlidingTabOption } from './SlidingTabs';
+
+const tableUnitOptions: SlidingTabOption<'metric' | 'imperial'>[] = [
+  { id: 'metric', label: 'cm' },
+  { id: 'imperial', label: 'in' },
+];
+
+const measurementTypeOptions: SlidingTabOption<'body' | 'garment'>[] = [
+  { id: 'body', label: 'Body' },
+  { id: 'garment', label: 'Garment' },
+];
 
 interface BrandDetailProps {
   matchResult: BrandMatchResult;
@@ -172,34 +183,27 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
         </h1>
 
         {/* Size Switcher Chips */}
-        <div
+        <SlidingTabs<string>
+          ariaLabel="Select size to compare"
           className="flex gap-2 overflow-x-auto pb-1"
-          role="radiogroup"
-          aria-label="Select size to compare"
-        >
-          {sizes.map((s, idx) => {
-            const isSelected = idx === selectedSizeIdx;
+          buttonClassName="flex-1 min-w-[85px] text-center"
+          value={sizes[selectedSizeIdx].label}
+          onChange={(val: string) => {
+            const idx = sizes.findIndex((s) => s.label === val);
+            if (idx !== -1) setSelectedSizeIdx(idx);
+          }}
+          options={sizes.map((s, idx) => {
             const isPrimary = idx === primarySizeIndex;
             let chipSubtext = 'regular';
             if (isPrimary) chipSubtext = 'best';
             else if (idx < primarySizeIndex) chipSubtext = 'snug';
             else if (idx > primarySizeIndex) chipSubtext = 'loose';
-
-            return (
-              <button
-                key={s.label}
-                role="radio"
-                aria-checked={isSelected}
-                onClick={() => setSelectedSizeIdx(idx)}
-                className={`pill-btn btn-press flex-1 min-w-[85px] text-center transition-all ${
-                  isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
-                }`}
-              >
-                {s.label} · {chipSubtext}
-              </button>
-            );
+            return {
+              id: s.label,
+              label: `${s.label} · ${chipSubtext}`,
+            };
           })}
-        </div>
+        />
 
         {/* Mobile Glass Overview Card */}
         <div className="glass-card p-5 sm:p-6 flex flex-col gap-4 border-accent/40">
@@ -271,36 +275,28 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
 
         {/* Mobile Size Chart Table */}
         <div className="glass-card p-4 sm:p-5 flex flex-col gap-2.5">
-          <div className="flex items-center gap-2">
-            <span className="text-secText w-28 sm:w-32 text-sm sm:text-base">Unit</span>
-            <button
-              onClick={() => setTableUnit('metric')}
-              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableUnit === 'metric' ? 'pill-active' : ''}`}
-            >
-              cm
-            </button>
-            <button
-              onClick={() => setTableUnit('imperial')}
-              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableUnit === 'imperial' ? 'pill-active' : ''}`}
-            >
-              in
-            </button>
+          <div className="flex items-center justify-between">
+            <span className="text-secText text-sm sm:text-base">Unit</span>
+            <SlidingTabs<'metric' | 'imperial'>
+              ariaLabel="Table unit"
+              className="flex gap-1.5"
+              buttonClassName="!min-h-[36px] !py-0 !px-3"
+              value={tableUnit}
+              onChange={(u: 'metric' | 'imperial') => setTableUnit(u)}
+              options={tableUnitOptions}
+            />
           </div>
 
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-secText w-28 sm:w-32 text-sm sm:text-base">Measurement type</span>
-            <button
-              onClick={() => setTableMeasurementType('body')}
-              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableMeasurementType === 'body' ? 'pill-active' : ''}`}
-            >
-              Body
-            </button>
-            <button
-              onClick={() => setTableMeasurementType('garment')}
-              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableMeasurementType === 'garment' ? 'pill-active' : ''}`}
-            >
-              Garment
-            </button>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-secText text-sm sm:text-base">Measurement type</span>
+            <SlidingTabs<'body' | 'garment'>
+              ariaLabel="Measurement type"
+              className="flex gap-1.5"
+              buttonClassName="!min-h-[36px] !py-0 !px-3"
+              value={tableMeasurementType}
+              onChange={(t: 'body' | 'garment') => setTableMeasurementType(t)}
+              options={measurementTypeOptions}
+            />
           </div>
 
           <div className="overflow-x-auto w-full">
@@ -406,34 +402,27 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               </h1>
 
               {/* S / M / L Size Selector Chips */}
-              <div
+              <SlidingTabs<string>
+                ariaLabel="Select size to compare"
                 className="flex flex-wrap gap-2 mt-1"
-                role="radiogroup"
-                aria-label="Select size to compare"
-              >
-                {sizes.map((s, idx) => {
-                  const isSelected = idx === selectedSizeIdx;
+                buttonClassName="flex-1 min-w-[85px] text-center font-medium !py-2.5"
+                value={sizes[selectedSizeIdx].label}
+                onChange={(val: string) => {
+                  const idx = sizes.findIndex((s) => s.label === val);
+                  if (idx !== -1) setSelectedSizeIdx(idx);
+                }}
+                options={sizes.map((s, idx) => {
                   const isPrimary = idx === primarySizeIndex;
                   let chipSubtext = 'regular';
                   if (isPrimary) chipSubtext = 'best';
                   else if (idx < primarySizeIndex) chipSubtext = 'snug';
                   else if (idx > primarySizeIndex) chipSubtext = 'loose';
-
-                  return (
-                    <button
-                      key={s.label}
-                      role="radio"
-                      aria-checked={isSelected}
-                      onClick={() => setSelectedSizeIdx(idx)}
-                      className={`pill-btn btn-press flex-1 min-w-[85px] text-center font-medium !py-2.5 transition-all duration-200 ${
-                        isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
-                      }`}
-                    >
-                      {s.label} · {chipSubtext}
-                    </button>
-                  );
+                  return {
+                    id: s.label,
+                    label: `${s.label} · ${chipSubtext}`,
+                  };
                 })}
-              </div>
+              />
             </div>
 
             {/* Overview Card */}
@@ -522,47 +511,27 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               {/* Unit Toggle Row */}
               <div className="flex items-center justify-between">
                 <span className="text-secText font-medium text-sm sm:text-base">Unit</span>
-                <div className="flex gap-1.5" role="radiogroup" aria-label="Table unit">
-                  <button
-                    onClick={() => setTableUnit('metric')}
-                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
-                      tableUnit === 'metric' ? 'pill-active' : ''
-                    }`}
-                  >
-                    cm
-                  </button>
-                  <button
-                    onClick={() => setTableUnit('imperial')}
-                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
-                      tableUnit === 'imperial' ? 'pill-active' : ''
-                    }`}
-                  >
-                    in
-                  </button>
-                </div>
+                <SlidingTabs<'metric' | 'imperial'>
+                  ariaLabel="Table unit"
+                  className="flex gap-1.5"
+                  buttonClassName="!min-h-[36px] !py-0 !px-4 text-xs sm:text-sm"
+                  value={tableUnit}
+                  onChange={(u: 'metric' | 'imperial') => setTableUnit(u)}
+                  options={tableUnitOptions}
+                />
               </div>
 
               {/* Measurement Type Toggle Row */}
               <div className="flex items-center justify-between pb-1 border-b border-white/10">
                 <span className="text-secText font-medium text-sm sm:text-base">Measurement type</span>
-                <div className="flex gap-1.5" role="radiogroup" aria-label="Measurement type">
-                  <button
-                    onClick={() => setTableMeasurementType('body')}
-                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
-                      tableMeasurementType === 'body' ? 'pill-active' : ''
-                    }`}
-                  >
-                    Body
-                  </button>
-                  <button
-                    onClick={() => setTableMeasurementType('garment')}
-                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
-                      tableMeasurementType === 'garment' ? 'pill-active' : ''
-                    }`}
-                  >
-                    Garment
-                  </button>
-                </div>
+                <SlidingTabs<'body' | 'garment'>
+                  ariaLabel="Measurement type"
+                  className="flex gap-1.5"
+                  buttonClassName="!min-h-[36px] !py-0 !px-4 text-xs sm:text-sm"
+                  value={tableMeasurementType}
+                  onChange={(t: 'body' | 'garment') => setTableMeasurementType(t)}
+                  options={measurementTypeOptions}
+                />
               </div>
 
               {/* Table Container */}
