@@ -1,0 +1,145 @@
+import React from 'react';
+import { BrandMatchResult, UnitSystem } from '../../types';
+import { RangeRuler } from '../RangeRuler';
+import { CheckIcon, WarningTriangleIcon, CrossCircleIcon, LockIcon } from '../Icons';
+
+interface BrandOverviewCardProps {
+  matchResult: BrandMatchResult;
+  selectedSizeIdx: number;
+  tableUnit: UnitSystem;
+  isPants: boolean;
+  userPrimaryVal: number;
+  matchLabel: string;
+  matchColor: string;
+  rulerProps: {
+    userDotPercent: number;
+    primaryBarLeftPercent: number;
+    primaryBarWidthPercent: number;
+    primaryBarColor: string;
+  };
+  chestRangeText: string;
+  waistRangeText: string;
+  className?: string;
+}
+
+function renderSelectedSize(label: string) {
+  const match = label.match(/^([^(]+?)(?:\s*(\([^)]+\)))?$/);
+  if (!match || !match[2]) {
+    const isLong = label.length > 3;
+    return (
+      <div
+        className={`font-barlow font-semibold text-white leading-none ${
+          isLong ? 'text-5xl sm:text-6xl lg:text-7xl' : 'text-6xl sm:text-7xl lg:text-8xl'
+        }`}
+      >
+        {label}
+      </div>
+    );
+  }
+
+  const primary = match[1].trim();
+  const secondary = match[2].trim();
+
+  return (
+    <div className="flex flex-col items-start leading-none">
+      <div className="font-barlow text-5xl sm:text-6xl lg:text-7xl font-semibold text-white leading-none">
+        {primary}
+      </div>
+      <div className="text-xs sm:text-sm font-semibold text-secText tracking-wider mt-1">
+        {secondary}
+      </div>
+    </div>
+  );
+}
+
+export const BrandOverviewCard: React.FC<BrandOverviewCardProps> = ({
+  matchResult,
+  selectedSizeIdx,
+  tableUnit,
+  isPants,
+  userPrimaryVal,
+  matchLabel,
+  matchColor,
+  rulerProps,
+  chestRangeText,
+  waistRangeText,
+  className = '',
+}) => {
+  const { brandChart, confidence, confidenceReason } = matchResult;
+  const currentSize = brandChart.sizes[selectedSizeIdx] || brandChart.sizes[0];
+  const userPrimaryText = `${Math.round(userPrimaryVal)} ${tableUnit === 'imperial' ? 'in' : 'cm'}`;
+
+  return (
+    <div className={`glass-card p-5 sm:p-6 flex flex-col gap-4 border-accent/40 rounded-[24px] sm:rounded-[28px] shadow-xl ${className}`}>
+      <div className="flex justify-between items-end">
+        <div>
+          <div className="text-xs sm:text-sm text-secText font-medium">Selected size</div>
+          <div className="mt-1">
+            {renderSelectedSize(currentSize.label)}
+          </div>
+        </div>
+
+        <div
+          className="pb-2 sm:pb-3 flex items-center gap-1.5 font-semibold text-sm sm:text-base"
+          style={{ color: matchColor }}
+        >
+          {matchLabel === 'Great match' && <CheckIcon size={16} />}
+          {matchLabel.includes('fit') && <WarningTriangleIcon size={16} />}
+          {matchLabel === 'Between sizes' && <WarningTriangleIcon size={16} />}
+          {matchLabel === 'Poor match' && <CrossCircleIcon size={16} />}
+          <span>{matchLabel}</span>
+        </div>
+      </div>
+
+      <div>
+        <div className="text-xs sm:text-sm text-secText mb-1">
+          Range: <span className="text-white font-medium">{chestRangeText}</span>
+        </div>
+        <RangeRuler
+          userValueText={`You: ${userPrimaryText}`}
+          userDotPercent={rulerProps.userDotPercent}
+          primaryBarLeftPercent={rulerProps.primaryBarLeftPercent}
+          primaryBarWidthPercent={rulerProps.primaryBarWidthPercent}
+          primaryBarColor={rulerProps.primaryBarColor}
+        />
+      </div>
+
+      <div className="flex items-center gap-2 text-xs sm:text-sm text-[#D6D6DC] pt-0.5">
+        <LockIcon size={15} className="text-[#4ADE80] flex-none" />
+        <span>
+          Confidence: <strong className="text-white capitalize">{confidence}</strong>. {confidenceReason}
+        </span>
+      </div>
+
+      <div className="flex border-t border-white/15 pt-3 mt-0.5">
+        <div className="flex-1 pr-2 sm:pr-3">
+          <div className="font-barlow text-xl sm:text-2xl lg:text-[32px] font-medium text-white">
+            {Math.round(userPrimaryVal)}
+            <span className="text-xs sm:text-sm text-secText"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
+          </div>
+          <div className="text-xs sm:text-sm text-secText mt-0.5">
+            Your {isPants ? 'waist' : 'chest'}
+          </div>
+        </div>
+
+        <div className="flex-1 px-2 sm:px-3 border-l border-white/15">
+          <div className="font-barlow text-xl sm:text-2xl lg:text-[32px] font-medium text-white truncate">
+            {chestRangeText.replace(' cm', '').replace(' in', '')}
+          </div>
+          <div className="text-xs sm:text-sm text-secText mt-0.5">
+            {isPants ? 'Waist' : 'Chest'} range
+          </div>
+        </div>
+
+        <div className="flex-1 pl-2 sm:pl-3 border-l border-white/15">
+          <div className="font-barlow text-xl sm:text-2xl lg:text-[32px] font-medium text-white truncate">
+            {waistRangeText.replace(' cm', '').replace(' in', '')}
+          </div>
+          <div className="text-xs sm:text-sm text-secText mt-0.5">
+            {isPants ? 'Hips' : 'Waist'} range
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

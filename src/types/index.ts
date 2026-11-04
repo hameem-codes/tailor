@@ -8,6 +8,8 @@ export type RegionFilter = 'all' | 'global' | 'local';
 export type SortOption = 'match' | 'brand-asc' | 'size';
 export type ChartType = 'body' | 'garment';
 
+export type BrandSize = SizeItem;
+
 export interface SizeItem {
   label: string;
   chest?: [number, number]; // [min, max] in cm

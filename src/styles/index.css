@@ -40,9 +40,9 @@
 @layer components {
   /* Glass Card */
   .glass-card {
-    background: rgba(32, 32, 35, 0.82);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: rgba(20, 21, 24, 0.90);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 28px;
     animation: fadeIn 0.5s both;
@@ -172,10 +172,12 @@
 
   /* Stepper Input Field Container */
   .field-container {
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    border: 1.5px solid rgba(255, 255, 255, 0.22);
     border-radius: 18px;
     padding: 10px 10px 10px 14px;
     background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
