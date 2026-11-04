@@ -157,3 +157,22 @@ export const HeartIcon: React.FC<IconProps & { filled?: boolean }> = ({
   </svg>
 );
 
+export const ShareIcon: React.FC<IconProps> = ({ size = 18, className = '', ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={className}
+    {...props}
+  >
+    <circle cx="18" cy="9" r="3" />
+    <path d="M21 15a9 9 0 0 0-9-9" />
+  </svg>
+);
+

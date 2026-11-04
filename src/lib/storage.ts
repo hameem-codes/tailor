@@ -1,10 +1,12 @@
-import { UserMeasurements, UserFeedback } from '../types';
+import { UserMeasurements, UserFeedback, UnitSystem, ChartType } from '../types';
 
 const MEASUREMENTS_KEY = 'tailor_user_measurements_v1';
 const SAVED_BRANDS_KEY = 'tailor_saved_brands_v1';
 const TIP_DISMISSED_KEY = 'tailor_tip_dismissed_v1';
 const FEEDBACK_KEY = 'tailor_feedback_v1';
 const ONBOARDING_SEEN_KEY = 'tailor_onboarding_seen_v1';
+const MEASUREMENT_PRESETS_KEY = 'tailor_measurement_presets_v1';
+const TABLE_PREFERENCES_KEY = 'tailor_table_preferences_v1';
 
 export const DEFAULT_MEASUREMENTS: UserMeasurements = {
   gender: 'men',
@@ -115,6 +117,103 @@ export function setOnboardingSeen(seen: boolean = true): void {
     localStorage.setItem(ONBOARDING_SEEN_KEY, seen ? 'true' : 'false');
   } catch (e) {
     console.warn('[Tailor] Failed to save onboarding state:', e);
+  }
+}
+
+export interface MeasurementPreset {
+  id: string;
+  name: string;
+  measurements: UserMeasurements;
+  createdAt: string;
+}
+
+export function loadMeasurementPresets(): MeasurementPreset[] {
+  try {
+    const raw = localStorage.getItem(MEASUREMENT_PRESETS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.warn('[Tailor] Failed to load measurement presets:', e);
+    return [];
+  }
+}
+
+export function saveMeasurementPreset(preset: Omit<MeasurementPreset, 'id' | 'createdAt'>): MeasurementPreset[] {
+  try {
+    const current = loadMeasurementPresets();
+    const newPreset: MeasurementPreset = {
+      ...preset,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [newPreset, ...current].slice(0, 10);
+    localStorage.setItem(MEASUREMENT_PRESETS_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (e) {
+    console.warn('[Tailor] Failed to save measurement preset:', e);
+    return [];
+  }
+}
+
+export function deleteMeasurementPreset(id: string): MeasurementPreset[] {
+  try {
+    const current = loadMeasurementPresets();
+    const updated = current.filter(p => p.id !== id);
+    localStorage.setItem(MEASUREMENT_PRESETS_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (e) {
+    console.warn('[Tailor] Failed to delete measurement preset:', e);
+    return [];
+  }
+}
+
+export interface TablePreferences {
+  tableUnit: UnitSystem;
+  tableMeasurementType: ChartType;
+}
+
+export function loadTablePreferences(): TablePreferences {
+  try {
+    const raw = localStorage.getItem(TABLE_PREFERENCES_KEY);
+    return raw ? JSON.parse(raw) : { tableUnit: 'metric', tableMeasurementType: 'body' };
+  } catch (e) {
+    console.warn('[Tailor] Failed to load table preferences:', e);
+    return { tableUnit: 'metric', tableMeasurementType: 'body' };
+  }
+}
+
+export function saveTablePreferences(prefs: TablePreferences): void {
+  try {
+    localStorage.setItem(TABLE_PREFERENCES_KEY, JSON.stringify(prefs));
+  } catch (e) {
+    console.warn('[Tailor] Failed to save table preferences:', e);
+  }
+}
+
+export function encodeShareData(measurements: UserMeasurements): string {
+  try {
+    const payload = JSON.stringify({
+      gender: measurements.gender,
+      category: measurements.category,
+      unit: measurements.unit,
+      height: measurements.height,
+      weight: measurements.weight,
+      chest: measurements.chest,
+      waist: measurements.waist,
+      hips: measurements.hips,
+      fitPreference: measurements.fitPreference,
+    });
+    return btoa(payload);
+  } catch (e) {
+    return '';
+  }
+}
+
+export function decodeShareData(encoded: string): Partial<UserMeasurements> | null {
+  try {
+    const payload = JSON.parse(atob(encoded));
+    return payload;
+  } catch (e) {
+    return null;
   }
 }
 

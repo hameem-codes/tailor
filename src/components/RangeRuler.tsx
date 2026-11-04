@@ -32,7 +32,8 @@ export const RangeRuler: React.FC<RangeRulerProps> = ({
       aria-label={accessibleDescription || `Size range ruler: ${userValueText}`}
     >
       {/* Primary Size Range Bar */}
-      <i
+      <div
+        aria-hidden="true"
         className="ruler-fill"
         style={{
           left: `${primaryBarLeftPercent}%`,
@@ -43,7 +44,8 @@ export const RangeRuler: React.FC<RangeRulerProps> = ({
 
       {/* Secondary Size Range Bar (for Between Sizes) */}
       {secondaryBarLeftPercent !== undefined && secondaryBarWidthPercent !== undefined && (
-        <i
+        <div
+          aria-hidden="true"
           className="ruler-fill"
           style={{
             left: `${secondaryBarLeftPercent}%`,
@@ -54,14 +56,15 @@ export const RangeRuler: React.FC<RangeRulerProps> = ({
       )}
 
       {/* User Dot Indicator with Label */}
-      <b
+      <div
+        aria-hidden="true"
         className="ruler-dot"
         style={{
           left: `${userDotPercent}%`,
         }}
       >
-        <u className="ruler-dot-label">{userValueText}</u>
-      </b>
+        <span className="ruler-dot-label">{userValueText}</span>
+      </div>
     </div>
   );
 };

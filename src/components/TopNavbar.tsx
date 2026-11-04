@@ -52,8 +52,14 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           </span>
         </button>
 
-        {/* Divider 1 */}
-        <div className="w-6 md:w-8 h-[1.5px] bg-white/20" aria-hidden="true" />
+        {/* Divider 1 with Sliding Progress */}
+        <div className="w-6 md:w-8 h-[2px] bg-white/20 rounded-full overflow-hidden relative" aria-hidden="true">
+          <div
+            className={`h-full bg-[#1DA84A] transition-all duration-300 ease-out ${
+              currentStep > 1 ? 'w-full' : 'w-0'
+            }`}
+          />
+        </div>
 
         {/* Step 2: Results */}
         <button
@@ -81,8 +87,14 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
           </span>
         </button>
 
-        {/* Divider 2 */}
-        <div className="w-6 md:w-8 h-[1.5px] bg-white/20" aria-hidden="true" />
+        {/* Divider 2 with Sliding Progress */}
+        <div className="w-6 md:w-8 h-[2px] bg-white/20 rounded-full overflow-hidden relative" aria-hidden="true">
+          <div
+            className={`h-full bg-[#1DA84A] transition-all duration-300 ease-out ${
+              currentStep > 2 ? 'w-full' : 'w-0'
+            }`}
+          />
+        </div>
 
         {/* Step 3: Your size */}
         <div className="flex items-center gap-2 text-xs md:text-sm font-semibold">
