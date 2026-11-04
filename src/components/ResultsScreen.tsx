@@ -38,6 +38,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   setSortBy,
 }) => {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [showMatchLevels, setShowMatchLevels] = useState(true);
 
   const isPants = measurements.category === 'pants';
   const primaryDim = isPants
@@ -236,7 +237,52 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       )}
 
       {/* =========================================================================
-          4. BRAND CARDS GRID
+          4. MATCH LEVELS KEY CARD (ON TOP)
+          Making the user see what is what at first before browsing brand cards
+         ========================================================================= */}
+      <div className="glass-card p-4 sm:p-5 flex flex-col gap-3 w-full animate-fade-in">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-sm sm:text-base text-white">Match levels</h3>
+          <button
+            onClick={() => setShowMatchLevels(!showMatchLevels)}
+            className="text-xs text-secText hover:text-white transition-colors cursor-pointer py-0.5 px-1.5 rounded hover:bg-white/10"
+            aria-label={showMatchLevels ? 'Hide match levels guide' : 'Show match levels guide'}
+          >
+            {showMatchLevels ? 'Hide' : 'Show guide'}
+          </button>
+        </div>
+        {showMatchLevels && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 animate-fade-in">
+            <div>
+              <span className="text-[#4ADE80] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
+                <CheckIcon size={16} /> Great match
+              </span>
+              <div className="text-secText text-xs sm:text-sm mt-1 leading-snug">
+                Your body measurement sits inside the size range.
+              </div>
+            </div>
+            <div>
+              <span className="text-[#FBBF24] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
+                <WarningTriangleIcon size={16} /> Between sizes
+              </span>
+              <div className="text-secText text-xs sm:text-sm mt-1 leading-snug">
+                You fall between two adjacent sizes. Suggested by fit preference.
+              </div>
+            </div>
+            <div>
+              <span className="text-[#F87171] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
+                <CrossCircleIcon size={16} /> Poor match
+              </span>
+              <div className="text-secText text-xs sm:text-sm mt-1 leading-snug">
+                No size is close. The brand cuts may not fit your proportions well.
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* =========================================================================
+          5. BRAND CARDS GRID
           - Desktop (lg:): Exactly 3 COLUMNS as shown in user's design image
           - Tablet (md:): 2 columns
           - Mobile (<md:): 1 column
@@ -281,39 +327,6 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             </div>
           </div>
         )}
-      </div>
-
-      {/* =========================================================================
-          5. MATCH LEVELS KEY CARD
-         ========================================================================= */}
-      <div className="glass-card p-5 sm:p-6 flex flex-col gap-3.5 mt-2 max-w-3xl">
-        <h3 className="font-semibold text-base text-white">Match levels</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-          <div>
-            <span className="text-[#4ADE80] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
-              <CheckIcon size={16} /> Great match
-            </span>
-            <div className="text-secText text-xs sm:text-sm mt-1 leading-snug">
-              Your body measurement sits inside the size range.
-            </div>
-          </div>
-          <div>
-            <span className="text-[#FBBF24] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
-              <WarningTriangleIcon size={16} /> Between sizes
-            </span>
-            <div className="text-secText text-xs sm:text-sm mt-1 leading-snug">
-              You fall between two adjacent sizes. Suggested by fit preference.
-            </div>
-          </div>
-          <div>
-            <span className="text-[#F87171] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
-              <CrossCircleIcon size={16} /> Poor match
-            </span>
-            <div className="text-secText text-xs sm:text-sm mt-1 leading-snug">
-              No size is close. The brand cuts may not fit your proportions well.
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* =========================================================================
