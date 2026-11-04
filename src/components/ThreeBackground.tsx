@@ -21,8 +21,8 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
   const currentTab = location.pathname.startsWith('/brand/')
     ? 3
     : location.pathname === '/results' || location.pathname === '/loading'
-    ? 2
-    : 1;
+      ? 2
+      : 1;
 
   // Use a ref to feed current tab to the 60fps Three.js animation loop without recreating the scene
   const currentTabRef = useRef(currentTab);
