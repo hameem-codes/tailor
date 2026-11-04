@@ -18,7 +18,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   const navigate = useNavigate();
 
   return (
-    <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-3 sm:py-6 flex items-center justify-between">
+    <header className="hidden lg:flex w-full max-w-7xl mx-auto px-6 lg:px-8 pt-6 pb-2 items-center justify-between">
       {/* Left: Brand Logo */}
       <button
         onClick={() => navigate('/')}
@@ -121,3 +121,4 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     </header>
   );
 };
+
