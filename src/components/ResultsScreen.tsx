@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BrandMatchResult, UserMeasurements, RegionFilter, SortOption } from '../types';
 import { BrandCard } from './BrandCard';
 import { SearchIcon, FilterIcon, HangerIcon, CheckIcon, WarningTriangleIcon, CrossCircleIcon, ShareIcon, HeartIcon } from './Icons';
@@ -65,12 +65,24 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   const genderLabel = measurements.gender.charAt(0).toUpperCase() + measurements.gender.slice(1);
   const categoryLabel = measurements.category.charAt(0).toUpperCase() + measurements.category.slice(1);
 
+  const PAGE_SIZE = 12;
+  const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
+
+  // Reset pagination when query or filters change
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [searchQuery, regionFilter, sortBy, showSavedOnly]);
+
   const filteredResults = useMemo(() => {
     if (showSavedOnly && savedBrandIds.length > 0) {
       return results.filter(r => savedBrandIds.includes(r.brandChart.id));
     }
     return results;
   }, [results, savedBrandIds, showSavedOnly]);
+
+  const displayedResults = useMemo(() => {
+    return filteredResults.slice(0, visibleCount);
+  }, [filteredResults, visibleCount]);
 
   const comparedMatches = useMemo(() => {
     return results.filter((r) => comparedBrandIds.includes(r.brandChart.id));
@@ -397,8 +409,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           - Mobile (<md:): 1 column
          ========================================================================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
-        {filteredResults.length > 0 ? (
-          filteredResults.map((match) => (
+        {displayedResults.length > 0 ? (
+          displayedResults.map((match) => (
             <BrandCard
               key={match.brandChart.id}
               matchResult={match}
@@ -459,6 +471,40 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </div>
         )}
       </div>
+
+      {/* Pagination / Load More Controls */}
+      {filteredResults.length > visibleCount && (
+        <div className="flex flex-col items-center justify-center gap-3 py-4 sm:py-6 animate-fade-in">
+          <div className="flex items-center gap-3 w-full max-w-xs">
+            <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#1DA84A] rounded-full transition-all duration-300"
+                style={{ width: `${Math.min(100, (displayedResults.length / filteredResults.length) * 100)}%` }}
+              />
+            </div>
+            <span className="text-xs text-secText font-medium whitespace-nowrap">
+              {displayedResults.length} of {filteredResults.length} brands
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setVisibleCount((prev) => Math.min(filteredResults.length, prev + PAGE_SIZE))}
+              className="primary-btn btn-press !min-h-[44px] !px-6 text-xs sm:text-sm font-bold"
+            >
+              Load more brands (+{Math.min(PAGE_SIZE, filteredResults.length - visibleCount)})
+            </button>
+            <button
+              type="button"
+              onClick={() => setVisibleCount(filteredResults.length)}
+              className="pill-btn btn-press !min-h-[44px] !px-4 text-xs sm:text-sm font-medium hover:border-white/30"
+            >
+              Show all ({filteredResults.length})
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Floating Bottom Comparison Bar */}
       {comparedBrandIds.length > 0 && (
