@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserMeasurements, Gender, ClothingCategory, UnitSystem, FitPreference } from '../types';
-import { HangerIcon, LockIcon, WarningTriangleIcon } from './Icons';
+import { LockIcon, WarningTriangleIcon } from './Icons';
+import { TapeRulerGraphic } from './TapeRulerGraphic';
 import {
   cmToInches,
   inchesToCm,
@@ -21,10 +22,8 @@ export const InputScreen: React.FC<InputScreenProps> = ({
   measurements,
   onMeasurementsChange,
   onSubmit,
-  onOpenAbout,
-  onOpenHowToMeasure,
 }) => {
-  // "Chest and waist" must be COLLAPSED by default
+  // "Chest and waist" is COLLAPSED by default
   const [chestWaistOpen, setChestWaistOpen] = useState(false);
 
   const isImperial = measurements.unit === 'imperial';
@@ -119,357 +118,369 @@ export const InputScreen: React.FC<InputScreenProps> = ({
   };
 
   return (
-    <div className="w-full max-w-[520px] mx-auto min-h-screen flex flex-col gap-3.5 px-4 sm:px-6 pt-6 pb-20 page-transition">
-      {/* Brand Header & About Action */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2.5">
-          <HangerIcon size={26} className="text-white" />
-          <span className="font-barlow text-3xl font-semibold text-white tracking-wide">
-            Tailor
-          </span>
-        </div>
-        <button
-          onClick={onOpenAbout}
-          className="circle-btn btn-press text-lg font-serif italic"
-          aria-label="About Tailor"
-        >
-          i
-        </button>
-      </div>
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10 page-transition">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
+        {/* Left Column: Hero & Value Proposition (Matches Desktop Design Image) */}
+        <section className="lg:col-span-5 xl:col-span-5 flex flex-col justify-center">
+          <h1 className="font-barlow text-5xl sm:text-6xl lg:text-[80px] xl:text-[96px] font-semibold text-white leading-[0.95] tracking-tight">
+            Find<br className="hidden sm:inline" /> your fit.
+          </h1>
 
-      {/* Main Heading */}
-      <h1 className="font-barlow text-5xl sm:text-[52px] font-semibold text-white mt-1 leading-[1.05]">
-        Find your fit.
-      </h1>
+          <p className="text-base sm:text-lg xl:text-xl text-[#D6D6DC] max-w-md mt-4 sm:mt-5 leading-relaxed">
+            Enter your measurements once. See the right size across brands.
+          </p>
 
-      {/* "Who and What" Card */}
-      <fieldset className="glass-card p-4 sm:p-5 flex flex-col gap-3 border border-white/12">
-        <legend className="text-base font-semibold text-[#D6D6DC] px-1">Who and what</legend>
+          <ul className="space-y-3 mt-6 sm:mt-8 text-sm sm:text-base text-white/95">
+            <li className="flex items-center gap-3">
+              <span className="text-[#4ADE80] font-bold text-lg sm:text-xl">✓</span>
+              <span>Compare 10+ brands at once</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="text-[#4ADE80] font-bold text-lg sm:text-xl">✓</span>
+              <span>Matched from real size charts</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="text-[#4ADE80] font-bold text-lg sm:text-xl">✓</span>
+              <span>Stays on your device</span>
+            </li>
+          </ul>
 
-        {/* Gender Segment - ONE row of 3 equal chips */}
-        <div
-          role="radiogroup"
-          aria-label="Gender selection"
-          className="grid grid-cols-3 gap-2"
-        >
-          {(['men', 'women', 'unisex'] as Gender[]).map((g) => (
-            <button
-              key={g}
-              type="button"
-              role="radio"
-              aria-checked={measurements.gender === g}
-              onClick={() => updateMeasurement('gender', g)}
-              className={`pill-btn btn-press w-full text-center capitalize ${
-                measurements.gender === g ? 'pill-active' : ''
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
-
-        {/* Category Segment - ONE row of 4 equal chips (no wrap) */}
-        <div
-          role="radiogroup"
-          aria-label="Clothing category selection"
-          className="grid grid-cols-4 gap-1.5 sm:gap-2"
-        >
-          {([
-            { id: 't-shirt', label: 'T-shirt' },
-            { id: 'shirt', label: 'Shirt' },
-            { id: 'pants', label: 'Pants' },
-            { id: 'jacket', label: 'Jacket' },
-          ] as { id: ClothingCategory; label: string }[]).map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              role="radio"
-              aria-checked={measurements.category === c.id}
-              onClick={() => updateMeasurement('category', c.id)}
-              className={`pill-btn btn-press w-full !px-1 sm:!px-3 !text-[13px] sm:!text-sm text-center justify-center truncate ${
-                measurements.category === c.id ? 'pill-active' : ''
-              }`}
-            >
-              {c.label}
-            </button>
-          ))}
-        </div>
-      </fieldset>
-
-      {/* Measurements Card */}
-      <div className="glass-card p-4 sm:p-5 flex flex-col gap-3.5 border border-white/12">
-        {/* How to measure link + Unit switcher */}
-        <div className="flex justify-between items-center">
-          <button
-            type="button"
-            onClick={onOpenHowToMeasure}
-            className="text-[#4ADE80] font-semibold text-sm min-h-[44px] inline-flex items-center hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
-          >
-            How to measure
-          </button>
-          <div className="flex gap-1.5" role="radiogroup" aria-label="Unit of measurement">
-            <button
-              type="button"
-              role="radio"
-              aria-checked={!isImperial}
-              onClick={() => handleUnitToggle('metric')}
-              className={`pill-btn btn-press !min-h-[38px] !px-3 text-xs sm:text-sm ${
-                !isImperial ? 'pill-active' : ''
-              }`}
-            >
-              cm · kg
-            </button>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={isImperial}
-              onClick={() => handleUnitToggle('imperial')}
-              className={`pill-btn btn-press !min-h-[38px] !px-3 text-xs sm:text-sm ${
-                isImperial ? 'pill-active' : ''
-              }`}
-            >
-              in · lb
-            </button>
+          {/* Decorative Tape Measure Tick Graphic */}
+          <div className="mt-8 sm:mt-10 pt-1">
+            <TapeRulerGraphic />
           </div>
-        </div>
+        </section>
 
-        {/* Height Field with Steppers */}
-        <div
-          className={`field-container flex items-center justify-between ${
-            !validation.heightValid ? 'field-container-error' : ''
-          }`}
-        >
-          <label htmlFor="height-input" className="font-semibold text-base text-white">
-            Height
-          </label>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <button
-              type="button"
-              onClick={() => stepHeight(-1)}
-              className="circle-btn btn-press"
-              aria-label="Decrease Height"
-            >
-              −
-            </button>
-            <input
-              id="height-input"
-              type="number"
-              inputMode="decimal"
-              value={displayHeight}
-              onChange={(e) => handleHeightInput(e.target.value)}
-              aria-invalid={!validation.heightValid}
-              aria-describedby={!validation.heightValid ? 'height-error' : undefined}
-              className="number-input text-white"
-            />
-            <span className="text-secText w-7 text-sm sm:text-base font-medium">
-              {isImperial ? 'in' : 'cm'}
-            </span>
-            <button
-              type="button"
-              onClick={() => stepHeight(1)}
-              className="circle-btn btn-press"
-              aria-label="Increase Height"
-            >
-              +
-            </button>
-          </div>
-        </div>
+        {/* Right Column: Measurements Card (Single unified glass card as in design) */}
+        <section className="lg:col-span-7 xl:col-span-7 flex justify-center lg:justify-end w-full">
+          <div className="w-full max-w-[540px] glass-card p-5 sm:p-7 flex flex-col gap-4 border border-white/12 rounded-[28px] shadow-2xl">
+            {/* Who and What Group */}
+            <div className="space-y-2.5">
+              <div className="text-xs sm:text-sm font-semibold text-[#D6D6DC]">
+                Who and what
+              </div>
 
-        {/* Height Error Message */}
-        {!validation.heightValid && (
-          <div
-            id="height-error"
-            role="alert"
-            className="flex items-start gap-2 text-[#FCA5A5] text-xs sm:text-sm leading-snug px-1 animate-fade-in"
-          >
-            <WarningTriangleIcon size={16} className="flex-none mt-0.5" />
-            <span>Height should be between 120 and 230 cm. Check the number and try again.</span>
-          </div>
-        )}
+              {/* Gender Segment - ONE row of 3 equal chips */}
+              <div
+                role="radiogroup"
+                aria-label="Gender selection"
+                className="grid grid-cols-3 gap-2"
+              >
+                {(['men', 'women', 'unisex'] as Gender[]).map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    role="radio"
+                    aria-checked={measurements.gender === g}
+                    onClick={() => updateMeasurement('gender', g)}
+                    className={`pill-btn btn-press w-full text-center capitalize ${
+                      measurements.gender === g ? 'pill-active' : ''
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
 
-        {/* Weight Field with Steppers */}
-        <div
-          className={`field-container flex items-center justify-between ${
-            !validation.weightValid ? 'field-container-error' : ''
-          }`}
-        >
-          <label htmlFor="weight-input" className="font-semibold text-base text-white">
-            Weight
-          </label>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <button
-              type="button"
-              onClick={() => stepWeight(-1)}
-              className="circle-btn btn-press"
-              aria-label="Decrease Weight"
-            >
-              −
-            </button>
-            <input
-              id="weight-input"
-              type="number"
-              inputMode="decimal"
-              value={displayWeight}
-              onChange={(e) => handleWeightInput(e.target.value)}
-              aria-invalid={!validation.weightValid}
-              aria-describedby={!validation.weightValid ? 'weight-error' : undefined}
-              className="number-input text-white"
-            />
-            <span className="text-secText w-7 text-sm sm:text-base font-medium">
-              {isImperial ? 'lb' : 'kg'}
-            </span>
-            <button
-              type="button"
-              onClick={() => stepWeight(1)}
-              className="circle-btn btn-press"
-              aria-label="Increase Weight"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Weight Error Message */}
-        {!validation.weightValid && (
-          <div
-            id="weight-error"
-            role="alert"
-            className="flex items-start gap-2 text-[#FCA5A5] text-xs sm:text-sm leading-snug px-1 animate-fade-in"
-          >
-            <WarningTriangleIcon size={16} className="flex-none mt-0.5" />
-            <span>Weight should be between 30 and 250 kg. Check the number and try again.</span>
-          </div>
-        )}
-
-        {/* Expandable Chest & Waist Card - COLLAPSED BY DEFAULT */}
-        <div className="field-container !p-0 overflow-hidden">
-          <div
-            onClick={() => setChestWaistOpen(!chestWaistOpen)}
-            className="min-h-[64px] flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer select-none"
-          >
-            <div>
-              <span className="font-semibold text-base text-white block">
-                {isPants ? 'Waist and hips' : 'Chest and waist'}
-              </span>
-              <span className="text-secText text-xs sm:text-sm block mt-0.5">
-                Improves accuracy
-              </span>
+              {/* Category Segment - ONE row of 4 equal chips (no wrap) */}
+              <div
+                role="radiogroup"
+                aria-label="Clothing category selection"
+                className="grid grid-cols-4 gap-1.5 sm:gap-2"
+              >
+                {([
+                  { id: 't-shirt', label: 'T-shirt' },
+                  { id: 'shirt', label: 'Shirt' },
+                  { id: 'pants', label: 'Pants' },
+                  { id: 'jacket', label: 'Jacket' },
+                ] as { id: ClothingCategory; label: string }[]).map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={measurements.category === c.id}
+                    onClick={() => updateMeasurement('category', c.id)}
+                    className={`pill-btn btn-press w-full !px-1 sm:!px-3 !text-[13px] sm:!text-sm text-center justify-center truncate ${
+                      measurements.category === c.id ? 'pill-active' : ''
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <button
-              type="button"
-              className="pill-btn btn-press !border-[#4ADE80] !text-[#4ADE80] !font-semibold !text-sm !min-h-[38px] !px-3.5"
-              aria-expanded={chestWaistOpen}
-            >
-              {chestWaistOpen ? 'Hide' : '+ Add'}
-            </button>
-          </div>
 
-          {chestWaistOpen && (
-            <div className="flex border-t border-white/15 px-3.5 py-3 gap-3 animate-fade-in">
-              {!isPants && (
-                <div className="flex-1">
-                  <label htmlFor="chest-val" className="text-secText text-xs sm:text-sm block mb-1">
-                    Chest
-                  </label>
-                  <div className="flex items-baseline gap-1">
-                    <input
-                      id="chest-val"
-                      type="number"
-                      inputMode="decimal"
-                      value={displayChest}
-                      placeholder="96"
-                      onChange={(e) => handleChestInput(e.target.value)}
-                      className="number-input !text-left !w-16 text-white"
-                    />
-                    <span className="text-secText text-sm">{isImperial ? 'in' : 'cm'}</span>
-                  </div>
-                </div>
-              )}
+            {/* Your Measurements Header Row */}
+            <div className="flex justify-between items-center pt-1">
+              <span className="text-xs sm:text-sm font-semibold text-[#D6D6DC]">
+                Your measurements
+              </span>
+              {/* Unit switcher */}
+              <div className="flex gap-1.5" role="radiogroup" aria-label="Unit of measurement">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!isImperial}
+                  onClick={() => handleUnitToggle('metric')}
+                  className={`pill-btn btn-press !min-h-[36px] !px-3 text-xs sm:text-sm ${
+                    !isImperial ? 'pill-active' : ''
+                  }`}
+                >
+                  cm · kg
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={isImperial}
+                  onClick={() => handleUnitToggle('imperial')}
+                  className={`pill-btn btn-press !min-h-[36px] !px-3 text-xs sm:text-sm ${
+                    isImperial ? 'pill-active' : ''
+                  }`}
+                >
+                  in · lb
+                </button>
+              </div>
+            </div>
 
-              <div className="flex-1 border-l border-white/15 pl-3">
-                <label htmlFor="waist-val" className="text-secText text-xs sm:text-sm block mb-1">
-                  Waist
+            {/* Side-by-Side Height and Weight Controls */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Height Field with Steppers */}
+              <div
+                className={`field-container flex items-center justify-between !py-2.5 !px-3 ${
+                  !validation.heightValid ? 'field-container-error' : ''
+                }`}
+              >
+                <label htmlFor="height-input" className="font-semibold text-sm sm:text-base text-white">
+                  Height
                 </label>
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => stepHeight(-1)}
+                    className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base"
+                    aria-label="Decrease Height"
+                  >
+                    −
+                  </button>
                   <input
-                    id="waist-val"
+                    id="height-input"
                     type="number"
                     inputMode="decimal"
-                    value={displayWaist}
-                    placeholder="82"
-                    onChange={(e) => handleWaistInput(e.target.value)}
-                    className="number-input !text-left !w-16 text-white"
+                    value={displayHeight}
+                    onChange={(e) => handleHeightInput(e.target.value)}
+                    aria-invalid={!validation.heightValid}
+                    aria-describedby={!validation.heightValid ? 'height-error' : undefined}
+                    className="number-input text-white !w-12 !text-2xl"
                   />
-                  <span className="text-secText text-sm">{isImperial ? 'in' : 'cm'}</span>
+                  <span className="text-secText w-6 text-xs sm:text-sm font-medium">
+                    {isImperial ? 'in' : 'cm'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => stepHeight(1)}
+                    className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base"
+                    aria-label="Increase Height"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
 
-              {isPants && (
-                <div className="flex-1 border-l border-white/15 pl-3">
-                  <label htmlFor="hips-val" className="text-secText text-xs sm:text-sm block mb-1">
-                    Hips
-                  </label>
-                  <div className="flex items-baseline gap-1">
-                    <input
-                      id="hips-val"
-                      type="number"
-                      inputMode="decimal"
-                      value={displayHips}
-                      placeholder="96"
-                      onChange={(e) => handleHipsInput(e.target.value)}
-                      className="number-input !text-left !w-16 text-white"
-                    />
-                    <span className="text-secText text-sm">{isImperial ? 'in' : 'cm'}</span>
+              {/* Weight Field with Steppers */}
+              <div
+                className={`field-container flex items-center justify-between !py-2.5 !px-3 ${
+                  !validation.weightValid ? 'field-container-error' : ''
+                }`}
+              >
+                <label htmlFor="weight-input" className="font-semibold text-sm sm:text-base text-white">
+                  Weight
+                </label>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => stepWeight(-1)}
+                    className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base"
+                    aria-label="Decrease Weight"
+                  >
+                    −
+                  </button>
+                  <input
+                    id="weight-input"
+                    type="number"
+                    inputMode="decimal"
+                    value={displayWeight}
+                    onChange={(e) => handleWeightInput(e.target.value)}
+                    aria-invalid={!validation.weightValid}
+                    aria-describedby={!validation.weightValid ? 'weight-error' : undefined}
+                    className="number-input text-white !w-12 !text-2xl"
+                  />
+                  <span className="text-secText w-6 text-xs sm:text-sm font-medium">
+                    {isImperial ? 'lb' : 'kg'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => stepWeight(1)}
+                    className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base"
+                    aria-label="Increase Weight"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Validation Alerts */}
+            {!validation.heightValid && (
+              <div
+                id="height-error"
+                role="alert"
+                className="flex items-start gap-2 text-[#FCA5A5] text-xs leading-snug px-1 animate-fade-in"
+              >
+                <WarningTriangleIcon size={14} className="flex-none mt-0.5" />
+                <span>Height should be between 120 and 230 cm.</span>
+              </div>
+            )}
+            {!validation.weightValid && (
+              <div
+                id="weight-error"
+                role="alert"
+                className="flex items-start gap-2 text-[#FCA5A5] text-xs leading-snug px-1 animate-fade-in"
+              >
+                <WarningTriangleIcon size={14} className="flex-none mt-0.5" />
+                <span>Weight should be between 30 and 250 kg.</span>
+              </div>
+            )}
+
+            {/* Expandable Chest & Waist Card - COLLAPSED BY DEFAULT */}
+            <div className="field-container !p-0 overflow-hidden">
+              <div
+                onClick={() => setChestWaistOpen(!chestWaistOpen)}
+                className="min-h-[56px] flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer select-none"
+              >
+                <div>
+                  <span className="font-semibold text-sm sm:text-base text-white block">
+                    {isPants ? 'Waist and hips' : 'Chest and waist'}
+                  </span>
+                  <span className="text-secText text-xs block">
+                    Improves accuracy
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="pill-btn btn-press !border-[#4ADE80] !text-[#4ADE80] !font-semibold !text-xs sm:!text-sm !min-h-[34px] !px-3"
+                  aria-expanded={chestWaistOpen}
+                >
+                  {chestWaistOpen ? 'Hide' : '+ Add'}
+                </button>
+              </div>
+
+              {chestWaistOpen && (
+                <div className="flex border-t border-white/15 px-3.5 py-3 gap-3 animate-fade-in">
+                  {!isPants && (
+                    <div className="flex-1">
+                      <label htmlFor="chest-val" className="text-secText text-xs block mb-1">
+                        Chest
+                      </label>
+                      <div className="flex items-baseline gap-1">
+                        <input
+                          id="chest-val"
+                          type="number"
+                          inputMode="decimal"
+                          value={displayChest}
+                          placeholder="96"
+                          onChange={(e) => handleChestInput(e.target.value)}
+                          className="number-input !text-left !w-16 text-white !text-2xl"
+                        />
+                        <span className="text-secText text-xs">{isImperial ? 'in' : 'cm'}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex-1 border-l border-white/15 pl-3">
+                    <label htmlFor="waist-val" className="text-secText text-xs block mb-1">
+                      Waist
+                    </label>
+                    <div className="flex items-baseline gap-1">
+                      <input
+                        id="waist-val"
+                        type="number"
+                        inputMode="decimal"
+                        value={displayWaist}
+                        placeholder="82"
+                        onChange={(e) => handleWaistInput(e.target.value)}
+                        className="number-input !text-left !w-16 text-white !text-2xl"
+                      />
+                      <span className="text-secText text-xs">{isImperial ? 'in' : 'cm'}</span>
+                    </div>
                   </div>
+
+                  {isPants && (
+                    <div className="flex-1 border-l border-white/15 pl-3">
+                      <label htmlFor="hips-val" className="text-secText text-xs block mb-1">
+                        Hips
+                      </label>
+                      <div className="flex items-baseline gap-1">
+                        <input
+                          id="hips-val"
+                          type="number"
+                          inputMode="decimal"
+                          value={displayHips}
+                          placeholder="96"
+                          onChange={(e) => handleHipsInput(e.target.value)}
+                          className="number-input !text-left !w-16 text-white !text-2xl"
+                        />
+                        <span className="text-secText text-xs">{isImperial ? 'in' : 'cm'}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
 
-        {/* Preferred Fit - ONE row of 3 equal chips */}
-        <div className="space-y-2 mt-1">
-          <div className="text-base font-semibold text-white">Preferred fit</div>
-          <div
-            role="radiogroup"
-            aria-label="Preferred fit"
-            className="grid grid-cols-3 gap-2"
-          >
-            {(['snug', 'regular', 'loose'] as FitPreference[]).map((f) => (
-              <button
-                key={f}
-                type="button"
-                role="radio"
-                aria-checked={measurements.fitPreference === f}
-                onClick={() => updateMeasurement('fitPreference', f)}
-                className={`pill-btn btn-press w-full text-center capitalize ${
-                  measurements.fitPreference === f ? 'pill-active' : ''
-                }`}
+            {/* Preferred Fit - ONE row of 3 equal chips */}
+            <div className="space-y-1.5 pt-0.5">
+              <div
+                role="radiogroup"
+                aria-label="Preferred fit"
+                className="grid grid-cols-3 gap-2"
               >
-                {f}
-              </button>
-            ))}
-          </div>
-          <div className="text-sm sm:text-[15px] text-[#D6D6DC] leading-snug pt-0.5">
-            {fitDescriptions[measurements.fitPreference]}
-          </div>
-        </div>
-      </div>
+                {(['snug', 'regular', 'loose'] as FitPreference[]).map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    role="radio"
+                    aria-checked={measurements.fitPreference === f}
+                    onClick={() => updateMeasurement('fitPreference', f)}
+                    className={`pill-btn btn-press w-full text-center capitalize ${
+                      measurements.fitPreference === f ? 'pill-active' : ''
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+              <div className="text-xs sm:text-sm text-[#D6D6DC] leading-snug pt-0.5">
+                {fitDescriptions[measurements.fitPreference]}
+              </div>
+            </div>
 
-      {/* Primary Action Button */}
-      <button
-        onClick={onSubmit}
-        disabled={!isFormValid}
-        aria-disabled={!isFormValid}
-        className="primary-btn btn-press w-full mt-1"
-      >
-        Find my size
-      </button>
+            {/* Primary Action Button: Find my size */}
+            <button
+              onClick={onSubmit}
+              disabled={!isFormValid}
+              aria-disabled={!isFormValid}
+              className="primary-btn btn-press w-full mt-1 !min-h-[54px] text-lg font-bold"
+            >
+              Find my size
+            </button>
 
-      {/* Privacy Notice */}
-      <div className="flex items-center justify-center gap-1.5 text-[15px] sm:text-base text-secText py-2">
-        <LockIcon size={16} className="text-secText flex-none" />
-        <span>Your measurements stay on your device.</span>
+            {/* Privacy Notice */}
+            <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm text-secText py-1">
+              <LockIcon size={14} className="text-secText flex-none" />
+              <span>Your measurements stay on your device.</span>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

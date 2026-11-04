@@ -25,6 +25,7 @@ import {
 } from './lib/storage';
 import { getInitialBrands, fetchBrandSizes } from './lib/data';
 import { matchAllBrands, matchBrand } from './lib/matching/engine';
+import { TopNavbar } from './components/TopNavbar';
 import { InputScreen } from './components/InputScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { ResultsScreen } from './components/ResultsScreen';
@@ -32,14 +33,15 @@ import { BrandDetail } from './components/BrandDetail';
 import { AboutScreen } from './components/AboutScreen';
 import { HowToMeasureModal } from './components/HowToMeasureModal';
 
-// Top-level route wrapper: Screen 1 (Input)
+// Route wrapper: Screen 1 (Input)
 const InputScreenRoute: React.FC<{
   measurements: UserMeasurements;
   onMeasurementsChange: (m: UserMeasurements) => void;
-}> = ({ measurements, onMeasurementsChange }) => {
+  onOpenAbout: () => void;
+  onOpenHowToMeasure: () => void;
+}> = ({ measurements, onMeasurementsChange, onOpenAbout, onOpenHowToMeasure }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showMeasureModal, setShowMeasureModal] = useState(false);
   const redirectReason = (location.state as any)?.redirectReason;
 
   const handleSubmit = () => {
@@ -55,8 +57,8 @@ const InputScreenRoute: React.FC<{
   return (
     <div className="w-full flex flex-col items-center">
       {redirectReason && (
-        <div role="status" className="w-full max-w-[520px] pt-4 px-4 animate-fade-in">
-          <div className="rounded-[18px] bg-amber-500/15 border border-amber-500/40 p-3.5 text-amber-200 text-sm flex items-center justify-between">
+        <div role="status" className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-2">
+          <div className="max-w-[540px] ml-auto rounded-[18px] bg-amber-500/15 border border-amber-500/40 p-3.5 text-amber-200 text-sm flex items-center justify-between animate-fade-in">
             <span>{redirectReason}</span>
           </div>
         </div>
@@ -65,19 +67,14 @@ const InputScreenRoute: React.FC<{
         measurements={measurements}
         onMeasurementsChange={onMeasurementsChange}
         onSubmit={handleSubmit}
-        onOpenAbout={() => navigate('/about')}
-        onOpenHowToMeasure={() => setShowMeasureModal(true)}
-      />
-      <HowToMeasureModal
-        isOpen={showMeasureModal}
-        onClose={() => setShowMeasureModal(false)}
-        showHips={measurements.category === 'pants'}
+        onOpenAbout={onOpenAbout}
+        onOpenHowToMeasure={onOpenHowToMeasure}
       />
     </div>
   );
 };
 
-// Top-level route wrapper: Screen 2 (Loading)
+// Route wrapper: Screen 2 (Loading)
 const LoadingScreenRoute: React.FC<{
   measurements: UserMeasurements;
   brandCount: number;
@@ -93,7 +90,7 @@ const LoadingScreenRoute: React.FC<{
   );
 };
 
-// Top-level route wrapper: Screen 3 (Results)
+// Route wrapper: Screen 3 (Results)
 const ResultsScreenRoute: React.FC<{
   results: BrandMatchResult[];
   measurements: UserMeasurements;
@@ -167,7 +164,7 @@ const ResultsScreenRoute: React.FC<{
   );
 };
 
-// Top-level route wrapper: Screen 4 (Brand Detail)
+// Route wrapper: Screen 4 (Brand Detail)
 const BrandDetailRoute: React.FC<{
   brands: BrandChart[];
   measurements: UserMeasurements;
@@ -199,6 +196,10 @@ const BrandDetailRoute: React.FC<{
 };
 
 export const App: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showMeasureModal, setShowMeasureModal] = useState(false);
+
   // Global & Persistent State
   const [measurements, setMeasurements] = useState<UserMeasurements>(loadStoredMeasurements);
   const [brands, setBrands] = useState<BrandChart[]>(getInitialBrands);
@@ -242,58 +243,94 @@ export const App: React.FC = () => {
     return matchAllBrands(brands, measurements, searchQuery, regionFilter, sortBy);
   }, [brands, measurements, searchQuery, regionFilter, sortBy]);
 
+  // Stepper state
+  const currentStep: 1 | 2 | 3 = location.pathname.startsWith('/brand/')
+    ? 3
+    : location.pathname === '/results' || location.pathname === '/loading'
+    ? 2
+    : 1;
+
+  let searchedInSession = false;
+  try {
+    searchedInSession = sessionStorage.getItem('tailor_searched') === 'true';
+  } catch (e) {
+    searchedInSession = false;
+  }
+  const canGoToResults = hasStoredMeasurements() || searchedInSession;
+
   return (
-    <div className="min-h-screen text-white relative w-full overflow-x-hidden">
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <InputScreenRoute
-              measurements={measurements}
-              onMeasurementsChange={handleMeasurementsChange}
-            />
-          }
+    <div className="min-h-screen text-white relative w-full overflow-x-hidden flex flex-col">
+      {/* Universal Desktop & Responsive Top Navbar matching design export */}
+      {location.pathname !== '/about' && (
+        <TopNavbar
+          currentStep={currentStep}
+          canGoToResults={canGoToResults}
+          onOpenHowToMeasure={() => setShowMeasureModal(true)}
+          onOpenAbout={() => navigate('/about')}
         />
-        <Route
-          path="/loading"
-          element={
-            <LoadingScreenRoute
-              measurements={measurements}
-              brandCount={matchResults.length}
-            />
-          }
-        />
-        <Route
-          path="/results"
-          element={
-            <ResultsScreenRoute
-              results={matchResults}
-              measurements={measurements}
-              savedBrandIds={savedBrandIds}
-              tipDismissed={tipDismissed}
-              onDismissTip={handleDismissTip}
-              onToggleSave={handleToggleSave}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              regionFilter={regionFilter}
-              setRegionFilter={setRegionFilter}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-            />
-          }
-        />
-        <Route
-          path="/brand/:id"
-          element={
-            <BrandDetailRoute
-              brands={brands}
-              measurements={measurements}
-            />
-          }
-        />
-        <Route path="/about" element={<AboutScreen />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      )}
+
+      {/* Global How to Measure Modal accessible from anywhere */}
+      <HowToMeasureModal
+        isOpen={showMeasureModal}
+        onClose={() => setShowMeasureModal(false)}
+        showHips={measurements.category === 'pants'}
+      />
+
+      <main className="flex-1 w-full">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <InputScreenRoute
+                measurements={measurements}
+                onMeasurementsChange={handleMeasurementsChange}
+                onOpenAbout={() => navigate('/about')}
+                onOpenHowToMeasure={() => setShowMeasureModal(true)}
+              />
+            }
+          />
+          <Route
+            path="/loading"
+            element={
+              <LoadingScreenRoute
+                measurements={measurements}
+                brandCount={matchResults.length}
+              />
+            }
+          />
+          <Route
+            path="/results"
+            element={
+              <ResultsScreenRoute
+                results={matchResults}
+                measurements={measurements}
+                savedBrandIds={savedBrandIds}
+                tipDismissed={tipDismissed}
+                onDismissTip={handleDismissTip}
+                onToggleSave={handleToggleSave}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                regionFilter={regionFilter}
+                setRegionFilter={setRegionFilter}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+              />
+            }
+          />
+          <Route
+            path="/brand/:id"
+            element={
+              <BrandDetailRoute
+                brands={brands}
+                measurements={measurements}
+              />
+            }
+          />
+          <Route path="/about" element={<AboutScreen />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </div>
   );
 };
