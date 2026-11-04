@@ -72,33 +72,36 @@ export const BrandCard: React.FC<BrandCardProps> = ({
 
   return (
     <article
-      onClick={() => onOpenDetail(matchResult)}
-      className={`glass-card p-5 sm:p-6 flex flex-col gap-4 transition-all duration-200 hover:border-white/25 cursor-pointer ${cardBorderClass}`}
+      onClick={(e) => {
+        // Only trigger card click if user did not click an interactive element inside
+        const target = e.target as HTMLElement;
+        if (target.closest('button, a')) return;
+        onOpenDetail(matchResult);
+      }}
+      className={`glass-card group relative p-5 sm:p-6 flex flex-col gap-4 transition-all duration-200 hover:border-white/25 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 ${cardBorderClass}`}
     >
       {/* Top Header: Brand Logo + View Chart Link + Save Heart */}
       <div className="flex items-center justify-between min-h-[36px]">
         <h3 className="flex items-center" aria-label={brandChart.brand}>
           <BrandLogo brand={brandChart.brand} />
         </h3>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5 relative z-10">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenDetail(matchResult);
-            }}
-            className="text-accent text-sm font-semibold min-h-[44px] px-2 inline-flex items-center hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
+            type="button"
+            onClick={() => onOpenDetail(matchResult)}
+            aria-label={`View size chart and breakdown for ${brandChart.brand}`}
+            className="text-accent hover:text-white text-xs sm:text-sm font-semibold min-h-[36px] px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/15 border border-white/10 hover:border-white/25 transition-all duration-150 inline-flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
-            View chart ›
+            <span>View chart</span>
+            <span aria-hidden="true" className="text-xs transition-transform group-hover:translate-x-0.5">›</span>
           </button>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSave(brandChart.id);
-            }}
-            className="circle-btn btn-press !bg-transparent hover:!bg-white/10"
+            type="button"
+            onClick={() => onToggleSave(brandChart.id)}
+            className="circle-btn btn-press !w-9 !h-9 !min-w-[36px] !min-h-[36px] !bg-transparent hover:!bg-white/10"
             aria-label={isSaved ? `Remove ${brandChart.brand} from saved` : `Save ${brandChart.brand}`}
           >
-            <HeartIcon filled={isSaved} size={22} />
+            <HeartIcon filled={isSaved} size={20} />
           </button>
         </div>
       </div>
