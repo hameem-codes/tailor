@@ -136,42 +136,39 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
           </div>
         </div>
 
-        {/* Verdict & Size Switcher Card with Frosted Backdrop Shield */}
-        <div className="backdrop-blur-2xl bg-black/60 border border-white/12 rounded-2xl p-5 flex flex-col gap-3.5 shadow-xl">
-          {/* Dynamic Headline Verdict */}
-          <h1 className="font-barlow text-4xl sm:text-[46px] font-semibold leading-[1.05] whitespace-pre-line text-white drop-shadow-sm">
-            {verdict}
-          </h1>
+        {/* Dynamic Headline Verdict */}
+        <h1 className="font-barlow text-4xl sm:text-[46px] font-semibold leading-[1.05] whitespace-pre-line text-white">
+          {verdict}
+        </h1>
 
-          {/* Size Switcher Chips */}
-          <div
-            className="flex gap-2 overflow-x-auto pb-1"
-            role="radiogroup"
-            aria-label="Select size to compare"
-          >
-            {sizes.map((s, idx) => {
-              const isSelected = idx === selectedSizeIdx;
-              const isPrimary = idx === primarySizeIndex;
-              let chipSubtext = 'regular';
-              if (isPrimary) chipSubtext = 'best';
-              else if (idx < primarySizeIndex) chipSubtext = 'snug';
-              else if (idx > primarySizeIndex) chipSubtext = 'loose';
+        {/* Size Switcher Chips */}
+        <div
+          className="flex gap-2 overflow-x-auto pb-1"
+          role="radiogroup"
+          aria-label="Select size to compare"
+        >
+          {sizes.map((s, idx) => {
+            const isSelected = idx === selectedSizeIdx;
+            const isPrimary = idx === primarySizeIndex;
+            let chipSubtext = 'regular';
+            if (isPrimary) chipSubtext = 'best';
+            else if (idx < primarySizeIndex) chipSubtext = 'snug';
+            else if (idx > primarySizeIndex) chipSubtext = 'loose';
 
-              return (
-                <button
-                  key={s.label}
-                  role="radio"
-                  aria-checked={isSelected}
-                  onClick={() => setSelectedSizeIdx(idx)}
-                  className={`pill-btn btn-press flex-1 min-w-[85px] text-center transition-all ${
-                    isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
-                  }`}
-                >
-                  {s.label} · {chipSubtext}
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button
+                key={s.label}
+                role="radio"
+                aria-checked={isSelected}
+                onClick={() => setSelectedSizeIdx(idx)}
+                className={`pill-btn btn-press flex-1 min-w-[85px] text-center transition-all ${
+                  isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
+                }`}
+              >
+                {s.label} · {chipSubtext}
+              </button>
+            );
+          })}
         </div>
 
         {/* Mobile Glass Overview Card */}
@@ -361,52 +358,49 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               </button>
             </div>
 
-            {/* Verdict & Size Selection Card with Frosted Backdrop Shield */}
-            <div className="backdrop-blur-2xl bg-black/60 border border-white/12 rounded-[28px] p-6 lg:p-7 flex flex-col gap-4 shadow-2xl">
-              {/* Breadcrumb Context Label */}
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide text-secText uppercase">
-                <BrandLogo
-                  brand={brandChart.brand}
-                  maxHeight={18}
-                  fallbackClassName="text-white font-semibold"
-                />
-                <span>· {genderLabel} · {categoryLabel}</span>
-              </div>
+            {/* Breadcrumb Context Label */}
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide text-secText uppercase">
+              <BrandLogo
+                brand={brandChart.brand}
+                maxHeight={18}
+                fallbackClassName="text-white font-semibold"
+              />
+              <span>· {genderLabel} · {categoryLabel}</span>
+            </div>
 
-              {/* Dynamic Headline Verdict */}
-              <h1 className="font-barlow text-4xl sm:text-5xl lg:text-[54px] font-semibold leading-[1.02] whitespace-pre-line text-white drop-shadow-sm">
-                {verdict}
-              </h1>
+            {/* Dynamic Headline Verdict */}
+            <h1 className="font-barlow text-4xl sm:text-5xl lg:text-[54px] font-semibold leading-[1.02] whitespace-pre-line text-white">
+              {verdict}
+            </h1>
 
-              {/* S / M / L Size Selector Chips */}
-              <div
-                className="flex gap-2.5 mt-1"
-                role="radiogroup"
-                aria-label="Select size to compare"
-              >
-                {sizes.map((s, idx) => {
-                  const isSelected = idx === selectedSizeIdx;
-                  const isPrimary = idx === primarySizeIndex;
-                  let chipSubtext = 'regular';
-                  if (isPrimary) chipSubtext = 'best';
-                  else if (idx < primarySizeIndex) chipSubtext = 'snug';
-                  else if (idx > primarySizeIndex) chipSubtext = 'loose';
+            {/* S / M / L Size Selector Chips */}
+            <div
+              className="flex gap-2.5 mt-1"
+              role="radiogroup"
+              aria-label="Select size to compare"
+            >
+              {sizes.map((s, idx) => {
+                const isSelected = idx === selectedSizeIdx;
+                const isPrimary = idx === primarySizeIndex;
+                let chipSubtext = 'regular';
+                if (isPrimary) chipSubtext = 'best';
+                else if (idx < primarySizeIndex) chipSubtext = 'snug';
+                else if (idx > primarySizeIndex) chipSubtext = 'loose';
 
-                  return (
-                    <button
-                      key={s.label}
-                      role="radio"
-                      aria-checked={isSelected}
-                      onClick={() => setSelectedSizeIdx(idx)}
-                      className={`pill-btn btn-press flex-1 text-center font-medium !py-2.5 transition-all duration-200 ${
-                        isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
-                      }`}
-                    >
-                      {s.label} · {chipSubtext}
-                    </button>
-                  );
-                })}
-              </div>
+                return (
+                  <button
+                    key={s.label}
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => setSelectedSizeIdx(idx)}
+                    className={`pill-btn btn-press flex-1 text-center font-medium !py-2.5 transition-all duration-200 ${
+                      isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
+                    }`}
+                  >
+                    {s.label} · {chipSubtext}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Overview Card */}

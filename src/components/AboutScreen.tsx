@@ -30,29 +30,24 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
 
   return (
     <div className="w-full max-w-[640px] mx-auto min-h-screen flex flex-col gap-4 p-4 sm:p-6 lg:p-8 pb-20 page-transition">
-      {/* Header & Intro Shield */}
-      <div className="backdrop-blur-2xl bg-black/60 border border-white/12 rounded-[24px] p-5 sm:p-6 flex flex-col gap-3 shadow-xl">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleGoBack}
-            className="circle-btn btn-press"
-            aria-label="Back"
-          >
-            ←
-          </button>
-          <div className="flex items-center gap-2">
-            <img src="/logo-tailor-accent.svg" alt="Tailor" className="h-9 w-auto object-contain" />
-            <h1 className="font-barlow text-3xl sm:text-4xl font-semibold text-secText tracking-wide">
-              · About
-            </h1>
-          </div>
-        </div>
-
-        {/* Intro */}
-        <p className="text-[16px] leading-relaxed text-[#E4E4E8]">
-          Tailor matches your body measurements to real brand size charts, so a Medium means the same thing everywhere.
-        </p>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={handleGoBack}
+          className="circle-btn btn-press"
+          aria-label="Back"
+        >
+          ←
+        </button>
+        <h1 className="font-barlow text-3xl sm:text-4xl font-semibold text-white tracking-wide">
+          About Tailor
+        </h1>
       </div>
+
+      {/* Intro */}
+      <p className="text-[16px] leading-relaxed text-[#E4E4E8]">
+        Tailor matches your body measurements to real brand size charts, so a Medium means the same thing everywhere.
+      </p>
 
       {/* Collapsible FAQ sections */}
       <div className="glass-card p-0 gap-0 overflow-hidden divide-y divide-white/12 border border-white/12">

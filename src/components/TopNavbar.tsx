@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { HangerIcon } from './Icons';
 
 interface TopNavbarProps {
   currentStep: 1 | 2 | 3;
@@ -21,18 +22,17 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
       {/* Left: Brand Logo */}
       <button
         onClick={() => navigate('/')}
-        className="flex items-center text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
+        className="flex items-center gap-2.5 text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
         aria-label="Tailor home"
       >
-        <img
-          src="/logo-tailor-accent.svg"
-          alt="Tailor"
-          className="h-10 xl:h-11 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
-        />
+        <HangerIcon size={26} className="text-white group-hover:text-accent transition-colors" />
+        <span className="font-barlow text-2xl sm:text-3xl font-semibold text-white tracking-wide">
+          Tailor
+        </span>
       </button>
 
-      {/* Center: Desktop 3-Step Wizard Stepper with Frosted Capsule */}
-      <nav aria-label="Progress steps" className="hidden sm:flex items-center gap-2.5 md:gap-3.5 px-4 py-1.5 rounded-full backdrop-blur-xl bg-black/50 border border-white/12 shadow-lg">
+      {/* Center: Desktop 3-Step Wizard Stepper */}
+      <nav aria-label="Progress steps" className="hidden sm:flex items-center gap-2.5 md:gap-3.5">
         {/* Step 1: Measurements */}
         <button
           onClick={() => navigate('/')}
