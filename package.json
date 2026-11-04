@@ -12,10 +12,12 @@
     "validate:data": "py scripts/validate_sizes.py"
   },
   "dependencies": {
+    "@types/three": "^0.187.0",
     "lucide-react": "^1.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.18.5"
+    "react-router-dom": "^7.18.5",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@types/node": "^22.13.0",

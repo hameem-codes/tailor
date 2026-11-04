@@ -32,6 +32,7 @@ import { ResultsScreen } from './components/ResultsScreen';
 import { BrandDetail } from './components/BrandDetail';
 import { AboutScreen } from './components/AboutScreen';
 import { HowToMeasureModal } from './components/HowToMeasureModal';
+import { ThreeBackground } from './components/ThreeBackground';
 import { HangerIcon } from './components/Icons';
 
 // Route wrapper: Screen 1 (Input)
@@ -271,6 +272,9 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen text-white relative w-full overflow-x-hidden flex flex-col">
+      {/* 3D Animated Clothes & Atelier Background */}
+      <ThreeBackground category={measurements.category} unit={measurements.unit} />
+
       {/* Universal Desktop & Responsive Top Navbar matching design export */}
       <TopNavbar
         currentStep={currentStep}
