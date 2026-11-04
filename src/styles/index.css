@@ -224,6 +224,7 @@
   bottom: 0;
   border-radius: 5px;
   animation: growBar 0.8s 0.2s both;
+  transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
 }
 
 .ruler-dot {
@@ -236,6 +237,7 @@
   background: #ffffff;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
   animation: slideDot 0.9s 0.2s both;
+  transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ruler-dot-label {

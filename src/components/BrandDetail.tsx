@@ -19,13 +19,16 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
 
   // Selected size index state (defaults to primary recommended size)
   const [selectedSizeIdx, setSelectedSizeIdx] = useState<number>(primarySizeIndex);
-  // Independent table display toggles (defaults to user's unit & chart default type)
+  // Independent table display toggles
   const [tableUnit, setTableUnit] = useState<UnitSystem>(measurements.unit);
   const [tableMeasurementType, setTableMeasurementType] = useState<ChartType>(brandChart.chartType);
 
   const isPants = measurements.category === 'pants';
   const userPrimaryVal = isPants ? (measurements.waist || 80) : (measurements.chest || 96);
   const userPrimaryText = formatDimension(userPrimaryVal, tableUnit);
+
+  const genderLabel = measurements.gender.charAt(0).toUpperCase() + measurements.gender.slice(1);
+  const categoryLabel = measurements.category.charAt(0).toUpperCase() + measurements.category.slice(1);
 
   const sizes = brandChart.sizes;
   const currentSize = sizes[selectedSizeIdx] || sizes[0];
@@ -102,226 +105,477 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
   }, [selectedSizeIdx, primarySizeIndex, currentSize, sizes, isPants, userPrimaryVal, tableUnit, matchResult.matchStatus]);
 
   return (
-    <div className="w-full max-w-[720px] mx-auto min-h-screen flex flex-col gap-3.5 p-4 sm:p-6 pb-20 page-transition">
-      {/* Top Header: Back Button + Brand Name */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onBack}
-          className="circle-btn btn-press"
-          aria-label="Back to recommendations"
+    <div className="w-full page-transition">
+      {/* =========================================================================
+          VIEW A: MOBILE VIEW (< lg: / under 1024px)
+          - Restores the exact mobile layout from before:
+            - Header: ← circle button + Brand Name
+            - Dynamic verdict headline
+            - Size switcher chips
+            - Overview card
+            - Size chart table card
+            - Sticky primary button
+         ========================================================================= */}
+      <div className="lg:hidden w-full max-w-[520px] mx-auto min-h-screen flex flex-col gap-3.5 p-4 sm:p-6 pb-20">
+        {/* Mobile Header: Back Button + Brand Name */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onBack}
+            className="circle-btn btn-press"
+            aria-label="Back to recommendations"
+          >
+            ←
+          </button>
+          <span className="font-barlow text-3xl font-semibold tracking-wide text-white">
+            {brandChart.brand}
+          </span>
+        </div>
+
+        {/* Dynamic Headline Verdict */}
+        <h1 className="font-barlow text-4xl sm:text-[46px] font-semibold leading-[1.05] whitespace-pre-line text-white">
+          {verdict}
+        </h1>
+
+        {/* Size Switcher Chips */}
+        <div
+          className="flex gap-2 overflow-x-auto pb-1"
+          role="radiogroup"
+          aria-label="Select size to compare"
         >
-          ←
-        </button>
-        <span className="font-barlow text-3xl font-semibold tracking-wide text-white">
-          {brandChart.brand}
-        </span>
-      </div>
+          {sizes.map((s, idx) => {
+            const isSelected = idx === selectedSizeIdx;
+            const isPrimary = idx === primarySizeIndex;
+            let chipSubtext = 'regular';
+            if (isPrimary) chipSubtext = 'best';
+            else if (idx < primarySizeIndex) chipSubtext = 'snug';
+            else if (idx > primarySizeIndex) chipSubtext = 'loose';
 
-      {/* Dynamic Headline Verdict */}
-      <h1 className="font-barlow text-4xl sm:text-[46px] font-semibold leading-[1.05] whitespace-pre-line text-white">
-        {verdict}
-      </h1>
+            return (
+              <button
+                key={s.label}
+                role="radio"
+                aria-checked={isSelected}
+                onClick={() => setSelectedSizeIdx(idx)}
+                className={`pill-btn btn-press flex-1 min-w-[85px] text-center transition-all ${
+                  isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
+                }`}
+              >
+                {s.label} · {chipSubtext}
+              </button>
+            );
+          })}
+        </div>
 
-      {/* S / M / L Size Switcher Chips */}
-      <div
-        className="flex gap-2 overflow-x-auto pb-1"
-        role="radiogroup"
-        aria-label="Select size to compare"
-      >
-        {sizes.map((s, idx) => {
-          const isSelected = idx === selectedSizeIdx;
-          const isPrimary = idx === primarySizeIndex;
-          let chipSubtext = 'regular';
-          if (isPrimary) chipSubtext = 'best';
-          else if (idx < primarySizeIndex) chipSubtext = 'snug';
-          else if (idx > primarySizeIndex) chipSubtext = 'loose';
+        {/* Mobile Glass Overview Card */}
+        <div className="glass-card p-5 sm:p-6 flex flex-col gap-4 border-accent/40">
+          <div className="flex justify-between items-end">
+            <div>
+              <div className="text-sm sm:text-base text-secText">Selected size</div>
+              <div className="font-barlow text-7xl sm:text-[96px] font-semibold text-white leading-none">
+                {currentSize.label}
+              </div>
+            </div>
 
-          return (
-            <button
-              key={s.label}
-              role="radio"
-              aria-checked={isSelected}
-              onClick={() => setSelectedSizeIdx(idx)}
-              className={`pill-btn btn-press flex-1 min-w-[85px] text-center ${
-                isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
-              }`}
-            >
-              {s.label} · {chipSubtext}
-            </button>
-          );
-        })}
-      </div>
+            <div className="pb-3 flex items-center gap-1.5 font-semibold text-base" style={{ color: matchColor }}>
+              {matchLabel === 'Great match' && <CheckIcon size={16} />}
+              {matchLabel.includes('fit') && <WarningTriangleIcon size={16} />}
+              {matchLabel === 'Between sizes' && <WarningTriangleIcon size={16} />}
+              {matchLabel === 'Poor match' && <CrossCircleIcon size={16} />}
+              <span>{matchLabel}</span>
+            </div>
+          </div>
 
-      {/* Glass Overview Card */}
-      <div className="glass-card p-5 sm:p-6 flex flex-col gap-4 border-accent/40">
-        <div className="flex justify-between items-end">
           <div>
-            <div className="text-sm sm:text-base text-secText">Selected size</div>
-            <div className="font-barlow text-7xl sm:text-[96px] font-semibold text-white leading-none">
-              {currentSize.label}
+            <div className="text-sm sm:text-base text-secText">
+              Range: <span className="text-white font-medium">{chestRangeText}</span>
             </div>
+            <RangeRuler
+              userValueText={`You: ${userPrimaryText}`}
+              userDotPercent={rulerProps.userDotPercent}
+              primaryBarLeftPercent={rulerProps.primaryBarLeftPercent}
+              primaryBarWidthPercent={rulerProps.primaryBarWidthPercent}
+              primaryBarColor={rulerProps.primaryBarColor}
+            />
           </div>
 
-          <div className="pb-3 flex items-center gap-1.5 font-semibold text-base" style={{ color: matchColor }}>
-            {matchLabel === 'Great match' && <CheckIcon size={16} />}
-            {matchLabel.includes('fit') && <WarningTriangleIcon size={16} />}
-            {matchLabel === 'Between sizes' && <WarningTriangleIcon size={16} />}
-            {matchLabel === 'Poor match' && <CrossCircleIcon size={16} />}
-            <span>{matchLabel}</span>
-          </div>
-        </div>
-
-        {/* Range Label & Animated Ruler */}
-        <div>
-          <div className="text-sm sm:text-base text-secText">
-            Range: <span className="text-white font-medium">{chestRangeText}</span>
-          </div>
-          <RangeRuler
-            userValueText={`You: ${userPrimaryText}`}
-            userDotPercent={rulerProps.userDotPercent}
-            primaryBarLeftPercent={rulerProps.primaryBarLeftPercent}
-            primaryBarWidthPercent={rulerProps.primaryBarWidthPercent}
-            primaryBarColor={rulerProps.primaryBarColor}
-          />
-        </div>
-
-        {/* Confidence Row */}
-        <div className="flex items-center gap-2 text-sm text-[#D6D6DC] pt-1">
-          <LockIcon size={16} className="text-[#4ADE80] flex-none" />
-          <span>Confidence: <strong className="text-white capitalize">{confidence}</strong>. {confidenceReason}</span>
-        </div>
-
-        {/* Stats Row (3 Columns) */}
-        <div className="flex border-t border-white/15 pt-3 mt-1">
-          <div className="flex-1 pr-3">
-            <div className="font-barlow text-2xl sm:text-[34px] font-medium text-white">
-              {Math.round(userPrimaryVal)}
-              <span className="text-sm text-secText"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
-            </div>
-            <div className="text-sm text-secText mt-1">
-              Your {isPants ? 'waist' : 'chest'}
-            </div>
+          <div className="flex items-center gap-2 text-sm text-[#D6D6DC] pt-1">
+            <LockIcon size={16} className="text-[#4ADE80] flex-none" />
+            <span>Confidence: <strong className="text-white capitalize">{confidence}</strong>. {confidenceReason}</span>
           </div>
 
-          <div className="flex-1 px-3 border-l border-white/15">
-            <div className="font-barlow text-2xl sm:text-[34px] font-medium text-white truncate">
-              {chestRangeText.replace(' cm', '').replace(' in', '')}
+          <div className="flex border-t border-white/15 pt-3 mt-1">
+            <div className="flex-1 pr-3">
+              <div className="font-barlow text-2xl sm:text-[34px] font-medium text-white">
+                {Math.round(userPrimaryVal)}
+                <span className="text-sm text-secText"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
+              </div>
+              <div className="text-sm text-secText mt-1">
+                Your {isPants ? 'waist' : 'chest'}
+              </div>
             </div>
-            <div className="text-sm text-secText mt-1">
-              {isPants ? 'Waist' : 'Chest'} range
-            </div>
-          </div>
 
-          <div className="flex-1 pl-3 border-l border-white/15">
-            <div className="font-barlow text-2xl sm:text-[34px] font-medium text-white truncate">
-              {waistRangeText.replace(' cm', '').replace(' in', '')}
+            <div className="flex-1 px-3 border-l border-white/15">
+              <div className="font-barlow text-2xl sm:text-[34px] font-medium text-white truncate">
+                {chestRangeText.replace(' cm', '').replace(' in', '')}
+              </div>
+              <div className="text-sm text-secText mt-1">
+                {isPants ? 'Waist' : 'Chest'} range
+              </div>
             </div>
-            <div className="text-sm text-secText mt-1">
-              {isPants ? 'Hips' : 'Waist'} range
+
+            <div className="flex-1 pl-3 border-l border-white/15">
+              <div className="font-barlow text-2xl sm:text-[34px] font-medium text-white truncate">
+                {waistRangeText.replace(' cm', '').replace(' in', '')}
+              </div>
+              <div className="text-sm text-secText mt-1">
+                {isPants ? 'Hips' : 'Waist'} range
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Mobile Size Chart Table */}
+        <div className="glass-card p-4 sm:p-5 flex flex-col gap-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-secText w-28 sm:w-32 text-sm sm:text-base">Unit</span>
+            <button
+              onClick={() => setTableUnit('metric')}
+              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableUnit === 'metric' ? 'pill-active' : ''}`}
+            >
+              cm
+            </button>
+            <button
+              onClick={() => setTableUnit('imperial')}
+              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableUnit === 'imperial' ? 'pill-active' : ''}`}
+            >
+              in
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-secText w-28 sm:w-32 text-sm sm:text-base">Measurement type</span>
+            <button
+              onClick={() => setTableMeasurementType('body')}
+              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableMeasurementType === 'body' ? 'pill-active' : ''}`}
+            >
+              Body
+            </button>
+            <button
+              onClick={() => setTableMeasurementType('garment')}
+              className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableMeasurementType === 'garment' ? 'pill-active' : ''}`}
+            >
+              Garment
+            </button>
+          </div>
+
+          <div className="overflow-x-auto w-full">
+            <div className="min-w-[280px]">
+              <div className="flex text-secText text-sm sm:text-base font-medium px-2.5 py-1">
+                <span className="w-16">Size</span>
+                <span className="flex-1">{isPants ? 'Waist' : 'Chest'}</span>
+                <span className="flex-1">{isPants ? 'Hips' : 'Waist'}</span>
+              </div>
+
+              <div className="space-y-1">
+                {sizes.map((s, idx) => {
+                  const isCurrent = idx === selectedSizeIdx;
+                  const chestR = tableMeasurementType === 'garment' && s.garmentChest
+                    ? s.garmentChest
+                    : (s.chest ?? [80, 88]);
+                  const waistR = tableMeasurementType === 'garment' && s.garmentWaist
+                    ? s.garmentWaist
+                    : (s.waist ?? [70, 78]);
+
+                  const col1Range = isPants ? (s.waist ?? [70, 78]) : chestR;
+                  const col2Range = isPants ? (s.hips ?? [85, 95]) : waistR;
+
+                  return (
+                    <div
+                      key={s.label}
+                      onClick={() => setSelectedSizeIdx(idx)}
+                      className={`flex items-center px-2.5 py-2 text-sm sm:text-base cursor-pointer rounded-[14px] transition-all duration-200 ${
+                        isCurrent
+                          ? 'bg-[#1DA84A] text-white font-bold shadow-md'
+                          : 'hover:bg-white/5 text-white/90'
+                      }`}
+                    >
+                      <span className="w-16 font-semibold">{s.label}</span>
+                      <span className="flex-1">
+                        {formatRange(col1Range[0], col1Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
+                      </span>
+                      <span className="flex-1">
+                        {formatRange(col2Range[0], col2Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="text-[15px] sm:text-base text-secText mt-2">
+            Source: {brandChart.source} · Updated {brandChart.updated}
+          </div>
+        </div>
+
+        {/* Primary Link Button */}
+        <a
+          href={brandChart.brandUrl || brandChart.sourceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="primary-btn btn-press w-full text-center no-underline mt-4 mb-2"
+        >
+          View on {brandChart.brand}
+        </a>
       </div>
 
-      {/* Interactive Size Chart Table Card */}
-      <div className="glass-card p-4 sm:p-5 flex flex-col gap-2.5">
-        {/* Unit Toggle Row */}
-        <div className="flex items-center gap-2">
-          <span className="text-secText w-28 sm:w-32 text-sm sm:text-base">Unit</span>
-          <button
-            onClick={() => setTableUnit('metric')}
-            className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableUnit === 'metric' ? 'pill-active' : ''}`}
-          >
-            cm
-          </button>
-          <button
-            onClick={() => setTableUnit('imperial')}
-            className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableUnit === 'imperial' ? 'pill-active' : ''}`}
-          >
-            in
-          </button>
-        </div>
-
-        {/* Measurement Type Toggle Row */}
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-secText w-28 sm:w-32 text-sm sm:text-base">Measurement type</span>
-          <button
-            onClick={() => setTableMeasurementType('body')}
-            className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableMeasurementType === 'body' ? 'pill-active' : ''}`}
-          >
-            Body
-          </button>
-          <button
-            onClick={() => setTableMeasurementType('garment')}
-            className={`pill-btn btn-press !min-h-[36px] !py-0 !px-3 ${tableMeasurementType === 'garment' ? 'pill-active' : ''}`}
-          >
-            Garment
-          </button>
-        </div>
-
-        {/* Table Container with Internal Horizontal Scroll if needed */}
-        <div className="overflow-x-auto w-full">
-          <div className="min-w-[280px]">
-            {/* Table Header */}
-            <div className="flex text-secText text-sm sm:text-base font-medium px-2.5 py-1">
-              <span className="w-16">Size</span>
-              <span className="flex-1">{isPants ? 'Waist' : 'Chest'}</span>
-              <span className="flex-1">{isPants ? 'Hips' : 'Waist'}</span>
+      {/* =========================================================================
+          VIEW B: DESKTOP VIEW (hidden on mobile, visible on lg: and up)
+          - Exactly matches the 3rd desktop reference image ("11 Desktop Brand Detail"):
+            - 2-Column Layout:
+              - Left Column: "← Back to results", "<Brand> · <Gender> · <Category>",
+                Verdict headline, S/M/L chips, Overview Card with Ruler & Stats,
+                and "View on <Brand>" button.
+              - Right Column: Size Chart Table Card with Unit and Measurement Type toggles,
+                active row highlighted in solid green, and source note.
+         ========================================================================= */}
+      <div className="hidden lg:block max-w-7xl mx-auto px-6 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-12 gap-8 xl:gap-12 items-start">
+          {/* ==================== LEFT COLUMN ==================== */}
+          <div className="col-span-6 flex flex-col gap-4">
+            {/* Top Back Action Button */}
+            <div>
+              <button
+                onClick={onBack}
+                className="pill-btn btn-press font-medium text-sm !px-4 !py-2 border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5"
+              >
+                ← Back to results
+              </button>
             </div>
 
-            {/* Size Rows */}
-            <div className="space-y-1">
-              {sizes.map((s, idx) => {
-                const isCurrent = idx === selectedSizeIdx;
-                const chestR = tableMeasurementType === 'garment' && s.garmentChest
-                  ? s.garmentChest
-                  : (s.chest ?? [80, 88]);
-                const waistR = tableMeasurementType === 'garment' && s.garmentWaist
-                  ? s.garmentWaist
-                  : (s.waist ?? [70, 78]);
+            {/* Breadcrumb Context Label */}
+            <div className="text-xs sm:text-sm font-semibold tracking-wide text-secText uppercase">
+              {brandChart.brand} · {genderLabel} · {categoryLabel}
+            </div>
 
-                const col1Range = isPants ? (s.waist ?? [70, 78]) : chestR;
-                const col2Range = isPants ? (s.hips ?? [85, 95]) : waistR;
+            {/* Dynamic Headline Verdict */}
+            <h1 className="font-barlow text-4xl sm:text-5xl lg:text-[54px] font-semibold leading-[1.02] whitespace-pre-line text-white">
+              {verdict}
+            </h1>
+
+            {/* S / M / L Size Selector Chips */}
+            <div
+              className="flex gap-2.5 mt-1"
+              role="radiogroup"
+              aria-label="Select size to compare"
+            >
+              {sizes.map((s, idx) => {
+                const isSelected = idx === selectedSizeIdx;
+                const isPrimary = idx === primarySizeIndex;
+                let chipSubtext = 'regular';
+                if (isPrimary) chipSubtext = 'best';
+                else if (idx < primarySizeIndex) chipSubtext = 'snug';
+                else if (idx > primarySizeIndex) chipSubtext = 'loose';
 
                 return (
-                  <div
+                  <button
                     key={s.label}
+                    role="radio"
+                    aria-checked={isSelected}
                     onClick={() => setSelectedSizeIdx(idx)}
-                    className={`flex items-center px-2.5 py-2 text-sm sm:text-base cursor-pointer rounded-[14px] transition-colors ${
-                      isCurrent
-                        ? 'bg-[#1DA84A] text-white font-bold shadow-md'
-                        : 'hover:bg-white/5 text-white/90'
+                    className={`pill-btn btn-press flex-1 text-center font-medium !py-2.5 transition-all duration-200 ${
+                      isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
                     }`}
                   >
-                    <span className="w-16 font-semibold">{s.label}</span>
-                    <span className="flex-1">
-                      {formatRange(col1Range[0], col1Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
-                    </span>
-                    <span className="flex-1">
-                      {formatRange(col2Range[0], col2Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
-                    </span>
-                  </div>
+                    {s.label} · {chipSubtext}
+                  </button>
                 );
               })}
             </div>
+
+            {/* Overview Card */}
+            <div className="glass-card p-6 flex flex-col gap-4 border border-white/12 rounded-[28px] mt-1">
+              <div className="flex justify-between items-end">
+                <div>
+                  <div className="text-sm text-secText">Selected size</div>
+                  <div className="font-barlow text-8xl font-semibold text-white leading-none">
+                    {currentSize.label}
+                  </div>
+                </div>
+
+                <div className="pb-2 flex items-center gap-1.5 font-semibold text-base" style={{ color: matchColor }}>
+                  {matchLabel === 'Great match' && <CheckIcon size={18} />}
+                  {matchLabel.includes('fit') && <WarningTriangleIcon size={18} />}
+                  {matchLabel === 'Between sizes' && <WarningTriangleIcon size={18} />}
+                  {matchLabel === 'Poor match' && <CrossCircleIcon size={18} />}
+                  <span>{matchLabel}</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-sm text-secText">
+                  Range: <span className="text-white font-medium">{chestRangeText}</span>
+                </div>
+                <RangeRuler
+                  userValueText={`You: ${userPrimaryText}`}
+                  userDotPercent={rulerProps.userDotPercent}
+                  primaryBarLeftPercent={rulerProps.primaryBarLeftPercent}
+                  primaryBarWidthPercent={rulerProps.primaryBarWidthPercent}
+                  primaryBarColor={rulerProps.primaryBarColor}
+                />
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-[#D6D6DC] pt-1">
+                <LockIcon size={16} className="text-[#4ADE80] flex-none" />
+                <span>Confidence: <strong className="text-white capitalize">{confidence}</strong>. {confidenceReason}</span>
+              </div>
+
+              {/* 3 Stats Columns */}
+              <div className="flex border-t border-white/15 pt-3.5 mt-1">
+                <div className="flex-1 pr-3">
+                  <div className="font-barlow text-3xl font-medium text-white">
+                    {Math.round(userPrimaryVal)}
+                    <span className="text-sm text-secText"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
+                  </div>
+                  <div className="text-xs sm:text-sm text-secText mt-1">
+                    Your {isPants ? 'waist' : 'chest'}
+                  </div>
+                </div>
+
+                <div className="flex-1 px-3 border-l border-white/15">
+                  <div className="font-barlow text-3xl font-medium text-white truncate">
+                    {chestRangeText.replace(' cm', '').replace(' in', '')}
+                  </div>
+                  <div className="text-xs sm:text-sm text-secText mt-1">
+                    {isPants ? 'Waist' : 'Chest'} range
+                  </div>
+                </div>
+
+                <div className="flex-1 pl-3 border-l border-white/15">
+                  <div className="font-barlow text-3xl font-medium text-white truncate">
+                    {waistRangeText.replace(' cm', '').replace(' in', '')}
+                  </div>
+                  <div className="text-xs sm:text-sm text-secText mt-1">
+                    {isPants ? 'Hips' : 'Waist'} range
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Primary Action Button: View on Brand */}
+            <a
+              href={brandChart.brandUrl || brandChart.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="primary-btn btn-press w-full text-center no-underline !min-h-[52px] text-lg font-bold mt-1"
+            >
+              View on {brandChart.brand}
+            </a>
+          </div>
+
+          {/* ==================== RIGHT COLUMN: SIZE CHART TABLE ==================== */}
+          <div className="col-span-6 flex flex-col justify-start">
+            <div className="glass-card p-6 sm:p-7 flex flex-col gap-4 border border-white/12 rounded-[28px] shadow-2xl">
+              {/* Unit Toggle Row */}
+              <div className="flex items-center justify-between">
+                <span className="text-secText font-medium text-sm sm:text-base">Unit</span>
+                <div className="flex gap-1.5" role="radiogroup" aria-label="Table unit">
+                  <button
+                    onClick={() => setTableUnit('metric')}
+                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
+                      tableUnit === 'metric' ? 'pill-active' : ''
+                    }`}
+                  >
+                    cm
+                  </button>
+                  <button
+                    onClick={() => setTableUnit('imperial')}
+                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
+                      tableUnit === 'imperial' ? 'pill-active' : ''
+                    }`}
+                  >
+                    in
+                  </button>
+                </div>
+              </div>
+
+              {/* Measurement Type Toggle Row */}
+              <div className="flex items-center justify-between pb-1 border-b border-white/10">
+                <span className="text-secText font-medium text-sm sm:text-base">Measurement type</span>
+                <div className="flex gap-1.5" role="radiogroup" aria-label="Measurement type">
+                  <button
+                    onClick={() => setTableMeasurementType('body')}
+                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
+                      tableMeasurementType === 'body' ? 'pill-active' : ''
+                    }`}
+                  >
+                    Body
+                  </button>
+                  <button
+                    onClick={() => setTableMeasurementType('garment')}
+                    className={`pill-btn btn-press !min-h-[36px] !py-0 !px-4 text-xs sm:text-sm ${
+                      tableMeasurementType === 'garment' ? 'pill-active' : ''
+                    }`}
+                  >
+                    Garment
+                  </button>
+                </div>
+              </div>
+
+              {/* Table Container */}
+              <div className="w-full">
+                {/* Table Header */}
+                <div className="flex text-secText text-sm sm:text-base font-semibold px-4 py-2">
+                  <span className="w-20">Size</span>
+                  <span className="flex-1">{isPants ? 'Waist' : 'Chest'}</span>
+                  <span className="flex-1">{isPants ? 'Hips' : 'Waist'}</span>
+                </div>
+
+                {/* Size Rows */}
+                <div className="space-y-1.5">
+                  {sizes.map((s, idx) => {
+                    const isCurrent = idx === selectedSizeIdx;
+                    const chestR = tableMeasurementType === 'garment' && s.garmentChest
+                      ? s.garmentChest
+                      : (s.chest ?? [80, 88]);
+                    const waistR = tableMeasurementType === 'garment' && s.garmentWaist
+                      ? s.garmentWaist
+                      : (s.waist ?? [70, 78]);
+
+                    const col1Range = isPants ? (s.waist ?? [70, 78]) : chestR;
+                    const col2Range = isPants ? (s.hips ?? [85, 95]) : waistR;
+
+                    return (
+                      <div
+                        key={s.label}
+                        onClick={() => setSelectedSizeIdx(idx)}
+                        className={`flex items-center px-4 py-3 text-sm sm:text-base cursor-pointer rounded-[16px] transition-all duration-200 ${
+                          isCurrent
+                            ? 'bg-[#1DA84A] text-white font-bold shadow-lg scale-[1.01]'
+                            : 'hover:bg-white/10 text-white/90'
+                        }`}
+                      >
+                        <span className="w-20 font-semibold">{s.label}</span>
+                        <span className="flex-1">
+                          {formatRange(col1Range[0], col1Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
+                        </span>
+                        <span className="flex-1">
+                          {formatRange(col2Range[0], col2Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Source Note */}
+              <div className="text-xs sm:text-sm text-secText mt-2 pt-2 border-t border-white/10">
+                Source: {brandChart.source} · Updated {brandChart.updated}
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Source and Updated Notice */}
-        <div className="text-[15px] sm:text-base text-secText mt-2">
-          Source: {brandChart.source} · Updated {brandChart.updated}
-        </div>
       </div>
-
-      {/* Sticky Primary Link Button */}
-      <a
-        href={brandChart.brandUrl || brandChart.sourceUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="primary-btn btn-press w-full text-center no-underline mt-4 mb-2"
-      >
-        View on {brandChart.brand}
-      </a>
     </div>
   );
 };
