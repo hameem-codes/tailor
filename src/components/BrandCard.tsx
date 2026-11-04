@@ -74,8 +74,8 @@ export const BrandCard: React.FC<BrandCardProps> = ({
 
       {/* Main Size & Match Level Row */}
       <div className="flex items-center gap-4">
-        {/* Recommended Size Big Display */}
-        <div className="font-barlow text-5xl sm:text-[64px] font-semibold w-20 sm:w-[84px] text-white flex-none tracking-tight">
+        {/* Recommended Size Big Display (Centered) */}
+        <div className="font-barlow text-5xl sm:text-[64px] font-semibold w-20 sm:w-[84px] text-center flex items-center justify-center text-white flex-none tracking-tight">
           {recommendedSize}
         </div>
 

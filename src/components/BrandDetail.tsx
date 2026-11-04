@@ -171,7 +171,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
           <div className="flex justify-between items-end">
             <div>
               <div className="text-sm sm:text-base text-secText">Selected size</div>
-              <div className="font-barlow text-7xl sm:text-[96px] font-semibold text-white leading-none">
+              <div className="font-barlow text-7xl sm:text-[96px] font-semibold text-white leading-none text-center">
                 {currentSize.label}
               </div>
             </div>
@@ -271,7 +271,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
           <div className="overflow-x-auto w-full">
             <div className="min-w-[280px]">
               <div className="flex text-secText text-sm sm:text-base font-medium px-2.5 py-1">
-                <span className="w-16">Size</span>
+                <span className="w-16 text-center">Size</span>
                 <span className="flex-1">{isPants ? 'Waist' : 'Chest'}</span>
                 <span className="flex-1">{isPants ? 'Hips' : 'Waist'}</span>
               </div>
@@ -299,7 +299,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
                           : 'hover:bg-white/5 text-white/90'
                       }`}
                     >
-                      <span className="w-16 font-semibold">{s.label}</span>
+                      <span className="w-16 text-center font-semibold">{s.label}</span>
                       <span className="flex-1">
                         {formatRange(col1Range[0], col1Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
                       </span>
@@ -398,7 +398,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               <div className="flex justify-between items-end">
                 <div>
                   <div className="text-sm text-secText">Selected size</div>
-                  <div className="font-barlow text-8xl font-semibold text-white leading-none">
+                  <div className="font-barlow text-8xl font-semibold text-white leading-none text-center">
                     {currentSize.label}
                   </div>
                 </div>
@@ -526,7 +526,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               <div className="w-full">
                 {/* Table Header */}
                 <div className="flex text-secText text-sm sm:text-base font-semibold px-4 py-2">
-                  <span className="w-20">Size</span>
+                  <span className="w-20 text-center">Size</span>
                   <span className="flex-1">{isPants ? 'Waist' : 'Chest'}</span>
                   <span className="flex-1">{isPants ? 'Hips' : 'Waist'}</span>
                 </div>
@@ -555,7 +555,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
                             : 'hover:bg-white/10 text-white/90'
                         }`}
                       >
-                        <span className="w-20 font-semibold">{s.label}</span>
+                        <span className="w-20 text-center font-semibold">{s.label}</span>
                         <span className="flex-1">
                           {formatRange(col1Range[0], col1Range[1], tableUnit).replace(' cm', '').replace(' in', '')}
                         </span>
