@@ -95,7 +95,7 @@ export function SlidingTabs<T extends string>({
       {pillRect && (
         <div
           aria-hidden="true"
-          className={`absolute rounded-[22px] bg-white pointer-events-none shadow-[0_4px_14px_rgba(0,0,0,0.35)] z-[5] ${
+          className={`absolute rounded-[22px] bg-white pointer-events-none shadow-[0_2px_10px_rgba(0,0,0,0.35)] z-0 ${
             isReady ? 'transition-all duration-280 ease-[cubic-bezier(0.16,1,0.3,1)]' : 'transition-none'
           } ${activePillClassName}`}
           style={{
@@ -120,17 +120,15 @@ export function SlidingTabs<T extends string>({
             aria-checked={isSelected}
             aria-label={opt.ariaLabel}
             onClick={() => onChange(opt.id)}
-            className={`pill-btn btn-press relative z-[1] select-none ${buttonClassName} ${
+            className={`pill-btn btn-press relative z-10 select-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#4ADE80] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0b] ${buttonClassName} ${
               isSelected
-                ? '!border-transparent !bg-transparent'
-                : '!bg-white/[0.06] border border-white/20 hover:border-white/35'
+                ? pillRect
+                  ? '!border-transparent !bg-transparent text-neutral-950 font-bold'
+                  : '!bg-white !border-white text-neutral-950 font-bold'
+                : '!bg-white/[0.06] border border-white/20 text-white/90 hover:text-white hover:border-white/40 font-medium'
             }`}
           >
-            <span
-              className={`relative z-[10] transition-colors duration-200 ${
-                isSelected ? 'text-[#0a0a0b] font-bold' : 'text-white font-medium hover:text-white'
-              }`}
-            >
+            <span className="relative z-10 pointer-events-none">
               {opt.label}
             </span>
           </button>
