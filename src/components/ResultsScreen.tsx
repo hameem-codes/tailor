@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { BrandMatchResult, UserMeasurements, RegionFilter, SortOption } from '../types';
 import { BrandCard } from './BrandCard';
-import { SearchIcon, FilterIcon, HangerIcon, CheckIcon, WarningTriangleIcon, CrossCircleIcon, ShareIcon } from './Icons';
+import { SearchIcon, FilterIcon, HangerIcon, CheckIcon, WarningTriangleIcon, CrossCircleIcon, ShareIcon, HeartIcon } from './Icons';
 import { formatDimension } from '../lib/matching/helpers';
 import { SlidingTabs, SlidingTabOption } from './SlidingTabs';
 import { BrandComparisonModal } from './BrandComparisonModal';
+import { ExportShareModal } from './ExportShareModal';
 
 const regionOptions: SlidingTabOption<RegionFilter>[] = [
   { id: 'all', label: 'All' },
@@ -54,6 +55,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [comparedBrandIds, setComparedBrandIds] = useState<string[]>([]);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const isPants = measurements.category === 'pants';
   const primaryDim = isPants
@@ -256,12 +258,15 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
           {/* Share button */}
           <button
-            onClick={onShare}
+            onClick={() => {
+              setShowExportModal(true);
+              onShare?.();
+            }}
             className="pill-btn btn-press flex-none !min-h-[40px] !px-4 text-xs sm:text-sm font-medium"
-            aria-label="Share results"
+            aria-label="Share and export results"
           >
             <ShareIcon size={16} className="mr-1" />
-            Share
+            Share / Export
           </button>
 
           {/* Filter icon button */}
@@ -515,6 +520,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         measurements={measurements}
         onRemoveBrand={(id) => setComparedBrandIds((prev) => prev.filter((item) => item !== id))}
         onOpenDetail={onOpenDetail}
+      />
+
+      {/* Export & Share Modal */}
+      <ExportShareModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        measurements={measurements}
+        results={results}
       />
 
       {/* =========================================================================
