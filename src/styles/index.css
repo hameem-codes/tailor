@@ -279,8 +279,35 @@
 }
 
 /* Animations */
-.page-transition {
-  animation: pageEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+.page-transition,
+.page-transition-forward {
+  animation: pageSlideForward 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.page-transition-backward {
+  animation: pageSlideBackward 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pageSlideForward {
+  0% {
+    opacity: 0;
+    transform: translate3d(36px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes pageSlideBackward {
+  0% {
+    opacity: 0;
+    transform: translate3d(-36px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes pageEnter {
