@@ -272,14 +272,12 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen text-white relative w-full overflow-x-hidden flex flex-col">
       {/* Universal Desktop & Responsive Top Navbar matching design export */}
-      {location.pathname !== '/loading' && (
-        <TopNavbar
-          currentStep={currentStep}
-          canGoToResults={canGoToResults}
-          onOpenHowToMeasure={() => setShowMeasureModal(true)}
-          onOpenAbout={() => navigate('/about')}
-        />
-      )}
+      <TopNavbar
+        currentStep={currentStep}
+        canGoToResults={canGoToResults}
+        onOpenHowToMeasure={() => setShowMeasureModal(true)}
+        onOpenAbout={() => navigate('/about')}
+      />
 
       {/* Global How to Measure Modal accessible from anywhere */}
       <HowToMeasureModal
