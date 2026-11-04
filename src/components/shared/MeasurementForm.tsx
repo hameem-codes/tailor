@@ -7,6 +7,7 @@ import { FitSelector } from './FitSelector';
 import { UnitSelector } from './UnitSelector';
 import { MeasurementStepper } from './MeasurementStepper';
 import { BodyMeasurementsExpandable } from './BodyMeasurementsExpandable';
+import { PresetManager } from './PresetManager';
 
 interface MeasurementFormProps {
   measurements: UserMeasurements;
@@ -53,6 +54,12 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
     <div className={`w-full max-w-[540px] glass-card p-5 sm:p-7 flex flex-col gap-4 border border-white/12 rounded-[28px] shadow-2xl ${className}`}>
       {/* Optional Preset / Extra header toolbar */}
       {extraHeaderActions}
+
+      {/* Preset & Recent Profile Manager */}
+      <PresetManager
+        measurements={measurements}
+        onLoadPreset={onMeasurementsChange}
+      />
 
       {/* Section 1: Gender & Category */}
       <fieldset className="flex flex-col gap-2.5">
