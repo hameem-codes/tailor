@@ -200,11 +200,13 @@
   padding: 0;
   outline: 0;
   text-align: center;
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
 .number-input::-webkit-outer-spin-button,
 .number-input::-webkit-inner-spin-button {
+  appearance: none;
   -webkit-appearance: none;
   margin: 0;
 }

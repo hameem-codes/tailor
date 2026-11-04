@@ -9,6 +9,8 @@ Usage:
     python scripts/scraper_skeleton.py --brand "H&M" --url "https://www2.hm.com/en_us/customer-service/sizeguide.html"
 """
 
+# pyrefly: ignore-errors[missing-import]
+
 import sys
 import json
 import re
@@ -17,7 +19,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 try:
-    from bs4 import BeautifulSoup
+    from bs4 import BeautifulSoup  # pyrefly: ignore[missing-import]  # type: ignore
 except ImportError:
     BeautifulSoup = None
 
@@ -58,7 +60,7 @@ def parse_range(text: str) -> Optional[List[float]]:
 def scrape_brand_chart_playwright(url: str) -> str:
     """Fetch dynamic rendered HTML using Playwright."""
     try:
-        from playwright.sync_api import sync_playwright
+        from playwright.sync_api import sync_playwright  # pyrefly: ignore[missing-import]  # type: ignore
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
