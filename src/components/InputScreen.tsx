@@ -4,7 +4,8 @@ import { HangerIcon } from './Icons';
 import { TapeRulerGraphic } from './TapeRulerGraphic';
 import { validateHeightWeight } from '../lib/matching/helpers';
 import { MeasurementForm } from './shared/MeasurementForm';
-import { isOnboardingSeen, setOnboardingSeen } from '../lib/storage';
+import { hasStoredMeasurements } from '../lib/storage';
+import { OnboardingWalkthrough } from './shared/OnboardingWalkthrough';
 
 interface InputScreenProps {
   measurements: UserMeasurements;
@@ -23,40 +24,24 @@ export const InputScreen: React.FC<InputScreenProps> = ({
   onOpenHowToMeasure,
   extraFormHeader,
 }) => {
-  const [onboardingSeen, setOnboardingSeenState] = useState<boolean>(isOnboardingSeen());
+  const [showGuide, setShowGuide] = useState<boolean>(!hasStoredMeasurements());
 
   const validation = validateHeightWeight(measurements.height, measurements.weight);
   const isFormValid = validation.heightValid && validation.weightValid;
 
   return (
     <div className="w-full page-transition pb-16">
-      {/* Onboarding Welcome Banner for first-time users */}
-      {!onboardingSeen && (
-        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 mx-auto">
-          <div
-            role="region"
-            aria-label="Welcome onboarding"
-            className="flex items-center gap-3 rounded-[20px] bg-black/60 backdrop-blur-md border border-[#4ADE80]/50 p-2 sm:p-2.5 pl-4 sm:pl-5 pr-2 animate-fade-in shadow-xl"
-          >
-            <span className="flex-1 text-xs sm:text-sm text-white font-normal leading-snug">
-              👋 <strong>Welcome to Tailor!</strong> Enter your measurements once to see your exact size match across top clothing brands. Chest and waist are optional but improve accuracy.
-            </span>
-            <button
-              onClick={() => {
-                setOnboardingSeenState(true);
-                setOnboardingSeen(true);
-              }}
-              className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base !bg-transparent hover:!bg-white/10 text-white flex-none"
-              aria-label="Dismiss welcome"
-            >
-              ×
-            </button>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4">
+        {/* Onboarding walkthrough for first-time visitors */}
+        {showGuide && (
+          <div className="mb-4">
+            <OnboardingWalkthrough onOpenHowToMeasure={onOpenHowToMeasure} />
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Main Unified Layout Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 lg:py-6">
         {/* Mobile-only Header: Logo and About info button */}
         <div className="lg:hidden flex justify-between items-center mb-3 max-w-[540px] mx-auto">
           <div className="flex items-center gap-2">
@@ -65,13 +50,23 @@ export const InputScreen: React.FC<InputScreenProps> = ({
               Tailor
             </span>
           </div>
-          <button
-            onClick={onOpenAbout}
-            className="circle-btn btn-press text-base font-serif italic !w-9 !h-9"
-            aria-label="About Tailor"
-          >
-            i
-          </button>
+          <div className="flex items-center gap-2">
+            {!showGuide && (
+              <button
+                onClick={() => setShowGuide(true)}
+                className="pill-btn btn-press !text-xs !py-1 !px-2.5 text-[#4ADE80] border-[#4ADE80]/40"
+              >
+                Guide
+              </button>
+            )}
+            <button
+              onClick={onOpenAbout}
+              className="circle-btn btn-press text-base font-serif italic !w-9 !h-9"
+              aria-label="About Tailor"
+            >
+              i
+            </button>
+          </div>
         </div>
 
         {/* Mobile-only Headline */}
@@ -114,6 +109,16 @@ export const InputScreen: React.FC<InputScreenProps> = ({
 
               <div className="mt-8 pt-2">
                 <TapeRulerGraphic />
+              </div>
+
+              <div className="mt-4 pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowGuide(!showGuide)}
+                  className="text-xs text-[#4ADE80] hover:underline font-semibold"
+                >
+                  {showGuide ? 'Hide quick start guide' : 'Show quick start walkthrough →'}
+                </button>
               </div>
             </div>
           </section>
