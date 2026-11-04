@@ -290,7 +290,7 @@ export const App: React.FC = () => {
         showHips={measurements.category === 'pants'}
       />
 
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full relative z-10">
         <Routes>
           <Route
             path="/"

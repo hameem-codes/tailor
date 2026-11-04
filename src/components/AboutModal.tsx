@@ -66,9 +66,12 @@ export const AboutModal: React.FC<AboutModalProps> = ({
           >
             ←
           </button>
-          <h2 id="about-modal-title" className="font-barlow text-3xl font-semibold">
-            About Tailor
-          </h2>
+          <div className="flex items-center gap-2">
+            <img src="/logo-tailor-accent.svg" alt="Tailor" className="h-8 w-auto object-contain" />
+            <h2 id="about-modal-title" className="font-barlow text-2xl font-semibold text-secText">
+              · About
+            </h2>
+          </div>
         </div>
 
         {/* Intro */}

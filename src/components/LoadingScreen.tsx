@@ -35,8 +35,12 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     >
       <div className="flex flex-col gap-4">
         {/* Mobile-only Brand Header (Desktop displays TopNavbar above) */}
-        <div className="lg:hidden font-barlow text-3xl sm:text-4xl font-semibold text-white tracking-wide">
-          Tailor
+        <div className="lg:hidden">
+          <img
+            src="/logo-tailor-accent.svg"
+            alt="Tailor"
+            className="h-9 sm:h-10 w-auto object-contain"
+          />
         </div>
 
         {/* Header & Status: On desktop/tablet, header text and cancel button sit side-by-side */}

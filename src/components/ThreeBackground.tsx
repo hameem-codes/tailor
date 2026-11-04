@@ -338,19 +338,19 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         }
       } else {
         // TAB 3: Brand Detail ('/brand/:id')
-        // Focused fitting mannequin perspective next to the size chart
+        // Fashion showroom mannequin perspective positioned elegantly behind the cards
         if (isDesktop) {
-          targetGroupPos.set(-1.8, 0.05, 0.05);
+          targetGroupPos.set(-0.6, 0.08, -0.45);
           targetGroupScale.set(2.15, 2.15, 2.15);
-          targetBaseRotationY = 0.32; // Angled towards chart
-          targetLeftPos.set(-2.4, -0.08, -0.9);
-          targetRightPos.set(2.4, -0.08, -0.9);
+          targetBaseRotationY = 0.18; // Angled gracefully towards chart
+          targetLeftPos.set(-2.8, -0.08, -1.0);
+          targetRightPos.set(2.8, -0.08, -1.0);
         } else {
-          targetGroupPos.set(0, 0.3, -0.6);
+          targetGroupPos.set(0, 0.35, -0.7);
           targetGroupScale.set(1.5, 1.5, 1.5);
-          targetBaseRotationY = 0.15;
-          targetLeftPos.set(-2.1, -0.08, -0.9);
-          targetRightPos.set(2.1, -0.08, -0.9);
+          targetBaseRotationY = 0.12;
+          targetLeftPos.set(-2.2, -0.08, -1.0);
+          targetRightPos.set(2.2, -0.08, -1.0);
         }
       }
     }

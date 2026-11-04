@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserMeasurements, Gender, ClothingCategory, UnitSystem, FitPreference } from '../types';
-import { HangerIcon, LockIcon, WarningTriangleIcon } from './Icons';
+import { LockIcon, WarningTriangleIcon } from './Icons';
 import { TapeRulerGraphic } from './TapeRulerGraphic';
 import {
   cmToInches,
@@ -133,11 +133,12 @@ export const InputScreen: React.FC<InputScreenProps> = ({
       <div className="lg:hidden w-full max-w-[520px] mx-auto min-h-screen flex flex-col gap-3.5 px-4 sm:px-6 pt-4 pb-20">
         {/* Mobile Header */}
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2.5">
-            <HangerIcon size={26} className="text-white" />
-            <span className="font-barlow text-3xl font-semibold text-white tracking-wide">
-              Tailor
-            </span>
+          <div className="flex items-center">
+            <img
+              src="/logo-tailor-accent.svg"
+              alt="Tailor"
+              className="h-9 sm:h-10 w-auto object-contain"
+            />
           </div>
           <button
             onClick={onOpenAbout}
@@ -148,10 +149,15 @@ export const InputScreen: React.FC<InputScreenProps> = ({
           </button>
         </div>
 
-        {/* Heading */}
-        <h1 className="font-barlow text-5xl sm:text-[52px] font-semibold text-white mt-1 leading-[1.05]">
-          Find your fit.
-        </h1>
+        {/* Mobile Heading with Frosted Backdrop Shield */}
+        <div className="backdrop-blur-xl bg-black/55 border border-white/12 rounded-2xl p-4 sm:p-5 flex flex-col gap-1.5 shadow-lg">
+          <h1 className="font-barlow text-5xl sm:text-[52px] font-semibold text-white leading-[1.05] drop-shadow-sm">
+            Find your fit.
+          </h1>
+          <p className="text-sm text-[#D6D6DC]">
+            Enter your measurements once. See the right size across brands.
+          </p>
+        </div>
 
         {/* Card 1: Who and what */}
         <fieldset className="glass-card p-4 sm:p-5 flex flex-col gap-3 border border-white/12">
@@ -487,7 +493,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
       <div className="hidden lg:grid max-w-7xl mx-auto px-6 lg:px-8 py-6 lg:py-10 grid-cols-12 gap-12 xl:gap-16 items-center min-h-[calc(100vh-140px)]">
         {/* Left Column: Hero & Value Proposition */}
         <section className="col-span-5 flex flex-col justify-center">
-          <div className="backdrop-blur-xl bg-black/45 border border-white/10 rounded-[32px] p-6 lg:p-8 shadow-2xl">
+          <div className="backdrop-blur-2xl bg-black/60 border border-white/12 rounded-[32px] p-6 lg:p-8 shadow-2xl">
             <h1 className="font-barlow text-[76px] xl:text-[90px] font-semibold text-white leading-[0.93] tracking-tight">
               Find<br />your fit.
             </h1>
