@@ -221,7 +221,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         <div
           role="region"
           aria-label="Onboarding tip"
-          className="flex items-center gap-2 rounded-[18px] bg-[#4ADE80]/15 border border-[#4ADE80]/45 p-1 pl-4 pr-1 animate-fade-in"
+          className="flex items-center gap-2 rounded-[18px] bg-black/50 backdrop-blur-md border border-[#4ADE80]/45 p-1.5 pl-4 pr-1.5 animate-fade-in"
         >
           <span className="flex-1 text-xs sm:text-sm text-white font-normal leading-snug">
             The white dot is you. The colored bar is the brand's size range.

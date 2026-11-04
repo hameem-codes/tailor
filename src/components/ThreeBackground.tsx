@@ -107,42 +107,42 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     normalTexture.magFilter = THREE.LinearFilter;
 
     // 5. Materials (Distinct, Highly Visible Studio Colorway - NO GREEN)
-    // Center Hero Hoodie: Sculptural Studio Heather Silver (#d8dfe8) -> Bright, detailed, and 100% visible!
+    // Center Hero Hoodie: Sculptural Studio Atelier Charcoal with Moonlit Rim Highlights
     const heroMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
       roughness: 0.82,
       metalness: 0.08,
-      color: 0xd8dfe8, // Bright Studio Heather Silver / Moonlit Platinum
+      color: 0x242830, // Luxury Atelier Stealth Charcoal / Titanium
       side: THREE.FrontSide,
       transparent: true,
       alphaTest: 0.02,
       depthWrite: true,
     });
 
-    // Left Companion Hoodie: Warm Desert Sand / Earth Taupe (#c8b6a6)
+    // Left Companion Hoodie: Deep Slate Charcoal
     const leftCompanionMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
       roughness: 0.86,
       metalness: 0.05,
-      color: 0xc8b6a6, // Warm Desert Sand
+      color: 0x1e2126, // Atelier Slate Charcoal
       side: THREE.FrontSide,
       transparent: true,
       alphaTest: 0.02,
       depthWrite: true,
     });
 
-    // Right Companion Hoodie: Smoked Titanium / Slate (#b4bcc8)
+    // Right Companion Hoodie: Smoked Titanium
     const rightCompanionMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
       roughness: 0.84,
       metalness: 0.12,
-      color: 0xb4bcc8, // Platinum Titanium
+      color: 0x282c35, // Titanium Charcoal
       side: THREE.FrontSide,
       transparent: true,
       alphaTest: 0.02,
@@ -228,11 +228,11 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     const tapeMaterial = new THREE.MeshStandardMaterial({
       color: 0xf8fafc,
       emissive: 0xffffff,
-      emissiveIntensity: 0.35,
-      roughness: 0.25,
-      metalness: 0.65,
+      emissiveIntensity: 0.12,
+      roughness: 0.35,
+      metalness: 0.5,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.28,
     });
     const tapeMesh = new THREE.Mesh(tapeGeometry, tapeMaterial);
     rootGroup.add(tapeMesh);
@@ -338,17 +338,17 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         }
       } else {
         // TAB 3: Brand Detail ('/brand/:id')
-        // Focused fitting mannequin perspective next to the size chart
+        // Positioned in deep right z-space to cleanly clear left column verdict & chips
         if (isDesktop) {
-          targetGroupPos.set(-1.8, 0.05, 0.05);
-          targetGroupScale.set(2.15, 2.15, 2.15);
-          targetBaseRotationY = 0.32; // Angled towards chart
+          targetGroupPos.set(1.4, 0.0, -1.2);
+          targetGroupScale.set(2.0, 2.0, 2.0);
+          targetBaseRotationY = -0.22;
           targetLeftPos.set(-2.4, -0.08, -0.9);
           targetRightPos.set(2.4, -0.08, -0.9);
         } else {
-          targetGroupPos.set(0, 0.3, -0.6);
-          targetGroupScale.set(1.5, 1.5, 1.5);
-          targetBaseRotationY = 0.15;
+          targetGroupPos.set(0, 0.25, -1.5);
+          targetGroupScale.set(1.4, 1.4, 1.4);
+          targetBaseRotationY = 0.1;
           targetLeftPos.set(-2.1, -0.08, -0.9);
           targetRightPos.set(2.1, -0.08, -0.9);
         }

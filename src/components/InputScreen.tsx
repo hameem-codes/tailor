@@ -636,7 +636,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
                     onChange={(e) => handleHeightInput(e.target.value)}
                     aria-invalid={!validation.heightValid}
                     aria-describedby={!validation.heightValid ? 'desktop-height-error' : undefined}
-                    className="number-input text-white !w-12 !text-2xl"
+                    className="number-input text-white !w-14 !text-2xl"
                   />
                   <span className="text-secText w-6 text-xs sm:text-sm font-medium">
                     {isImperial ? 'in' : 'cm'}
@@ -678,7 +678,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
                     onChange={(e) => handleWeightInput(e.target.value)}
                     aria-invalid={!validation.weightValid}
                     aria-describedby={!validation.weightValid ? 'desktop-weight-error' : undefined}
-                    className="number-input text-white !w-12 !text-2xl"
+                    className="number-input text-white !w-14 !text-2xl"
                   />
                   <span className="text-secText w-6 text-xs sm:text-sm font-medium">
                     {isImperial ? 'lb' : 'kg'}

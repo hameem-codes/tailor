@@ -13,6 +13,36 @@ interface BrandCardProps {
   onOpenDetail: (matchResult: BrandMatchResult) => void;
 }
 
+export function renderBrandSizeBadge(sizeStr: string) {
+  const match = sizeStr.match(/^([^(]+?)(?:\s*(\([^)]+\)))?$/);
+  if (!match || !match[2]) {
+    const isLong = sizeStr.length > 3;
+    return (
+      <span
+        className={`font-barlow font-semibold text-white leading-none ${
+          isLong ? 'text-4xl sm:text-[46px]' : 'text-5xl sm:text-[60px]'
+        }`}
+      >
+        {sizeStr}
+      </span>
+    );
+  }
+
+  const primary = match[1].trim();
+  const secondary = match[2].trim();
+
+  return (
+    <div className="flex flex-col items-center justify-center leading-none text-center">
+      <span className="font-barlow text-4xl sm:text-5xl font-semibold text-white leading-none">
+        {primary}
+      </span>
+      <span className="text-[11px] sm:text-xs font-semibold text-secText tracking-wider leading-none mt-1">
+        {secondary}
+      </span>
+    </div>
+  );
+}
+
 export const BrandCard: React.FC<BrandCardProps> = ({
   matchResult,
   measurements,
@@ -76,8 +106,8 @@ export const BrandCard: React.FC<BrandCardProps> = ({
       {/* Main Size & Match Level Row */}
       <div className="flex items-center gap-4">
         {/* Recommended Size Big Display (Centered) */}
-        <div className="font-barlow text-5xl sm:text-[64px] font-semibold w-20 sm:w-[84px] text-center flex items-center justify-center text-white flex-none tracking-tight">
-          {recommendedSize}
+        <div className="min-w-[76px] sm:min-w-[88px] max-w-[104px] flex-none flex items-center justify-center text-center">
+          {renderBrandSizeBadge(recommendedSize)}
         </div>
 
         {/* Match Details */}

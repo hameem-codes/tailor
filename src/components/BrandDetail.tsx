@@ -11,6 +11,36 @@ interface BrandDetailProps {
   onBack: () => void;
 }
 
+function renderSelectedSize(label: string) {
+  const match = label.match(/^([^(]+?)(?:\s*(\([^)]+\)))?$/);
+  if (!match || !match[2]) {
+    const isLong = label.length > 3;
+    return (
+      <div
+        className={`font-barlow font-semibold text-white leading-none ${
+          isLong ? 'text-6xl sm:text-7xl' : 'text-7xl sm:text-8xl'
+        }`}
+      >
+        {label}
+      </div>
+    );
+  }
+
+  const primary = match[1].trim();
+  const secondary = match[2].trim();
+
+  return (
+    <div className="flex flex-col items-center justify-center leading-none text-center">
+      <div className="font-barlow text-6xl sm:text-7xl font-semibold text-white leading-none">
+        {primary}
+      </div>
+      <div className="text-xs sm:text-sm font-semibold text-secText tracking-wider mt-1">
+        {secondary}
+      </div>
+    </div>
+  );
+}
+
 export const BrandDetail: React.FC<BrandDetailProps> = ({
   matchResult,
   measurements,
@@ -176,8 +206,8 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
           <div className="flex justify-between items-end">
             <div>
               <div className="text-sm sm:text-base text-secText">Selected size</div>
-              <div className="font-barlow text-7xl sm:text-[96px] font-semibold text-white leading-none text-center">
-                {currentSize.label}
+              <div className="mt-1">
+                {renderSelectedSize(currentSize.label)}
               </div>
             </div>
 
@@ -348,59 +378,62 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
         <div className="grid grid-cols-12 gap-8 xl:gap-12 items-start">
           {/* ==================== LEFT COLUMN ==================== */}
           <div className="col-span-6 flex flex-col gap-4">
-            {/* Top Back Action Button */}
-            <div>
-              <button
-                onClick={onBack}
-                className="pill-btn btn-press font-medium text-sm !px-4 !py-2 border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5"
+            {/* Top Hero Shield Card: Prevents 3D model collision, ensures 100% text contrast */}
+            <div className="glass-card p-6 sm:p-7 flex flex-col gap-4 border border-white/12 rounded-[28px] shadow-2xl">
+              {/* Top Back Action Button */}
+              <div>
+                <button
+                  onClick={onBack}
+                  className="pill-btn btn-press font-medium text-sm !px-4 !py-2 border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5"
+                >
+                  ← Back to results
+                </button>
+              </div>
+
+              {/* Breadcrumb Context Label */}
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide text-secText uppercase">
+                <BrandLogo
+                  brand={brandChart.brand}
+                  maxHeight={18}
+                  fallbackClassName="text-white font-semibold"
+                />
+                <span>· {genderLabel} · {categoryLabel}</span>
+              </div>
+
+              {/* Dynamic Headline Verdict */}
+              <h1 className="font-barlow text-4xl sm:text-5xl lg:text-[54px] font-semibold leading-[1.04] whitespace-pre-line text-white">
+                {verdict}
+              </h1>
+
+              {/* S / M / L Size Selector Chips */}
+              <div
+                className="flex flex-wrap gap-2 mt-1"
+                role="radiogroup"
+                aria-label="Select size to compare"
               >
-                ← Back to results
-              </button>
-            </div>
+                {sizes.map((s, idx) => {
+                  const isSelected = idx === selectedSizeIdx;
+                  const isPrimary = idx === primarySizeIndex;
+                  let chipSubtext = 'regular';
+                  if (isPrimary) chipSubtext = 'best';
+                  else if (idx < primarySizeIndex) chipSubtext = 'snug';
+                  else if (idx > primarySizeIndex) chipSubtext = 'loose';
 
-            {/* Breadcrumb Context Label */}
-            <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide text-secText uppercase">
-              <BrandLogo
-                brand={brandChart.brand}
-                maxHeight={18}
-                fallbackClassName="text-white font-semibold"
-              />
-              <span>· {genderLabel} · {categoryLabel}</span>
-            </div>
-
-            {/* Dynamic Headline Verdict */}
-            <h1 className="font-barlow text-4xl sm:text-5xl lg:text-[54px] font-semibold leading-[1.02] whitespace-pre-line text-white">
-              {verdict}
-            </h1>
-
-            {/* S / M / L Size Selector Chips */}
-            <div
-              className="flex gap-2.5 mt-1"
-              role="radiogroup"
-              aria-label="Select size to compare"
-            >
-              {sizes.map((s, idx) => {
-                const isSelected = idx === selectedSizeIdx;
-                const isPrimary = idx === primarySizeIndex;
-                let chipSubtext = 'regular';
-                if (isPrimary) chipSubtext = 'best';
-                else if (idx < primarySizeIndex) chipSubtext = 'snug';
-                else if (idx > primarySizeIndex) chipSubtext = 'loose';
-
-                return (
-                  <button
-                    key={s.label}
-                    role="radio"
-                    aria-checked={isSelected}
-                    onClick={() => setSelectedSizeIdx(idx)}
-                    className={`pill-btn btn-press flex-1 text-center font-medium !py-2.5 transition-all duration-200 ${
-                      isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
-                    }`}
-                  >
-                    {s.label} · {chipSubtext}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={s.label}
+                      role="radio"
+                      aria-checked={isSelected}
+                      onClick={() => setSelectedSizeIdx(idx)}
+                      className={`pill-btn btn-press flex-1 min-w-[85px] text-center font-medium !py-2.5 transition-all duration-200 ${
+                        isSelected ? 'pill-active ring-2 ring-accent ring-offset-2 ring-offset-black' : ''
+                      }`}
+                    >
+                      {s.label} · {chipSubtext}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Overview Card */}
@@ -408,8 +441,8 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               <div className="flex justify-between items-end">
                 <div>
                   <div className="text-sm text-secText">Selected size</div>
-                  <div className="font-barlow text-8xl font-semibold text-white leading-none text-center">
-                    {currentSize.label}
+                  <div className="mt-1">
+                    {renderSelectedSize(currentSize.label)}
                   </div>
                 </div>
 
