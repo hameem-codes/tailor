@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface BrandConfig {
   src: string;
@@ -108,6 +108,11 @@ export interface BrandLogoProps {
   hideTextSuffix?: boolean;
 }
 
+const getLogoSrc = (src: string) => {
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+  return `${base}${src.startsWith('/') ? src : `/${src}`}`;
+};
+
 export const BrandLogo: React.FC<BrandLogoProps> = ({
   brand,
   className = '',
@@ -117,11 +122,22 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
 }) => {
   const [hasError, setHasError] = useState(false);
 
+  useEffect(() => {
+    setHasError(false);
+  }, [brand]);
+
   const normalized = brand.trim().toLowerCase();
   const config = BRAND_CONFIGS[normalized];
 
   if (!config || hasError) {
-    return <span className={fallbackClassName}>{brand}</span>;
+    return (
+      <span
+        className={`inline-block tracking-wide select-none ${fallbackClassName}`}
+        aria-label={brand}
+      >
+        {brand}
+      </span>
+    );
   }
 
   const renderHeight = maxHeight ?? config.height;
@@ -129,8 +145,10 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   return (
     <div className="inline-flex items-center gap-2 select-none" title={brand}>
       <img
-        src={config.src}
+        src={getLogoSrc(config.src)}
         alt={config.alt}
+        loading="lazy"
+        decoding="async"
         className={`object-contain max-w-[130px] transition-opacity duration-200 ${
           config.invertOnDark ? 'brightness-0 invert' : ''
         } ${className}`}
