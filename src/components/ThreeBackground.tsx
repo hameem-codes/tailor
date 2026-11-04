@@ -42,6 +42,10 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x0a0a0b, 0.038);
 
+    const isMobileDevice =
+      typeof navigator !== 'undefined' &&
+      (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768);
+
     const camera = new THREE.PerspectiveCamera(
       45,
       container.clientWidth / container.clientHeight,
@@ -52,11 +56,11 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance',
+      antialias: !isMobileDevice,
+      powerPreference: isMobileDevice ? 'default' : 'high-performance',
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.35;
     container.appendChild(renderer.domElement);
@@ -92,23 +96,56 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     scene.add(overheadSpot);
     scene.add(overheadSpot.target);
 
-    // 4. Textures
+    // 4. Textures with 404 Fallback & Base Path Handling
+    const baseApparelPath = `${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}/apparel`;
+
+    let heroMaterial: THREE.MeshStandardMaterial;
+    let leftCompanionMaterial: THREE.MeshStandardMaterial;
+    let rightCompanionMaterial: THREE.MeshStandardMaterial;
+
+    const handleTextureError = (kind: 'diffuse' | 'normal') => {
+      return (err: unknown) => {
+        console.warn(`ThreeBackground: ${kind} texture failed to load from ${baseApparelPath}. Fallback applied.`, err);
+        if (heroMaterial && leftCompanionMaterial && rightCompanionMaterial) {
+          if (kind === 'diffuse') {
+            heroMaterial.map = null;
+            leftCompanionMaterial.map = null;
+            rightCompanionMaterial.map = null;
+          } else {
+            heroMaterial.normalMap = null;
+            leftCompanionMaterial.normalMap = null;
+            rightCompanionMaterial.normalMap = null;
+          }
+          heroMaterial.needsUpdate = true;
+          leftCompanionMaterial.needsUpdate = true;
+          rightCompanionMaterial.needsUpdate = true;
+        }
+      };
+    };
+
     const textureLoader = new THREE.TextureLoader();
     const diffuseTexture = textureLoader.load(
-      '/apparel/hoodie_hero_diffuse.png',
-      () => renderer.render(scene, camera)
+      `${baseApparelPath}/hoodie_hero_diffuse.png`,
+      () => renderer.render(scene, camera),
+      undefined,
+      handleTextureError('diffuse')
     );
     diffuseTexture.colorSpace = THREE.SRGBColorSpace;
     diffuseTexture.minFilter = THREE.LinearMipmapLinearFilter;
     diffuseTexture.magFilter = THREE.LinearFilter;
 
-    const normalTexture = textureLoader.load('/apparel/hoodie_hero_normal.png');
+    const normalTexture = textureLoader.load(
+      `${baseApparelPath}/hoodie_hero_normal.png`,
+      undefined,
+      undefined,
+      handleTextureError('normal')
+    );
     normalTexture.minFilter = THREE.LinearMipmapLinearFilter;
     normalTexture.magFilter = THREE.LinearFilter;
 
     // 5. Materials (Distinct, Highly Visible Studio Colorway - NO GREEN)
     // Center Hero Hoodie: Sculptural Studio Heather Silver (#d8dfe8) -> Bright, detailed, and 100% visible!
-    const heroMaterial = new THREE.MeshStandardMaterial({
+    heroMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
@@ -122,7 +159,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     });
 
     // Left Companion Hoodie: Warm Desert Sand / Earth Taupe (#c8b6a6)
-    const leftCompanionMaterial = new THREE.MeshStandardMaterial({
+    leftCompanionMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
@@ -136,7 +173,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     });
 
     // Right Companion Hoodie: Smoked Titanium / Slate (#b4bcc8)
-    const rightCompanionMaterial = new THREE.MeshStandardMaterial({
+    rightCompanionMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
       normalScale: new THREE.Vector2(0.5, 0.5),
@@ -212,31 +249,6 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     rightHoodieMesh.scale.set(0.88, 0.88, 0.88);
     hoodieTrioGroup.add(rightHoodieMesh);
 
-    // 8. Floating Couture Measuring Ribbon (Pure Silver-White Satin - ZERO GREEN)
-    const tapePoints: THREE.Vector3[] = [];
-    const turns = 2.4;
-    const tapeSegments = 100;
-    for (let i = 0; i <= tapeSegments; i++) {
-      const t = i / tapeSegments;
-      const angle = t * Math.PI * 2 * turns + Math.PI * 0.35;
-      const y = THREE.MathUtils.lerp(1.8, -1.4, t);
-      const r = THREE.MathUtils.lerp(2.4, 2.0, t) + Math.sin(t * Math.PI * 4) * 0.16;
-      tapePoints.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
-    }
-    const tapeCurve = new THREE.CatmullRomCurve3(tapePoints);
-    const tapeGeometry = new THREE.TubeGeometry(tapeCurve, 80, 0.024, 8, false);
-    const tapeMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf8fafc,
-      emissive: 0xffffff,
-      emissiveIntensity: 0.35,
-      roughness: 0.25,
-      metalness: 0.65,
-      transparent: true,
-      opacity: 0.72,
-    });
-    const tapeMesh = new THREE.Mesh(tapeGeometry, tapeMaterial);
-    rootGroup.add(tapeMesh);
-
     // 9. Floating Platinum Stardust Particles (ZERO GREEN)
     const particleCount = 100;
     const particleGeometry = new THREE.BufferGeometry();
@@ -301,24 +313,24 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         // TAB 1: Input / Landing ('/')
         // Make model ENLARGED and fit the left hero space prominently so user sees it clearly!
         if (isDesktop) {
-          targetGroupPos.set(-0.95, 0.05, 0.1);
-          targetGroupScale.set(2.25, 2.25, 2.25);
+          targetGroupPos.set(-2.0, 0.05, -0.2);
+          targetGroupScale.set(1.95, 1.95, 1.95);
           targetBaseRotationY = 0.12;
-          targetLeftPos.set(-2.4, -0.08, -0.9);
-          targetRightPos.set(2.4, -0.08, -0.9);
+          targetLeftPos.set(-1.5, -0.08, -0.8);
+          targetRightPos.set(1.1, -0.08, -1.0);
         } else if (isTablet) {
-          targetGroupPos.set(-0.6, 0.1, -0.2);
-          targetGroupScale.set(1.85, 1.85, 1.85);
+          targetGroupPos.set(-1.1, 0.1, -0.3);
+          targetGroupScale.set(1.65, 1.65, 1.65);
           targetBaseRotationY = 0.08;
-          targetLeftPos.set(-2.2, -0.08, -0.9);
-          targetRightPos.set(2.2, -0.08, -0.9);
+          targetLeftPos.set(-1.4, -0.08, -0.8);
+          targetRightPos.set(1.1, -0.08, -0.9);
         } else {
           // Mobile: Centered, elevated above fold
-          targetGroupPos.set(0, 0.45, -0.4);
-          targetGroupScale.set(1.45, 1.45, 1.45);
+          targetGroupPos.set(0, 0.45, -0.5);
+          targetGroupScale.set(1.4, 1.4, 1.4);
           targetBaseRotationY = 0;
-          targetLeftPos.set(-2.0, -0.08, -0.9);
-          targetRightPos.set(2.0, -0.08, -0.9);
+          targetLeftPos.set(-1.8, -0.08, -0.9);
+          targetRightPos.set(1.8, -0.08, -0.9);
         }
       } else if (tab === 2) {
         // TAB 2: Results / Loading ('/results', '/loading')
@@ -412,10 +424,6 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         centerHoodieMesh.geometry.computeVertexNormals();
       }
 
-      // Measuring ribbon rotation & pulse
-      tapeMesh.rotation.y = elapsed * 0.12 * motionSpeed;
-      tapeMaterial.emissiveIntensity = 0.32 + Math.sin(elapsed * 2.0 * motionSpeed) * 0.14;
-
       // Drift floating stardust particles upward
       const pPositions = particleGeometry.attributes.position.array as Float32Array;
       for (let i = 0; i < particleCount; i++) {
@@ -443,8 +451,6 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
       rightCompanionMaterial.dispose();
       diffuseTexture.dispose();
       normalTexture.dispose();
-      tapeGeometry.dispose();
-      tapeMaterial.dispose();
       particleGeometry.dispose();
       particleMaterial.dispose();
       renderer.dispose();
