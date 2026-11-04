@@ -135,7 +135,23 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             Your sizes
           </h1>
           <div className="text-sm sm:text-base text-[#D6D6DC] mt-1.5 flex items-center gap-2 flex-wrap">
-            <span>{genderLabel} · {categoryLabel} · {primaryDim} · {filteredResults.length} brands</span>
+            <span>
+              {genderLabel} · {categoryLabel} · {primaryDim} ·{' '}
+              {showSavedOnly ? (
+                <>
+                  <strong className="text-white">{filteredResults.length} saved brands</strong>{' '}
+                  <button
+                    type="button"
+                    onClick={() => setShowSavedOnly(false)}
+                    className="text-[#4ADE80] hover:underline font-medium text-xs sm:text-sm ml-1"
+                  >
+                    (show all {results.length})
+                  </button>
+                </>
+              ) : (
+                `${filteredResults.length} brands`
+              )}
+            </span>
             {isLoading && (
               <span
                 role="status"
@@ -202,19 +218,32 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
         {/* Right Toolbar group */}
         <div className="flex items-center gap-2 self-end sm:self-auto">
-          {/* Saved toggle */}
-          {savedBrandIds.length > 0 && (
-            <button
-              onClick={() => setShowSavedOnly(!showSavedOnly)}
-              className={`pill-btn btn-press flex-none text-xs sm:text-sm font-medium !min-h-[40px] !px-4 ${
-                showSavedOnly ? '!bg-[#1DA84A] text-white' : ''
+          {/* Saved filter tab */}
+          <button
+            type="button"
+            onClick={() => setShowSavedOnly(!showSavedOnly)}
+            className={`pill-btn btn-press flex-none text-xs sm:text-sm font-semibold !min-h-[40px] !px-3.5 inline-flex items-center gap-1.5 transition-all ${
+              showSavedOnly
+                ? '!bg-[#1DA84A] text-white !border-[#4ADE80] shadow-md ring-1 ring-[#4ADE80]/30'
+                : '!bg-white/[0.04] text-white/90 border-white/15 hover:border-white/30'
+            }`}
+            aria-label={showSavedOnly ? 'Show all brands' : 'Filter by saved brands'}
+            aria-pressed={showSavedOnly}
+          >
+            <HeartIcon
+              size={15}
+              filled={showSavedOnly || savedBrandIds.length > 0}
+              className={showSavedOnly ? 'text-white' : savedBrandIds.length > 0 ? 'text-[#F87171]' : 'text-secText'}
+            />
+            <span>Saved</span>
+            <span
+              className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
+                showSavedOnly ? 'bg-white/25 text-white' : 'bg-white/10 text-secText'
               }`}
-              aria-label={showSavedOnly ? 'Show all brands' : 'Show saved brands only'}
-              aria-pressed={showSavedOnly}
             >
-              {showSavedOnly ? 'All' : 'Saved'}
-            </button>
-          )}
+              {savedBrandIds.length}
+            </span>
+          </button>
 
           {/* Sort button */}
           <button
@@ -376,6 +405,26 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               onToggleCompare={handleToggleCompare}
             />
           ))
+        ) : showSavedOnly ? (
+          /* Empty Saved Brands State */
+          <div className="col-span-full glass-card p-8 sm:p-10 flex flex-col items-center text-center gap-3 animate-fade-in border border-white/15">
+            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-red-400 mb-1">
+              <HeartIcon size={32} filled={false} />
+            </div>
+            <h2 className="font-barlow text-2xl sm:text-3xl font-semibold text-white">
+              No saved brands yet
+            </h2>
+            <p className="text-secText text-sm sm:text-[15px] leading-relaxed max-w-sm">
+              Tap the heart icon on any brand card to save your favorite brands for quick reference anytime.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowSavedOnly(false)}
+              className="primary-btn btn-press !min-h-[44px] !px-6 text-sm font-semibold mt-2"
+            >
+              Browse all brands
+            </button>
+          </div>
         ) : (
           /* Empty No Brands Match State */
           <div className="col-span-full glass-card p-8 flex flex-col items-center text-center gap-3 animate-fade-in">
