@@ -66,7 +66,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   };
 
   return (
-    <div className="w-full max-w-[440px] lg:max-w-[560px] mx-auto min-h-screen flex flex-col gap-4 p-4 sm:p-6 pb-20 animate-fade-in">
+    <div className="w-full max-w-[720px] mx-auto min-h-screen flex flex-col gap-4 p-4 sm:p-6 pb-20 page-transition">
       {/* Top Header Navigation */}
       <div className="flex justify-between items-center">
         <button
@@ -178,8 +178,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         </div>
       )}
 
-      {/* Brand Cards List */}
-      <div className="space-y-4">
+      {/* Brand Cards List: 1 column on mobile/tablet, 2 columns on desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {results.length > 0 ? (
           results.map((match) => (
             <BrandCard
@@ -193,7 +193,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           ))
         ) : (
           /* Empty No Brands Match State */
-          <div className="glass-card p-8 flex flex-col items-center text-center gap-3 animate-fade-in">
+          <div className="col-span-full glass-card p-8 flex flex-col items-center text-center gap-3 animate-fade-in">
             <div className="text-[#D6D6DC] my-1">
               <HangerIcon size={48} />
             </div>

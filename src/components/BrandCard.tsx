@@ -41,7 +41,8 @@ export const BrandCard: React.FC<BrandCardProps> = ({
 
   return (
     <article
-      className={`glass-card p-5 sm:p-6 flex flex-col gap-4 transition-all duration-200 hover:border-white/25 ${cardBorderClass}`}
+      onClick={() => onOpenDetail(matchResult)}
+      className={`glass-card p-5 sm:p-6 flex flex-col gap-4 transition-all duration-200 hover:border-white/25 cursor-pointer ${cardBorderClass}`}
     >
       {/* Top Header: Brand Name + View Chart Link + Save Heart */}
       <div className="flex items-center justify-between">
@@ -50,13 +51,19 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         </h3>
         <div className="flex items-center gap-1">
           <button
-            onClick={() => onOpenDetail(matchResult)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenDetail(matchResult);
+            }}
             className="text-accent text-sm font-semibold min-h-[44px] px-2 inline-flex items-center hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
           >
             View chart ›
           </button>
           <button
-            onClick={() => onToggleSave(brandChart.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSave(brandChart.id);
+            }}
             className="circle-btn btn-press !bg-transparent hover:!bg-white/10"
             aria-label={isSaved ? `Remove ${brandChart.brand} from saved` : `Save ${brandChart.brand}`}
           >
@@ -115,3 +122,4 @@ export const BrandCard: React.FC<BrandCardProps> = ({
     </article>
   );
 };
+

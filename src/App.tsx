@@ -1,4 +1,12 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
 import {
   UserMeasurements,
   BrandChart,
@@ -9,23 +17,186 @@ import {
 import {
   loadStoredMeasurements,
   saveStoredMeasurements,
+  hasStoredMeasurements,
   loadSavedBrands,
   toggleSavedBrand,
   isTipDismissed,
   setTipDismissed,
-  isOnboardingSeen,
-  setOnboardingSeen,
 } from './lib/storage';
 import { getInitialBrands, fetchBrandSizes } from './lib/data';
-import { matchAllBrands } from './lib/matching/engine';
+import { matchAllBrands, matchBrand } from './lib/matching/engine';
 import { InputScreen } from './components/InputScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { BrandDetail } from './components/BrandDetail';
+import { AboutScreen } from './components/AboutScreen';
 import { HowToMeasureModal } from './components/HowToMeasureModal';
-import { AboutModal } from './components/AboutModal';
 
-type AppScreen = 'input' | 'loading' | 'results' | 'detail';
+// Top-level route wrapper: Screen 1 (Input)
+const InputScreenRoute: React.FC<{
+  measurements: UserMeasurements;
+  onMeasurementsChange: (m: UserMeasurements) => void;
+}> = ({ measurements, onMeasurementsChange }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [showMeasureModal, setShowMeasureModal] = useState(false);
+  const redirectReason = (location.state as any)?.redirectReason;
+
+  const handleSubmit = () => {
+    try {
+      sessionStorage.setItem('tailor_searched', 'true');
+    } catch (e) {
+      // storage quota / privacy mode
+    }
+    saveStoredMeasurements(measurements);
+    navigate('/loading');
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center">
+      {redirectReason && (
+        <div role="status" className="w-full max-w-[520px] pt-4 px-4 animate-fade-in">
+          <div className="rounded-[18px] bg-amber-500/15 border border-amber-500/40 p-3.5 text-amber-200 text-sm flex items-center justify-between">
+            <span>{redirectReason}</span>
+          </div>
+        </div>
+      )}
+      <InputScreen
+        measurements={measurements}
+        onMeasurementsChange={onMeasurementsChange}
+        onSubmit={handleSubmit}
+        onOpenAbout={() => navigate('/about')}
+        onOpenHowToMeasure={() => setShowMeasureModal(true)}
+      />
+      <HowToMeasureModal
+        isOpen={showMeasureModal}
+        onClose={() => setShowMeasureModal(false)}
+        showHips={measurements.category === 'pants'}
+      />
+    </div>
+  );
+};
+
+// Top-level route wrapper: Screen 2 (Loading)
+const LoadingScreenRoute: React.FC<{
+  measurements: UserMeasurements;
+  brandCount: number;
+}> = ({ measurements, brandCount }) => {
+  const navigate = useNavigate();
+  return (
+    <LoadingScreen
+      measurements={measurements}
+      brandCount={brandCount}
+      onCancel={() => navigate('/')}
+      onFinished={() => navigate('/results')}
+    />
+  );
+};
+
+// Top-level route wrapper: Screen 3 (Results)
+const ResultsScreenRoute: React.FC<{
+  results: BrandMatchResult[];
+  measurements: UserMeasurements;
+  savedBrandIds: string[];
+  tipDismissed: boolean;
+  onDismissTip: () => void;
+  onToggleSave: (id: string) => void;
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  regionFilter: RegionFilter;
+  setRegionFilter: (r: RegionFilter) => void;
+  sortBy: SortOption;
+  setSortBy: (s: SortOption) => void;
+}> = (props) => {
+  const navigate = useNavigate();
+
+  // Restore scroll position when returning from Brand Detail
+  useEffect(() => {
+    try {
+      const savedY = sessionStorage.getItem('tailor_results_scroll');
+      if (savedY) {
+        window.scrollTo({ top: parseInt(savedY, 10), behavior: 'instant' as ScrollBehavior });
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  // Check if measurements are valid; if cleared or missing, redirect to Input with friendly message
+  let searchedInSession = false;
+  try {
+    searchedInSession = sessionStorage.getItem('tailor_searched') === 'true';
+  } catch (e) {
+    searchedInSession = false;
+  }
+
+  if (!hasStoredMeasurements() && !searchedInSession) {
+    return (
+      <Navigate
+        to="/"
+        replace
+        state={{ redirectReason: 'Please enter your measurements to view size recommendations.' }}
+      />
+    );
+  }
+
+  const handleOpenDetail = (match: BrandMatchResult) => {
+    try {
+      sessionStorage.setItem('tailor_results_scroll', window.scrollY.toString());
+    } catch (e) {
+      // ignore
+    }
+    navigate(`/brand/${match.brandChart.id}`);
+  };
+
+  const handleEditMeasurements = () => {
+    try {
+      sessionStorage.removeItem('tailor_results_scroll');
+    } catch (e) {
+      // ignore
+    }
+    navigate('/');
+  };
+
+  return (
+    <ResultsScreen
+      {...props}
+      onOpenDetail={handleOpenDetail}
+      onEditMeasurements={handleEditMeasurements}
+    />
+  );
+};
+
+// Top-level route wrapper: Screen 4 (Brand Detail)
+const BrandDetailRoute: React.FC<{
+  brands: BrandChart[];
+  measurements: UserMeasurements;
+}> = ({ brands, measurements }) => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const brandChart = brands.find((b) => b.id === id);
+
+  if (!brandChart) {
+    return (
+      <div className="w-full max-w-[520px] mx-auto min-h-screen flex flex-col items-center justify-center p-6 text-center page-transition">
+        <h2 className="font-barlow text-3xl font-semibold mb-2">Brand not found</h2>
+        <p className="text-secText mb-4">We couldn't locate this brand's size guide.</p>
+        <button onClick={() => navigate('/results')} className="primary-btn btn-press px-6">
+          Back to results
+        </button>
+      </div>
+    );
+  }
+
+  const match = matchBrand(brandChart, measurements);
+  return (
+    <BrandDetail
+      matchResult={match}
+      measurements={measurements}
+      onBack={() => navigate('/results')}
+    />
+  );
+};
 
 export const App: React.FC = () => {
   // Global & Persistent State
@@ -33,36 +204,11 @@ export const App: React.FC = () => {
   const [brands, setBrands] = useState<BrandChart[]>(getInitialBrands);
   const [savedBrandIds, setSavedBrandIds] = useState<string[]>(loadSavedBrands);
   const [tipDismissed, setTipDismissedState] = useState<boolean>(isTipDismissed);
-  const [onboardingBanner, setOnboardingBanner] = useState<boolean>(!isOnboardingSeen());
-
-  // Screen & Navigation
-  const [currentScreen, setCurrentScreen] = useState<AppScreen>('input');
-  const [selectedBrandMatch, setSelectedBrandMatch] = useState<BrandMatchResult | null>(null);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [regionFilter, setRegionFilter] = useState<RegionFilter>('all');
   const [sortBy, setSortBy] = useState<SortOption>('match');
-
-  // Modals
-  const [showAboutModal, setShowAboutModal] = useState(false);
-  const [showMeasureModal, setShowMeasureModal] = useState(false);
-
-  // Responsive Layout detection (desktop 1200px+)
-  const [isDesktop, setIsDesktop] = useState<boolean>(
-    typeof window !== 'undefined' ? window.innerWidth >= 1200 : false
-  );
-
-  const loadingTimerRef = useRef<number | null>(null);
-
-  // Handle window resizing for responsive layouts
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1200);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Fetch updated brand data if available
   useEffect(() => {
@@ -91,163 +237,42 @@ export const App: React.FC = () => {
     setTipDismissed(true);
   };
 
-  const handleDismissOnboarding = () => {
-    setOnboardingBanner(false);
-    setOnboardingSeen(true);
-  };
-
-  // Matching calculation
+  // Compute matches
   const matchResults = useMemo(() => {
     return matchAllBrands(brands, measurements, searchQuery, regionFilter, sortBy);
   }, [brands, measurements, searchQuery, regionFilter, sortBy]);
 
-  // Handle "Find my size" submission
-  const handleSubmit = () => {
-    setCurrentScreen('loading');
-    if (loadingTimerRef.current) clearTimeout(loadingTimerRef.current);
-
-    // Brief simulation (750ms) as specified in PRD
-    loadingTimerRef.current = window.setTimeout(() => {
-      setCurrentScreen('results');
-    }, 750);
-  };
-
-  const handleCancelLoading = () => {
-    if (loadingTimerRef.current) clearTimeout(loadingTimerRef.current);
-    setCurrentScreen('input');
-  };
-
-  const handleOpenDetail = (match: BrandMatchResult) => {
-    setSelectedBrandMatch(match);
-    if (!isDesktop) {
-      setCurrentScreen('detail');
-    }
-  };
-
-  const handleCloseDetail = () => {
-    setSelectedBrandMatch(null);
-    if (currentScreen === 'detail') {
-      setCurrentScreen('results');
-    }
-  };
-
-  // Selected brand result on desktop (if currently selected brand exists in results, use updated match)
-  const activeDetailMatch = useMemo(() => {
-    if (!selectedBrandMatch) return null;
-    return matchResults.find(m => m.brandChart.id === selectedBrandMatch.brandChart.id) || selectedBrandMatch;
-  }, [selectedBrandMatch, matchResults]);
-
   return (
-    <div className="min-h-screen text-white relative flex flex-col items-center">
-      {/* Onboarding hint banner for first-time visitors */}
-      {onboardingBanner && (
-        <div
-          role="status"
-          className="w-full bg-[#1DA84A] text-white px-4 py-2.5 text-xs sm:text-sm font-medium flex items-center justify-between shadow-lg z-30"
-        >
-          <div className="flex-1 text-center">
-            👋 Welcome to <strong>Tailor</strong>. Enter your measurements once to discover your exact size across every clothing brand!
-          </div>
-          <button
-            onClick={handleDismissOnboarding}
-            className="text-white hover:opacity-80 px-2 py-0.5 text-lg font-bold"
-            aria-label="Dismiss welcome banner"
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-      {/* DESKTOP LAYOUT (1200px+) */}
-      {isDesktop ? (
-        <main className="w-full max-w-[1440px] px-8 py-8 flex items-start gap-8 min-h-screen justify-center">
-          {/* Left Column: Sticky Input Panel (approx 400px) */}
-          <aside className="w-[400px] flex-none sticky top-8 max-h-[calc(100vh-64px)] overflow-y-auto pr-2 pb-6">
-            <InputScreen
+    <div className="min-h-screen text-white relative w-full overflow-x-hidden">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <InputScreenRoute
               measurements={measurements}
               onMeasurementsChange={handleMeasurementsChange}
-              onSubmit={handleSubmit}
-              onOpenAbout={() => setShowAboutModal(true)}
-              onOpenHowToMeasure={() => setShowMeasureModal(true)}
             />
-          </aside>
-
-          {/* Middle Column: Results List (approx 560px) */}
-          <section className="w-[560px] flex-none min-h-[80vh]">
-            {currentScreen === 'loading' ? (
-              <LoadingScreen
-                measurements={measurements}
-                brandCount={matchResults.length}
-                onCancel={handleCancelLoading}
-              />
-            ) : (
-              <ResultsScreen
-                results={matchResults}
-                measurements={measurements}
-                savedBrandIds={savedBrandIds}
-                tipDismissed={tipDismissed}
-                onDismissTip={handleDismissTip}
-                onToggleSave={handleToggleSave}
-                onOpenDetail={handleOpenDetail}
-                onEditMeasurements={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                regionFilter={regionFilter}
-                setRegionFilter={setRegionFilter}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-              />
-            )}
-          </section>
-
-          {/* Right Column / Panel: Brand Detail Drawer (420px) */}
-          {activeDetailMatch ? (
-            <aside className="w-[420px] flex-none sticky top-8 glass-card border border-white/15 max-h-[calc(100vh-64px)] overflow-hidden animate-fade-in shadow-2xl">
-              <BrandDetail
-                matchResult={activeDetailMatch}
-                measurements={measurements}
-                onBack={handleCloseDetail}
-                isDrawer={true}
-              />
-            </aside>
-          ) : (
-            <div className="w-[420px] flex-none hidden xl:flex flex-col items-center justify-center p-8 text-center text-secText glass-card min-h-[400px] border border-white/5 opacity-60">
-              <span className="font-barlow text-2xl font-medium">Select any brand</span>
-              <p className="text-sm mt-1">Click "View chart ›" on any brand card to open full size breakdown and interactive specifications.</p>
-            </div>
-          )}
-        </main>
-      ) : (
-        /* MOBILE & TABLET LAYOUT (< 1200px) */
-        <main className="w-full flex justify-center min-h-screen">
-          {currentScreen === 'input' && (
-            <InputScreen
-              measurements={measurements}
-              onMeasurementsChange={handleMeasurementsChange}
-              onSubmit={handleSubmit}
-              onOpenAbout={() => setShowAboutModal(true)}
-              onOpenHowToMeasure={() => setShowMeasureModal(true)}
-            />
-          )}
-
-          {currentScreen === 'loading' && (
-            <LoadingScreen
+          }
+        />
+        <Route
+          path="/loading"
+          element={
+            <LoadingScreenRoute
               measurements={measurements}
               brandCount={matchResults.length}
-              onCancel={handleCancelLoading}
             />
-          )}
-
-          {currentScreen === 'results' && (
-            <ResultsScreen
+          }
+        />
+        <Route
+          path="/results"
+          element={
+            <ResultsScreenRoute
               results={matchResults}
               measurements={measurements}
               savedBrandIds={savedBrandIds}
               tipDismissed={tipDismissed}
               onDismissTip={handleDismissTip}
               onToggleSave={handleToggleSave}
-              onOpenDetail={handleOpenDetail}
-              onEditMeasurements={() => setCurrentScreen('input')}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
               regionFilter={regionFilter}
@@ -255,32 +280,20 @@ export const App: React.FC = () => {
               sortBy={sortBy}
               setSortBy={setSortBy}
             />
-          )}
-
-          {currentScreen === 'detail' && activeDetailMatch && (
-            <BrandDetail
-              matchResult={activeDetailMatch}
+          }
+        />
+        <Route
+          path="/brand/:id"
+          element={
+            <BrandDetailRoute
+              brands={brands}
               measurements={measurements}
-              onBack={handleCloseDetail}
-              isDrawer={false}
             />
-          )}
-        </main>
-      )}
-
-      {/* Modals */}
-      <HowToMeasureModal
-        isOpen={showMeasureModal}
-        onClose={() => setShowMeasureModal(false)}
-        showHips={measurements.category === 'pants'}
-      />
-
-      <AboutModal
-        isOpen={showAboutModal}
-        onClose={() => setShowAboutModal(false)}
-        brandContext={selectedBrandMatch?.brandChart.brand}
-        sizeContext={selectedBrandMatch?.recommendedSize}
-      />
+          }
+        />
+        <Route path="/about" element={<AboutScreen />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   );
 };

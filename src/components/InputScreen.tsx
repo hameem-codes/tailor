@@ -24,9 +24,8 @@ export const InputScreen: React.FC<InputScreenProps> = ({
   onOpenAbout,
   onOpenHowToMeasure,
 }) => {
-  const [chestWaistOpen, setChestWaistOpen] = useState(
-    Boolean((measurements.chest && measurements.chest > 0) || (measurements.waist && measurements.waist > 0))
-  );
+  // "Chest and waist" must be COLLAPSED by default
+  const [chestWaistOpen, setChestWaistOpen] = useState(false);
 
   const isImperial = measurements.unit === 'imperial';
   const isPants = measurements.category === 'pants';
@@ -120,7 +119,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
   };
 
   return (
-    <div className="w-full max-w-[420px] mx-auto min-h-screen flex flex-col gap-3.5 p-4 sm:p-5 pt-8 pb-12 animate-fade-in">
+    <div className="w-full max-w-[520px] mx-auto min-h-screen flex flex-col gap-3.5 px-4 sm:px-6 pt-6 pb-20 page-transition">
       {/* Brand Header & About Action */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2.5">
@@ -147,11 +146,11 @@ export const InputScreen: React.FC<InputScreenProps> = ({
       <fieldset className="glass-card p-4 sm:p-5 flex flex-col gap-3 border border-white/12">
         <legend className="text-base font-semibold text-[#D6D6DC] px-1">Who and what</legend>
 
-        {/* Gender Segment */}
+        {/* Gender Segment - ONE row of 3 equal chips */}
         <div
           role="radiogroup"
           aria-label="Gender selection"
-          className="flex gap-2"
+          className="grid grid-cols-3 gap-2"
         >
           {(['men', 'women', 'unisex'] as Gender[]).map((g) => (
             <button
@@ -160,7 +159,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
               role="radio"
               aria-checked={measurements.gender === g}
               onClick={() => updateMeasurement('gender', g)}
-              className={`pill-btn btn-press flex-1 capitalize ${
+              className={`pill-btn btn-press w-full text-center capitalize ${
                 measurements.gender === g ? 'pill-active' : ''
               }`}
             >
@@ -169,11 +168,11 @@ export const InputScreen: React.FC<InputScreenProps> = ({
           ))}
         </div>
 
-        {/* Category Segment */}
+        {/* Category Segment - ONE row of 4 equal chips (no wrap) */}
         <div
           role="radiogroup"
           aria-label="Clothing category selection"
-          className="flex gap-2 flex-wrap"
+          className="grid grid-cols-4 gap-1.5 sm:gap-2"
         >
           {([
             { id: 't-shirt', label: 'T-shirt' },
@@ -187,7 +186,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
               role="radio"
               aria-checked={measurements.category === c.id}
               onClick={() => updateMeasurement('category', c.id)}
-              className={`pill-btn btn-press flex-1 min-w-[70px] ${
+              className={`pill-btn btn-press w-full !px-1 sm:!px-3 !text-[13px] sm:!text-sm text-center justify-center truncate ${
                 measurements.category === c.id ? 'pill-active' : ''
               }`}
             >
@@ -342,7 +341,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
           </div>
         )}
 
-        {/* Expandable Chest & Waist Card */}
+        {/* Expandable Chest & Waist Card - COLLAPSED BY DEFAULT */}
         <div className="field-container !p-0 overflow-hidden">
           <div
             onClick={() => setChestWaistOpen(!chestWaistOpen)}
@@ -428,13 +427,13 @@ export const InputScreen: React.FC<InputScreenProps> = ({
           )}
         </div>
 
-        {/* Preferred Fit */}
+        {/* Preferred Fit - ONE row of 3 equal chips */}
         <div className="space-y-2 mt-1">
           <div className="text-base font-semibold text-white">Preferred fit</div>
           <div
             role="radiogroup"
             aria-label="Preferred fit"
-            className="flex gap-2"
+            className="grid grid-cols-3 gap-2"
           >
             {(['snug', 'regular', 'loose'] as FitPreference[]).map((f) => (
               <button
@@ -443,7 +442,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
                 role="radio"
                 aria-checked={measurements.fitPreference === f}
                 onClick={() => updateMeasurement('fitPreference', f)}
-                className={`pill-btn btn-press flex-1 capitalize ${
+                className={`pill-btn btn-press w-full text-center capitalize ${
                   measurements.fitPreference === f ? 'pill-active' : ''
                 }`}
               >
@@ -468,7 +467,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
       </button>
 
       {/* Privacy Notice */}
-      <div className="flex items-center justify-center gap-1.5 text-[15px] sm:text-base text-secText py-1">
+      <div className="flex items-center justify-center gap-1.5 text-[15px] sm:text-base text-secText py-2">
         <LockIcon size={16} className="text-secText flex-none" />
         <span>Your measurements stay on your device.</span>
       </div>

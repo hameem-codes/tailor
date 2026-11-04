@@ -175,3 +175,4 @@ The matching engine in [`src/lib/matching/engine.ts`](file:///c:/Users/matee/One
 1. **Visual Source of Truth**: The colors, glassmorphism backdrop blurs (`rgba(32,32,35,.82)`, blur 24px), border radiuses (`28px`), typography (`Barlow Condensed` + `Inter`), range ruler styling, and micro-animations were matched directly from the visual export (`Tailor Dark Glass UI (4 screens).html`).
 2. **Behavioral Source of Truth**: Dynamic features (unit toggle converting both height/weight and girth inputs, hips toggle dynamically appearing for pants, dismissible tips with localStorage persistence, search & filter combinations, and responsive desktop two-pane drawers) were built according to the PRD.
 3. **Accessibility**: Visible green focus rings (`#4ADE80`), full keyboard navigation, `aria-live="polite"` status announcements on loading screens, screen-reader labels on all circular icon buttons, and non-color-dependent status indicators (icons + text + colors).
+

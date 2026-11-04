@@ -96,3 +96,4 @@ export interface UserFeedback {
   sentiment: 'well' | 'tight' | 'loose';
   timestamp: string;
 }
+

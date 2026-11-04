@@ -65,3 +65,4 @@ export const RangeRuler: React.FC<RangeRulerProps> = ({
     </div>
   );
 };
+

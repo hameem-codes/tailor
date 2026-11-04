@@ -8,14 +8,12 @@ interface BrandDetailProps {
   matchResult: BrandMatchResult;
   measurements: UserMeasurements;
   onBack: () => void;
-  isDrawer?: boolean;
 }
 
 export const BrandDetail: React.FC<BrandDetailProps> = ({
   matchResult,
   measurements,
   onBack,
-  isDrawer = false,
 }) => {
   const { brandChart, primarySizeIndex, confidence, confidenceReason } = matchResult;
 
@@ -104,17 +102,15 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
   }, [selectedSizeIdx, primarySizeIndex, currentSize, sizes, isPants, userPrimaryVal, tableUnit, matchResult.matchStatus]);
 
   return (
-    <div
-      className={`w-full ${isDrawer ? 'h-full max-h-screen' : 'max-w-[420px] mx-auto min-h-screen'} flex flex-col gap-3.5 p-5 sm:p-6 overflow-y-auto animate-fade-in`}
-    >
+    <div className="w-full max-w-[720px] mx-auto min-h-screen flex flex-col gap-3.5 p-4 sm:p-6 pb-20 page-transition">
       {/* Top Header: Back Button + Brand Name */}
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
           className="circle-btn btn-press"
-          aria-label={isDrawer ? 'Close brand detail' : 'Back to recommendations'}
+          aria-label="Back to recommendations"
         >
-          {isDrawer ? '×' : '←'}
+          ←
         </button>
         <span className="font-barlow text-3xl font-semibold tracking-wide text-white">
           {brandChart.brand}
@@ -322,7 +318,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
         href={brandChart.brandUrl || brandChart.sourceUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="primary-btn btn-press w-full text-center no-underline mt-auto"
+        className="primary-btn btn-press w-full text-center no-underline mt-4 mb-2"
       >
         View on {brandChart.brand}
       </a>

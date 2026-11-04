@@ -17,6 +17,17 @@ export const DEFAULT_MEASUREMENTS: UserMeasurements = {
   fitPreference: 'regular',
 };
 
+export function hasStoredMeasurements(): boolean {
+  try {
+    const raw = localStorage.getItem(MEASUREMENTS_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return Boolean(parsed && typeof parsed.height === 'number' && parsed.height >= 120);
+  } catch (e) {
+    return false;
+  }
+}
+
 export function loadStoredMeasurements(): UserMeasurements {
   try {
     const raw = localStorage.getItem(MEASUREMENTS_KEY);
@@ -106,3 +117,4 @@ export function setOnboardingSeen(seen: boolean = true): void {
     console.warn('[Tailor] Failed to save onboarding state:', e);
   }
 }
+

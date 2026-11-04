@@ -104,3 +104,4 @@ export function getEaseAllowance(category: ClothingCategory, fit: 'regular' | 's
   if (fit === 'relaxed') return { chest: 0, waist: 4 };
   return { chest: 0, waist: 2 };
 }
+
