@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import * as THREE from 'three';
 import { UnitSystem } from '../types';
 
@@ -8,9 +9,26 @@ interface ThreeBackgroundProps {
 }
 
 export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
-  category = 't-shirt',
+  category: _category = 't-shirt',
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
+  // Detect current active tab / screen:
+  // Tab 1: Input / Landing ('/')
+  // Tab 2: Results / Loading ('/results', '/loading')
+  // Tab 3: Brand Detail ('/brand/:id')
+  const currentTab = location.pathname.startsWith('/brand/')
+    ? 3
+    : location.pathname === '/results' || location.pathname === '/loading'
+    ? 2
+    : 1;
+
+  // Use a ref to feed current tab to the 60fps Three.js animation loop without recreating the scene
+  const currentTabRef = useRef(currentTab);
+  useEffect(() => {
+    currentTabRef.current = currentTab;
+  }, [currentTab]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -22,7 +40,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0a0b, 0.045);
+    scene.fog = new THREE.FogExp2(0x0a0a0b, 0.038);
 
     const camera = new THREE.PerspectiveCamera(
       45,
@@ -40,188 +58,194 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.35;
     container.appendChild(renderer.domElement);
 
-    // Main 3D Root Group
+    // 2. Main 3D Root Group
     const rootGroup = new THREE.Group();
-    const isDesktop = window.innerWidth >= 1024;
-    // Position comfortably behind the left hero on desktop, or centered on mobile
-    rootGroup.position.set(isDesktop ? -2.3 : 0, -0.3, isDesktop ? -0.8 : -1.4);
-    if (!isDesktop) {
-      rootGroup.scale.set(0.85, 0.85, 0.85);
-    }
     scene.add(rootGroup);
 
-    // 2. Lighting (Atelier spotlight vibe)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    // 3. Studio Lighting (Pure Light Colors - Platinum, Soft White, Moonlit Silver - ZERO GREEN)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
     scene.add(ambientLight);
 
-    // Emerald Green Accent Light from bottom/left
-    const greenPointLight = new THREE.PointLight(0x4ade80, 2.5, 16);
-    greenPointLight.position.set(-3.5, -1.0, 3);
-    scene.add(greenPointLight);
+    const whiteKeyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+    whiteKeyLight.position.set(3.5, 4.0, 3.5);
+    scene.add(whiteKeyLight);
 
-    // Soft White Key Light from top/right
-    const whitePointLight = new THREE.PointLight(0xffffff, 1.8, 16);
-    whitePointLight.position.set(3, 4, 3.5);
-    scene.add(whitePointLight);
+    const platinumFillLight = new THREE.PointLight(0xe2e8f0, 2.0, 16);
+    platinumFillLight.position.set(-3.5, -1.0, 3.0);
+    scene.add(platinumFillLight);
 
-    // Subtle Cyan/Teal fill light from back
-    const backLight = new THREE.PointLight(0x1da84a, 1.2, 14);
-    backLight.position.set(0, 1, -3);
-    scene.add(backLight);
+    const silverRimLight = new THREE.PointLight(0xcfd8dc, 2.2, 16);
+    silverRimLight.position.set(0, 1.8, -3.2);
+    scene.add(silverRimLight);
 
-    // 3. Procedural 3D Atelier Tailor Mannequin (Dressmaker's Dummy)
-    // Points defining the classic couture dressmaker dummy
-    const mannequinPoints: THREE.Vector2[] = [];
-    mannequinPoints.push(new THREE.Vector2(0.01, 1.95));  // Neck top
-    mannequinPoints.push(new THREE.Vector2(0.32, 1.90));  // Neck base
-    mannequinPoints.push(new THREE.Vector2(0.82, 1.72));  // Shoulder inner
-    mannequinPoints.push(new THREE.Vector2(1.35, 1.50));  // Shoulder outer
-    mannequinPoints.push(new THREE.Vector2(1.26, 1.25));  // Armpit / upper chest
-    mannequinPoints.push(new THREE.Vector2(1.22, 0.90));  // Bust apex
-    mannequinPoints.push(new THREE.Vector2(1.10, 0.50));  // Ribcage
-    mannequinPoints.push(new THREE.Vector2(0.90, 0.10));  // Tapered waist
-    mannequinPoints.push(new THREE.Vector2(1.04, -0.30)); // Upper hip
-    mannequinPoints.push(new THREE.Vector2(1.18, -0.70)); // Full hip curve
-    mannequinPoints.push(new THREE.Vector2(1.12, -1.05)); // Torso base rim
-    mannequinPoints.push(new THREE.Vector2(0.10, -1.10)); // Bottom plate
-    mannequinPoints.push(new THREE.Vector2(0.01, -1.10));
+    const overheadSpot = new THREE.SpotLight(0xffffff, 1.8, 14, Math.PI / 4, 0.4);
+    overheadSpot.position.set(0, 5.5, 2.0);
+    overheadSpot.target.position.set(0, 0, 0);
+    scene.add(overheadSpot);
+    scene.add(overheadSpot.target);
 
-    const latheGeometry = new THREE.LatheGeometry(mannequinPoints, 36);
+    // 4. Textures
+    const textureLoader = new THREE.TextureLoader();
+    const diffuseTexture = textureLoader.load(
+      '/apparel/hoodie_hero_diffuse.png',
+      () => renderer.render(scene, camera)
+    );
+    diffuseTexture.colorSpace = THREE.SRGBColorSpace;
+    diffuseTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    diffuseTexture.magFilter = THREE.LinearFilter;
 
-    // Dark glass / obsidian translucent finish
-    const mannequinMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x111317,
-      metalness: 0.9,
-      roughness: 0.22,
-      transmission: 0.7,
-      thickness: 1.4,
+    const normalTexture = textureLoader.load('/apparel/hoodie_hero_normal.png');
+    normalTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    normalTexture.magFilter = THREE.LinearFilter;
+
+    // 5. Materials (Light colors: Chalk White, Warm Bone Ivory, Platinum Silver - NO GREEN)
+    const heroMaterial = new THREE.MeshStandardMaterial({
+      map: diffuseTexture,
+      normalMap: normalTexture,
+      normalScale: new THREE.Vector2(0.65, 0.65), // Smooth, elegant fabric texture without stair-step ridges
+      roughness: 0.82,
+      metalness: 0.06,
+      color: 0xffffff, // Pristine Chalk White
+      side: THREE.FrontSide, // FrontSide prevents self-shadowing and backface slice artifacts
       transparent: true,
-      opacity: 0.55,
-      reflectivity: 0.95,
-      clearcoat: 0.4,
+      alphaTest: 0.06,
+      depthWrite: true,
     });
-    const mannequinMesh = new THREE.Mesh(latheGeometry, mannequinMaterial);
-    rootGroup.add(mannequinMesh);
 
-    // Subtle Emerald Wireframe Contour Overlay (Fashion CAD / Precision Tailoring vibe)
-    const wireframeGeometry = new THREE.WireframeGeometry(latheGeometry);
-    const wireframeMaterial = new THREE.LineBasicMaterial({
-      color: 0x4ade80,
+    const leftCompanionMaterial = new THREE.MeshStandardMaterial({
+      map: diffuseTexture,
+      normalMap: normalTexture,
+      normalScale: new THREE.Vector2(0.65, 0.65),
+      roughness: 0.86,
+      metalness: 0.05,
+      color: 0xf3ede6, // Warm Bone / Ivory Beige
+      side: THREE.FrontSide,
       transparent: true,
-      opacity: 0.14,
-      blending: THREE.AdditiveBlending,
+      alphaTest: 0.06,
+      depthWrite: true,
     });
-    const wireframeMesh = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
-    rootGroup.add(wireframeMesh);
 
-    // Stand Rod (Brushed Gunmetal / Chrome)
-    const poleGeometry = new THREE.CylinderGeometry(0.038, 0.038, 2.4, 20);
-    const poleMaterial = new THREE.MeshStandardMaterial({
-      color: 0x33373e,
-      metalness: 0.95,
-      roughness: 0.15,
+    const rightCompanionMaterial = new THREE.MeshStandardMaterial({
+      map: diffuseTexture,
+      normalMap: normalTexture,
+      normalScale: new THREE.Vector2(0.65, 0.65),
+      roughness: 0.82,
+      metalness: 0.1,
+      color: 0xf1f5f9, // Platinum Silver
+      side: THREE.FrontSide,
+      transparent: true,
+      alphaTest: 0.06,
+      depthWrite: true,
     });
-    const poleMesh = new THREE.Mesh(poleGeometry, poleMaterial);
-    poleMesh.position.set(0, -1.9, 0);
-    rootGroup.add(poleMesh);
 
-    // Pedestal Base (Circular beveled disk)
-    const baseGeometry = new THREE.CylinderGeometry(0.65, 0.75, 0.07, 36);
-    const baseMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1c1e22,
-      metalness: 0.8,
-      roughness: 0.3,
-    });
-    const baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
-    baseMesh.position.set(0, -3.05, 0);
-    rootGroup.add(baseMesh);
+    // 6. Smooth Volumetric 3D Hoodie Geometry (Parametric - Zero Stair-Step Artifacts)
+    function createSmoothHoodieGeometry(width = 2.1, height = 2.7, segX = 56, segY = 64) {
+      const geo = new THREE.PlaneGeometry(width, height, segX, segY);
+      const pos = geo.attributes.position;
+      const count = pos.count;
 
-    // Neck Finial (Sleek dark titanium cap with subtle emerald top ring)
-    const finialGeometry = new THREE.CylinderGeometry(0.18, 0.26, 0.22, 28);
-    const finialMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1f2228,
-      metalness: 0.95,
-      roughness: 0.15,
-      emissive: 0x1da84a,
-      emissiveIntensity: 0.2,
-    });
-    const finialMesh = new THREE.Mesh(finialGeometry, finialMaterial);
-    finialMesh.position.set(0, 2.05, 0);
-    rootGroup.add(finialMesh);
+      for (let i = 0; i < count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const nx = x / (width * 0.5); // -1 to 1 across garment width
+        const ny = y / (height * 0.5); // -1 to 1 across garment height
 
-    // 4. Floating Tailor's Tape / Measuring Ribbon Curving Around Torso
+        // 1. Torso cylindrical & anatomical curvature
+        const torsoZ = Math.cos(nx * Math.PI * 0.44) * 0.36;
+
+        // 2. Puffy drop shoulders and forward-curved sleeves
+        const isSleeve = Math.abs(nx) > 0.4 && ny < 0.35;
+        const sleeveCurve = isSleeve ? Math.sin((Math.abs(nx) - 0.4) * 2.6) * 0.26 : 0;
+
+        // 3. Deep 3D open hood volume at the top (ny > 0.35)
+        let hoodZ = 0;
+        if (ny > 0.35) {
+          const hoodFactor = (ny - 0.35) / 0.65;
+          const hoodArc = Math.cos(nx * Math.PI * 0.72);
+          hoodZ = hoodArc * 0.38 * hoodFactor;
+        }
+
+        // 4. Subtle chest volume & hem taper
+        const chestZ = Math.exp(-(nx * nx * 3.2 + (ny - 0.08) * (ny - 0.08) * 4.2)) * 0.14;
+
+        pos.setZ(i, torsoZ + sleeveCurve + hoodZ + chestZ);
+      }
+
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    const baseHoodieGeo = createSmoothHoodieGeometry();
+    const originalPositions = new Float32Array(baseHoodieGeo.attributes.position.array);
+
+    // 7. Streetwear Hoodie Trio Group
+    const hoodieTrioGroup = new THREE.Group();
+    rootGroup.add(hoodieTrioGroup);
+
+    // Center Hero Hoodie (Chalk White, front-facing)
+    const centerHoodieMesh = new THREE.Mesh(baseHoodieGeo, heroMaterial);
+    centerHoodieMesh.position.set(0, 0, 0);
+    hoodieTrioGroup.add(centerHoodieMesh);
+
+    // Left Companion Hoodie (Warm Bone Ivory, angled back in showroom depth)
+    const leftHoodieMesh = new THREE.Mesh(baseHoodieGeo.clone(), leftCompanionMaterial);
+    leftHoodieMesh.position.set(-2.5, -0.08, -0.9);
+    leftHoodieMesh.rotation.y = 0.46;
+    leftHoodieMesh.scale.set(0.88, 0.88, 0.88);
+    hoodieTrioGroup.add(leftHoodieMesh);
+
+    // Right Companion Hoodie (Platinum Silver, angled back in showroom depth)
+    const rightHoodieMesh = new THREE.Mesh(baseHoodieGeo.clone(), rightCompanionMaterial);
+    rightHoodieMesh.position.set(2.5, -0.08, -0.9);
+    rightHoodieMesh.rotation.y = -0.46;
+    rightHoodieMesh.scale.set(0.88, 0.88, 0.88);
+    hoodieTrioGroup.add(rightHoodieMesh);
+
+    // 8. Floating Couture Measuring Ribbon (Pure Silver-White Satin - ZERO GREEN)
     const tapePoints: THREE.Vector3[] = [];
     const turns = 2.4;
-    const tapeSegments = 120;
+    const tapeSegments = 100;
     for (let i = 0; i <= tapeSegments; i++) {
       const t = i / tapeSegments;
-      const angle = t * Math.PI * 2 * turns + Math.PI * 0.4;
-      const y = THREE.MathUtils.lerp(1.35, -0.65, t);
-      const r = THREE.MathUtils.lerp(1.44, 1.26, t) + Math.sin(t * Math.PI * 4) * 0.12;
+      const angle = t * Math.PI * 2 * turns + Math.PI * 0.35;
+      const y = THREE.MathUtils.lerp(1.8, -1.4, t);
+      const r = THREE.MathUtils.lerp(2.4, 2.0, t) + Math.sin(t * Math.PI * 4) * 0.16;
       tapePoints.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
     }
     const tapeCurve = new THREE.CatmullRomCurve3(tapePoints);
-    const tapeGeometry = new THREE.TubeGeometry(tapeCurve, 100, 0.024, 8, false);
+    const tapeGeometry = new THREE.TubeGeometry(tapeCurve, 80, 0.024, 8, false);
     const tapeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x4ade80,
-      emissive: 0x1da84a,
-      emissiveIntensity: 0.75,
+      color: 0xf8fafc,
+      emissive: 0xffffff,
+      emissiveIntensity: 0.35,
       roughness: 0.25,
-      metalness: 0.5,
+      metalness: 0.65,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.72,
     });
     const tapeMesh = new THREE.Mesh(tapeGeometry, tapeMaterial);
     rootGroup.add(tapeMesh);
 
-    // 5. Floating Silk Ribbon / Fluid Fabric Wave
-    // A graceful ribbon undulating in 3D space like couture silk
-    const ribbonPoints: THREE.Vector3[] = [];
-    for (let i = 0; i < 40; i++) {
-      const u = (i / 40) * Math.PI * 2 * 1.5;
-      ribbonPoints.push(
-        new THREE.Vector3(
-          Math.sin(u) * 2.8,
-          Math.cos(u * 0.7) * 2.2 - 0.2,
-          Math.cos(u) * 2.0 - 0.5
-        )
-      );
-    }
-    const ribbonCurve = new THREE.CatmullRomCurve3(ribbonPoints, true);
-    const ribbonGeometry = new THREE.TubeGeometry(ribbonCurve, 80, 0.06, 6, true);
-    const ribbonMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x1da84a,
-      emissive: 0x093016,
-      emissiveIntensity: 0.3,
-      metalness: 0.85,
-      roughness: 0.2,
-      transmission: 0.5,
-      transparent: true,
-      opacity: 0.4,
-    });
-    const ribbonMesh = new THREE.Mesh(ribbonGeometry, ribbonMaterial);
-    rootGroup.add(ribbonMesh);
-
-    // 6. Floating Tailor Particles (Floating Atelier Stardust / Lint)
-    const particleCount = 140;
+    // 9. Floating Platinum Stardust Particles (ZERO GREEN)
+    const particleCount = 100;
     const particleGeometry = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     const particleSpeeds = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
-      particlePositions[i * 3] = (Math.random() - 0.5) * 12;
+      particlePositions[i * 3] = (Math.random() - 0.5) * 14;
       particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 10;
       particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 6;
-      particleSpeeds[i] = 0.2 + Math.random() * 0.6;
+      particleSpeeds[i] = 0.15 + Math.random() * 0.45;
     }
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
 
     const particleMaterial = new THREE.PointsMaterial({
-      color: 0x4ade80,
-      size: 0.045,
+      color: 0xf1f5f9,
+      size: 0.038,
       transparent: true,
       opacity: 0.55,
       blending: THREE.AdditiveBlending,
@@ -229,18 +253,16 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     const particles = new THREE.Points(particleGeometry, particleMaterial);
     scene.add(particles);
 
-    // 7. Mouse Interaction & Responsive Parallax
-    let targetRotationY = 0;
-    let targetRotationX = 0;
-    let targetPositionX = isDesktop ? -1.8 : 0;
+    // 10. Mouse Interaction
+    let mouseYaw = 0;
+    let mousePitch = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
       const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-      targetRotationY = mouseX * 0.45;
-      targetRotationX = -mouseY * 0.2;
+      mouseYaw = mouseX * 0.32;
+      mousePitch = -mouseY * 0.14;
     };
-
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     // Handle Window Resize
@@ -251,41 +273,142 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
-
-      const desktopNow = window.innerWidth >= 1024;
-      targetPositionX = desktopNow ? -1.8 : 0;
     };
     window.addEventListener('resize', handleResize);
 
-    // 8. Animation Loop
+    // 11. Tab Adaptation Parameters & Smooth Lerp Targets
+    // Vectors for smooth interpolation between tabs
+    const targetGroupPos = new THREE.Vector3();
+    const targetGroupScale = new THREE.Vector3();
+    const targetLeftPos = new THREE.Vector3();
+    const targetRightPos = new THREE.Vector3();
+    let targetBaseRotationY = 0;
+
+    // Helper to calculate responsive target transformations for the current tab
+    function updateTabTargets(tab: number) {
+      const isDesktop = window.innerWidth >= 1024;
+      const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+      if (tab === 1) {
+        // TAB 1: Input / Landing ('/')
+        // Make model ENLARGED and fit the left hero space prominently so user sees it clearly!
+        if (isDesktop) {
+          targetGroupPos.set(-2.2, -0.05, 0.15);
+          targetGroupScale.set(2.25, 2.25, 2.25);
+          targetBaseRotationY = 0.18;
+          targetLeftPos.set(-2.3, -0.08, -0.9);
+          targetRightPos.set(2.3, -0.08, -0.9);
+        } else if (isTablet) {
+          targetGroupPos.set(-1.2, 0.1, -0.2);
+          targetGroupScale.set(1.85, 1.85, 1.85);
+          targetBaseRotationY = 0.1;
+          targetLeftPos.set(-2.2, -0.08, -0.9);
+          targetRightPos.set(2.2, -0.08, -0.9);
+        } else {
+          // Mobile: Centered, elevated above fold
+          targetGroupPos.set(0, 0.45, -0.4);
+          targetGroupScale.set(1.45, 1.45, 1.45);
+          targetBaseRotationY = 0;
+          targetLeftPos.set(-2.0, -0.08, -0.9);
+          targetRightPos.set(2.0, -0.08, -0.9);
+        }
+      } else if (tab === 2) {
+        // TAB 2: Results / Loading ('/results', '/loading')
+        // Enlarge into an expansive, panoramic fashion showroom behind the brand cards!
+        if (isDesktop) {
+          targetGroupPos.set(0, 0.12, -0.8);
+          targetGroupScale.set(2.5, 2.5, 2.5);
+          targetBaseRotationY = 0;
+          targetLeftPos.set(-3.0, -0.08, -1.1);
+          targetRightPos.set(3.0, -0.08, -1.1);
+        } else {
+          targetGroupPos.set(0, 0.2, -1.2);
+          targetGroupScale.set(1.7, 1.7, 1.7);
+          targetBaseRotationY = 0;
+          targetLeftPos.set(-2.3, -0.08, -1.0);
+          targetRightPos.set(2.3, -0.08, -1.0);
+        }
+      } else {
+        // TAB 3: Brand Detail ('/brand/:id')
+        // Focused fitting mannequin perspective next to the size chart
+        if (isDesktop) {
+          targetGroupPos.set(-1.8, 0.05, 0.05);
+          targetGroupScale.set(2.15, 2.15, 2.15);
+          targetBaseRotationY = 0.32; // Angled towards chart
+          targetLeftPos.set(-2.4, -0.08, -0.9);
+          targetRightPos.set(2.4, -0.08, -0.9);
+        } else {
+          targetGroupPos.set(0, 0.3, -0.6);
+          targetGroupScale.set(1.5, 1.5, 1.5);
+          targetBaseRotationY = 0.15;
+          targetLeftPos.set(-2.1, -0.08, -0.9);
+          targetRightPos.set(2.1, -0.08, -0.9);
+        }
+      }
+    }
+
+    // Initialize targets immediately
+    updateTabTargets(currentTabRef.current);
+    rootGroup.position.copy(targetGroupPos);
+    rootGroup.scale.copy(targetGroupScale);
+
+    // 12. Animation Loop (Smooth Inter-Tab Lerp + Cloth Breathing)
     let animationFrameId: number;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
-
-      // Smooth idle rotation + mouse parallax
       const motionSpeed = prefersReducedMotion ? 0.1 : 1.0;
-      const idleRotation = elapsed * 0.22 * motionSpeed;
 
-      rootGroup.rotation.y += (targetRotationY + idleRotation - rootGroup.rotation.y) * 0.035;
-      rootGroup.rotation.x += (targetRotationX - rootGroup.rotation.x) * 0.035;
-      rootGroup.position.x += (targetPositionX - rootGroup.position.x) * 0.05;
+      // Update target based on live currentTab
+      updateTabTargets(currentTabRef.current);
 
-      // Subtle breathing float on mannequin
-      rootGroup.position.y = -0.2 + Math.sin(elapsed * 1.2 * motionSpeed) * 0.08;
+      // Smooth buttery-smooth lerp interpolation between tabs (0.045 factor = ~0.8s graceful glide)
+      rootGroup.position.lerp(targetGroupPos, 0.045);
+      rootGroup.scale.lerp(targetGroupScale, 0.045);
 
-      // Smooth floating rotation of the silk ribbon
-      ribbonMesh.rotation.y = elapsed * 0.18 * motionSpeed;
-      ribbonMesh.rotation.z = Math.sin(elapsed * 0.4 * motionSpeed) * 0.15;
+      leftHoodieMesh.position.lerp(targetLeftPos, 0.045);
+      rightHoodieMesh.position.lerp(targetRightPos, 0.045);
 
-      // Gentle pulse on the measuring tape glow
-      tapeMaterial.emissiveIntensity = 0.5 + Math.sin(elapsed * 2.5 * motionSpeed) * 0.25;
+      // Subtle idle turntable drift + mouse parallax
+      const idleYaw = Math.sin(elapsed * 0.35 * motionSpeed) * 0.08;
+      const desiredYaw = targetBaseRotationY + mouseYaw + idleYaw;
+      rootGroup.rotation.y = THREE.MathUtils.lerp(rootGroup.rotation.y, desiredYaw, 0.045);
+      rootGroup.rotation.x = THREE.MathUtils.lerp(rootGroup.rotation.x, mousePitch, 0.045);
 
-      // Drift floating particles upward
+      // Harmonic Floating & Breathing motion (bobbing)
+      centerHoodieMesh.position.y = Math.sin(elapsed * 1.3 * motionSpeed) * 0.06;
+      leftHoodieMesh.position.y = targetLeftPos.y + Math.sin((elapsed * 1.3 + 0.8) * motionSpeed) * 0.05;
+      rightHoodieMesh.position.y = targetRightPos.y + Math.sin((elapsed * 1.3 - 0.8) * motionSpeed) * 0.05;
+
+      // Smooth Continuous Cloth Breathing Wave on Center Hoodie
+      if (centerHoodieMesh && originalPositions) {
+        const positions = centerHoodieMesh.geometry.attributes.position;
+        const count = positions.count;
+
+        for (let i = 0; i < count; i++) {
+          const origX = originalPositions[i * 3];
+          const origY = originalPositions[i * 3 + 1];
+          const origZ = originalPositions[i * 3 + 2];
+
+          // Harmonic micro-flutter along cotton drape
+          const wave = Math.sin(elapsed * 2.2 * motionSpeed + origY * 3.5 + origX * 2.0) * 0.007;
+          const chestBreath = Math.sin(elapsed * 1.3 * motionSpeed) * 0.012 * (origY > -0.2 ? 1.0 : 0.4);
+
+          positions.setZ(i, origZ + wave + chestBreath);
+        }
+        positions.needsUpdate = true;
+        centerHoodieMesh.geometry.computeVertexNormals();
+      }
+
+      // Measuring ribbon rotation & pulse
+      tapeMesh.rotation.y = elapsed * 0.12 * motionSpeed;
+      tapeMaterial.emissiveIntensity = 0.32 + Math.sin(elapsed * 2.0 * motionSpeed) * 0.14;
+
+      // Drift floating stardust particles upward
       const pPositions = particleGeometry.attributes.position.array as Float32Array;
       for (let i = 0; i < particleCount; i++) {
         pPositions[i * 3 + 1] += particleSpeeds[i] * delta * motionSpeed;
@@ -300,26 +423,20 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
     animate();
 
-    // Cleanup on unmount
+    // 13. Cleanup on unmount
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
 
-      latheGeometry.dispose();
-      mannequinMaterial.dispose();
-      wireframeGeometry.dispose();
-      wireframeMaterial.dispose();
-      poleGeometry.dispose();
-      poleMaterial.dispose();
-      baseGeometry.dispose();
-      baseMaterial.dispose();
-      finialGeometry.dispose();
-      finialMaterial.dispose();
+      baseHoodieGeo.dispose();
+      heroMaterial.dispose();
+      leftCompanionMaterial.dispose();
+      rightCompanionMaterial.dispose();
+      diffuseTexture.dispose();
+      normalTexture.dispose();
       tapeGeometry.dispose();
       tapeMaterial.dispose();
-      ribbonGeometry.dispose();
-      ribbonMaterial.dispose();
       particleGeometry.dispose();
       particleMaterial.dispose();
       renderer.dispose();
@@ -328,7 +445,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [category]);
+  }, []);
 
   return (
     <div

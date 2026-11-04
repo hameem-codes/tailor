@@ -3,6 +3,7 @@ import { BrandMatchResult, UserMeasurements, UnitSystem, ChartType } from '../ty
 import { RangeRuler } from './RangeRuler';
 import { CheckIcon, WarningTriangleIcon, CrossCircleIcon, LockIcon } from './Icons';
 import { formatDimension, formatRange } from '../lib/matching/helpers';
+import { BrandLogo } from './BrandLogo';
 
 interface BrandDetailProps {
   matchResult: BrandMatchResult;
@@ -117,7 +118,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
             - Sticky primary button
          ========================================================================= */}
       <div className="lg:hidden w-full max-w-[520px] mx-auto min-h-screen flex flex-col gap-3.5 p-4 sm:p-6 pb-20">
-        {/* Mobile Header: Back Button + Brand Name */}
+        {/* Mobile Header: Back Button + Brand Logo */}
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
@@ -126,9 +127,13 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
           >
             ←
           </button>
-          <span className="font-barlow text-3xl font-semibold tracking-wide text-white">
-            {brandChart.brand}
-          </span>
+          <div className="flex items-center min-h-[36px]">
+            <BrandLogo
+              brand={brandChart.brand}
+              maxHeight={32}
+              fallbackClassName="font-barlow text-3xl font-semibold tracking-wide text-white"
+            />
+          </div>
         </div>
 
         {/* Dynamic Headline Verdict */}
@@ -354,8 +359,13 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
             </div>
 
             {/* Breadcrumb Context Label */}
-            <div className="text-xs sm:text-sm font-semibold tracking-wide text-secText uppercase">
-              {brandChart.brand} · {genderLabel} · {categoryLabel}
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide text-secText uppercase">
+              <BrandLogo
+                brand={brandChart.brand}
+                maxHeight={18}
+                fallbackClassName="text-white font-semibold"
+              />
+              <span>· {genderLabel} · {categoryLabel}</span>
             </div>
 
             {/* Dynamic Headline Verdict */}

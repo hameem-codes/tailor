@@ -3,6 +3,7 @@ import { BrandMatchResult, UserMeasurements } from '../types';
 import { RangeRuler } from './RangeRuler';
 import { CheckIcon, WarningTriangleIcon, CrossCircleIcon, HeartIcon } from './Icons';
 import { formatDimension } from '../lib/matching/helpers';
+import { BrandLogo } from './BrandLogo';
 
 interface BrandCardProps {
   matchResult: BrandMatchResult;
@@ -44,10 +45,10 @@ export const BrandCard: React.FC<BrandCardProps> = ({
       onClick={() => onOpenDetail(matchResult)}
       className={`glass-card p-5 sm:p-6 flex flex-col gap-4 transition-all duration-200 hover:border-white/25 cursor-pointer ${cardBorderClass}`}
     >
-      {/* Top Header: Brand Name + View Chart Link + Save Heart */}
-      <div className="flex items-center justify-between">
-        <h3 className="font-barlow text-2xl sm:text-[28px] font-semibold text-white tracking-wide">
-          {brandChart.brand}
+      {/* Top Header: Brand Logo + View Chart Link + Save Heart */}
+      <div className="flex items-center justify-between min-h-[36px]">
+        <h3 className="flex items-center" aria-label={brandChart.brand}>
+          <BrandLogo brand={brandChart.brand} />
         </h3>
         <div className="flex items-center gap-1">
           <button
