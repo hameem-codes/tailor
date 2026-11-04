@@ -311,16 +311,16 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             <p className="text-secText text-[15px] leading-relaxed max-w-xs">
               We couldn't find a matching brand for these filters or search terms. Try adjusting your preferences.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs mt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-sm mt-3">
               <button
                 onClick={onEditMeasurements}
-                className="primary-btn btn-press flex-1 !min-h-[44px] text-sm"
+                className="primary-btn btn-press w-full sm:w-auto !px-6 !min-h-[44px] !text-sm font-semibold whitespace-nowrap"
               >
                 Edit measurements
               </button>
               <button
                 onClick={clearFilters}
-                className="pill-btn btn-press flex-1 !min-h-[44px] text-sm"
+                className="pill-btn btn-press w-full sm:w-auto !px-6 !min-h-[44px] !text-sm font-medium whitespace-nowrap"
               >
                 Clear filters
               </button>
