@@ -388,6 +388,7 @@ export const App: React.FC = () => {
                 setRegionFilter={setRegionFilter}
                 sortBy={sortBy}
                 setSortBy={setSortBy}
+                isLoading={brandsLoading}
               />
             }
           />
