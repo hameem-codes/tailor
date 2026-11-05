@@ -227,8 +227,10 @@ export const App: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>('match');
 
   // Fetch updated brand data if available
+  const [brandsLoading, setBrandsLoading] = useState(false);
   useEffect(() => {
     let mounted = true;
+    setBrandsLoading(true);
     fetchBrandSizes()
       .then((loaded) => {
         if (mounted && loaded && loaded.length > 0) {
@@ -239,8 +241,8 @@ export const App: React.FC = () => {
         console.warn('[Tailor] fetchBrandSizes background fetch error:', err);
       })
       .finally(() => {
+        if (mounted) setBrandsLoading(false);
       });
-
 
     return () => {
       mounted = false;

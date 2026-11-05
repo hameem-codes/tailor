@@ -403,6 +403,75 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       </div>
 
       {/* =========================================================================
+          ACTIVE STICKY COMPARISON TRAY (TOP DOCKED)
+          - Positioned prominently at top of content, never obscuring bottom
+          - Sticks gracefully when scrolling down through brand cards
+         ========================================================================= */}
+      {comparedBrandIds.length > 0 && (
+        <aside
+          role="region"
+          aria-label="Brand comparison bar"
+          className="sticky top-4 z-30 w-full glass-card !bg-[#131518]/95 border-2 border-[#4ADE80]/50 p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 animate-fade-in"
+        >
+          {/* Left: Indicator & Selected Brand Chips */}
+          <div className="flex items-center gap-2.5 overflow-x-auto min-w-0 py-0.5">
+            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white whitespace-nowrap bg-white/10 px-2.5 py-1 rounded-full border border-white/15">
+              <span>⚖️</span>
+              <span>Compare ({comparedBrandIds.length}/3)</span>
+            </span>
+
+            <div className="flex items-center gap-2 flex-nowrap">
+              {comparedMatches.map((m) => (
+                <span
+                  key={m.brandChart.id}
+                  className="inline-flex items-center gap-1.5 text-xs bg-white/[0.08] text-white px-3 py-1 rounded-full whitespace-nowrap border border-white/15 group shadow-sm"
+                >
+                  <strong className="font-semibold">{m.brandChart.brand}</strong>
+                  <span className="text-[#4ADE80] font-bold text-[11px] bg-[#1DA84A]/25 px-1.5 py-0.5 rounded border border-[#4ADE80]/30">
+                    {m.recommendedSize}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setComparedBrandIds((prev) => prev.filter((id) => id !== m.brandChart.id))}
+                    className="text-secText hover:text-red-400 ml-1 p-0.5 text-sm leading-none transition-colors"
+                    aria-label={`Remove ${m.brandChart.brand}`}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+
+              {comparedBrandIds.length < 3 && (
+                <span className="hidden md:inline-flex text-xs text-secText/70 italic px-1 whitespace-nowrap">
+                  + pick {comparedBrandIds.length === 1 ? 'another brand' : '1 more'} below
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2.5 flex-none justify-end">
+            <button
+              type="button"
+              onClick={() => setShowComparisonModal(true)}
+              disabled={comparedBrandIds.length < 2}
+              className="primary-btn btn-press !min-h-[38px] !px-5 text-xs sm:text-sm font-bold whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(29,168,74,0.35)]"
+            >
+              {comparedBrandIds.length < 2 ? 'Pick 1 more brand' : 'Compare side-by-side →'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setComparedBrandIds([])}
+              className="pill-btn btn-press !min-h-[38px] !px-3 text-xs text-secText hover:text-white border-white/15"
+              aria-label="Clear all compared brands"
+            >
+              Clear
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* =========================================================================
           5. BRAND CARDS GRID
           - Desktop (lg:): Exactly 3 COLUMNS as shown in user's design image
           - Tablet (md:): 2 columns
@@ -472,58 +541,6 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         )}
       </div>
 
-      {/* Floating Bottom Comparison Bar */}
-      {comparedBrandIds.length > 0 && (
-        <aside
-          role="region"
-          aria-label="Brand comparison bar"
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-xl glass-card border border-[#4ADE80]/50 p-2.5 sm:p-3 rounded-full shadow-[0_10px_35px_rgba(0,0,0,0.7)] backdrop-blur-xl flex items-center justify-between gap-3 animate-fade-in"
-        >
-          <div className="flex items-center gap-2 overflow-x-auto min-w-0 pl-2">
-            <span className="text-xs sm:text-sm font-semibold text-white whitespace-nowrap">
-              Compare ({comparedBrandIds.length}/3):
-            </span>
-            <div className="flex items-center gap-1.5 flex-nowrap">
-              {comparedMatches.map((m) => (
-                <span
-                  key={m.brandChart.id}
-                  className="inline-flex items-center gap-1 text-xs bg-white/10 text-white px-2.5 py-0.5 rounded-full whitespace-nowrap border border-white/10"
-                >
-                  {m.brandChart.brand}
-                  <button
-                    type="button"
-                    onClick={() => setComparedBrandIds((prev) => prev.filter((id) => id !== m.brandChart.id))}
-                    className="text-secText hover:text-white ml-0.5"
-                    aria-label={`Remove ${m.brandChart.brand}`}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 flex-none pr-1">
-            <button
-              type="button"
-              onClick={() => setShowComparisonModal(true)}
-              disabled={comparedBrandIds.length < 2}
-              className="primary-btn btn-press !min-h-[36px] !px-4 !py-1 text-xs sm:text-sm font-bold whitespace-nowrap disabled:opacity-50"
-            >
-              {comparedBrandIds.length < 2 ? 'Pick 2+ to compare' : 'Compare side-by-side →'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setComparedBrandIds([])}
-              className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] text-xs text-secText hover:text-white"
-              aria-label="Clear all compared brands"
-            >
-              ×
-            </button>
-          </div>
-        </aside>
-      )}
-
       {/* Brand Comparison Modal */}
       <BrandComparisonModal
         isOpen={showComparisonModal}
@@ -575,76 +592,6 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </div>
         </div>
       )}
-
-      {/* Floating Bottom Comparison Bar */}
-      {comparedBrandIds.length > 0 && (
-        <aside
-          role="region"
-          aria-label="Brand comparison bar"
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-xl glass-card border border-[#4ADE80]/50 p-2.5 sm:p-3 rounded-full shadow-[0_10px_35px_rgba(0,0,0,0.7)] backdrop-blur-xl flex items-center justify-between gap-3 animate-fade-in"
-        >
-          <div className="flex items-center gap-2 overflow-x-auto min-w-0 pl-2">
-            <span className="text-xs sm:text-sm font-semibold text-white whitespace-nowrap">
-              Compare ({comparedBrandIds.length}/3):
-            </span>
-            <div className="flex items-center gap-1.5 flex-nowrap">
-              {comparedMatches.map((m) => (
-                <span
-                  key={m.brandChart.id}
-                  className="inline-flex items-center gap-1 text-xs bg-white/10 text-white px-2.5 py-0.5 rounded-full whitespace-nowrap border border-white/10"
-                >
-                  {m.brandChart.brand}
-                  <button
-                    type="button"
-                    onClick={() => setComparedBrandIds((prev) => prev.filter((id) => id !== m.brandChart.id))}
-                    className="text-secText hover:text-white ml-0.5"
-                    aria-label={`Remove ${m.brandChart.brand}`}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 flex-none pr-1">
-            <button
-              type="button"
-              onClick={() => setShowComparisonModal(true)}
-              disabled={comparedBrandIds.length < 2}
-              className="primary-btn btn-press !min-h-[36px] !px-4 !py-1 text-xs sm:text-sm font-bold whitespace-nowrap disabled:opacity-50"
-            >
-              {comparedBrandIds.length < 2 ? 'Pick 2+ to compare' : 'Compare side-by-side →'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setComparedBrandIds([])}
-              className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] text-xs text-secText hover:text-white"
-              aria-label="Clear all compared brands"
-            >
-              ×
-            </button>
-          </div>
-        </aside>
-      )}
-
-      {/* Brand Comparison Modal */}
-      <BrandComparisonModal
-        isOpen={showComparisonModal}
-        onClose={() => setShowComparisonModal(false)}
-        matches={comparedMatches}
-        measurements={measurements}
-        onRemoveBrand={(id) => setComparedBrandIds((prev) => prev.filter((item) => item !== id))}
-        onOpenDetail={onOpenDetail}
-      />
-
-      {/* Export & Share Modal */}
-      <ExportShareModal
-        isOpen={showExportModal}
-        onClose={() => setShowExportModal(false)}
-        measurements={measurements}
-        results={results}
-      />
 
       {/* =========================================================================
           6. FOOTER DISCLAIMER
