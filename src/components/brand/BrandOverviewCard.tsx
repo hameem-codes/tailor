@@ -143,3 +143,4 @@ export const BrandOverviewCard: React.FC<BrandOverviewCardProps> = ({
     </div>
   );
 };
+

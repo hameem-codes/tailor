@@ -176,3 +176,4 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
     </div>
   );
 };
+

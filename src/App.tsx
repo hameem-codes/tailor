@@ -27,7 +27,6 @@ import {
 } from './lib/storage';
 import { getInitialBrands, fetchBrandSizes } from './lib/data';
 import { matchAllBrands, matchBrand } from './lib/matching/engine';
-import { saveRecentSearch } from './components/shared/PresetManager';
 import { TopNavbar } from './components/TopNavbar';
 import { InputScreen } from './components/InputScreen';
 import { LoadingScreen } from './components/LoadingScreen';
@@ -56,7 +55,6 @@ const InputScreenRoute: React.FC<{
       // storage quota / privacy mode
     }
     saveStoredMeasurements(measurements);
-    saveRecentSearch(measurements);
     navigate('/loading');
   };
 

@@ -110,3 +110,4 @@ describe('storage: measurement presets (Issue 16)', () => {
     expect(loadMeasurementPresets()).toHaveLength(0);
   });
 });
+

@@ -121,3 +121,4 @@ export const OnboardingWalkthrough: React.FC<OnboardingWalkthroughProps> = ({
     </div>
   );
 };
+
