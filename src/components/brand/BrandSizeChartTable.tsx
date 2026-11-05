@@ -102,8 +102,8 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
                   onClick={() => onSelectSize(idx)}
                   className={`w-full flex items-center px-3 py-2 text-xs sm:text-sm text-left rounded-[14px] transition-all duration-200 cursor-pointer ${
                     isCurrent
-                      ? 'bg-[#1DA84A] text-white font-bold shadow-md ring-1 ring-[#4ADE80]/40'
-                      : 'hover:bg-white/10 text-white/90'
+                      ? 'bg-gradient-to-r from-[#1DA84A] to-[#15803d] text-white font-bold shadow-[0_4px_16px_rgba(29,168,74,0.3)] ring-1 ring-[#4ADE80]/50'
+                      : 'hover:bg-white/[0.07] text-white/90'
                   }`}
                   aria-selected={isCurrent}
                 >

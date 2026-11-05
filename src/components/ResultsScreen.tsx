@@ -345,7 +345,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           4. MATCH LEVELS COMPACT HELPER (Dark glass card for guaranteed contrast)
          ========================================================================= */}
       <div className="flex flex-col gap-2 w-full">
-        <div className="glass-card !bg-[#131518]/92 backdrop-blur-xl border border-white/12 rounded-2xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-secText shadow-md">
+        <div className="glass-card border border-white/10 rounded-2xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-secText shadow-md">
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
             <span className="text-white font-semibold">Match levels:</span>
             <span className="inline-flex items-center gap-1 text-[#4ADE80] font-semibold">
@@ -370,7 +370,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         </div>
 
         {showMatchLevels && (
-          <div className="glass-card !bg-[#131518]/96 backdrop-blur-xl p-4 flex flex-col gap-3 w-full animate-fade-in border border-white/15 rounded-2xl shadow-xl">
+          <div className="glass-card p-4 flex flex-col gap-3 w-full animate-fade-in border border-white/10 rounded-2xl shadow-xl">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
               <div>
                 <span className="text-[#4ADE80] font-semibold text-xs sm:text-sm inline-flex items-center gap-1.5">
@@ -410,7 +410,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         <aside
           role="region"
           aria-label="Brand comparison bar"
-          className="sticky top-2 sm:top-4 z-30 w-full glass-card !bg-[#131518]/96 border-2 border-[#4ADE80]/50 p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 animate-fade-in"
+          className="sticky top-2 sm:top-4 z-30 w-full glass-card border border-[#4ADE80]/40 p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 animate-fade-in"
         >
           {/* Left: Indicator & Selected Brand Chips */}
           <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar min-w-0 py-0.5">

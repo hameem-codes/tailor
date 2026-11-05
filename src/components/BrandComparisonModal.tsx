@@ -43,7 +43,7 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
       <div
         className={`relative w-full my-auto ${
           isTwo ? 'max-w-4xl' : 'max-w-6xl'
-        } glass-card !bg-[#131518]/98 border border-white/20 rounded-[24px] sm:rounded-[28px] p-4 sm:p-6 shadow-[0_25px_70px_rgba(0,0,0,0.9)] flex flex-col gap-4 max-h-[86vh] overflow-y-auto animate-modal-pop`}
+        } glass-card !bg-[#12141a]/92 backdrop-blur-3xl border border-white/12 rounded-[24px] sm:rounded-[28px] p-4 sm:p-6 shadow-[0_25px_70px_rgba(0,0,0,0.85)] flex flex-col gap-4 max-h-[86vh] overflow-y-auto animate-modal-pop`}
       >
         {/* Modal Header */}
         <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3 flex-none">

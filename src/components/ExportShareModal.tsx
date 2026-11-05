@@ -112,7 +112,7 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-lg glass-card !bg-[#131518]/98 border border-white/20 rounded-t-[28px] sm:rounded-[28px] p-5 sm:p-7 shadow-2xl flex flex-col gap-4 sm:gap-5 max-h-[90vh] overflow-y-auto animate-modal-pop">
+      <div className="relative w-full max-w-lg glass-card !bg-[#12141a]/92 backdrop-blur-3xl border border-white/12 rounded-t-[28px] sm:rounded-[28px] p-5 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.85)] flex flex-col gap-4 sm:gap-5 max-h-[90vh] overflow-y-auto animate-modal-pop">
         {/* Modal Header */}
         <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-3.5">
           <div className="flex items-center gap-2.5">

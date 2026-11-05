@@ -51,7 +51,7 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
   };
 
   return (
-    <div className={`w-full max-w-[540px] glass-card !bg-[#131518]/96 sm:!bg-[#14161B]/90 backdrop-blur-2xl p-5 sm:p-7 flex flex-col gap-4 border border-white/12 rounded-[28px] shadow-2xl ${className}`}>
+    <div className={`w-full max-w-[540px] glass-card p-5 sm:p-7 flex flex-col gap-4 border border-white/10 rounded-[28px] shadow-2xl ${className}`}>
       {/* Optional Preset / Extra header toolbar */}
       {extraHeaderActions}
 

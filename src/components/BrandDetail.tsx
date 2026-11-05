@@ -150,34 +150,34 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
          ========================================================================= */}
       <section
         aria-label={`${brandChart.brand} overview`}
-        className="glass-card !bg-[#131518]/95 backdrop-blur-2xl border border-white/15 rounded-[24px] sm:rounded-[32px] p-5 sm:p-7 shadow-2xl flex flex-col gap-4 animate-fade-in"
+        className="glass-card p-5 sm:p-7 flex flex-col gap-4 animate-fade-in"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          {/* Large Brand Logo + Brand Details */}
+          {/* Large Brand Logo + Brand Details (No white border box around logo) */}
           <div className="flex items-center gap-4 sm:gap-6 min-w-0">
-            {/* Illuminated Logo Emblem Container */}
-            <div className="flex items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-white/[0.07] border border-white/12 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex-none min-w-[96px] sm:min-w-[130px] min-h-[64px] sm:min-h-[80px]">
+            <div className="flex items-center flex-none">
               <BrandLogo
                 brand={brandChart.brand}
-                maxHeight={52}
-                maxWidth={220}
+                maxHeight={48}
+                maxWidth={180}
+                hideTextSuffix={true}
                 fallbackClassName="font-barlow text-3xl sm:text-5xl font-extrabold tracking-wide text-white uppercase"
               />
             </div>
 
             <div className="flex flex-col gap-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-barlow text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-wide truncate">
+                <span className="font-barlow text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-wide truncate">
                   {brandChart.brand}
                 </span>
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#4ADE80] bg-[#1DA84A]/20 px-2.5 py-0.5 rounded-full border border-[#4ADE80]/30 flex-none">
                   {brandChart.region}
                 </span>
-                <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-secText bg-white/[0.06] px-2.5 py-0.5 rounded-full border border-white/10 flex-none">
+                <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-secText/85 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10 flex-none">
                   {genderLabel} · {categoryLabel}
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-secText/90 leading-snug">
+              <p className="text-xs sm:text-sm text-secText/80 leading-snug">
                 Official {brandChart.brand} size guide & body fit matching
               </p>
             </div>
@@ -185,14 +185,14 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
 
           {/* Quick Best Fit Callout Badge */}
           <div className="flex items-center sm:flex-col sm:items-end justify-between border-t border-white/10 sm:border-0 pt-3 sm:pt-0 flex-none">
-            <span className="text-xs font-semibold text-secText uppercase tracking-wider">
+            <span className="text-xs font-semibold text-secText/80 uppercase tracking-wider">
               Recommended Size
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mt-0.5">
               <span className="font-barlow text-3xl sm:text-4xl font-extrabold text-[#4ADE80]">
                 {matchResult.recommendedSize}
               </span>
-              <span className="text-xs font-bold text-white/90 bg-white/10 px-2.5 py-1 rounded-md border border-white/15">
+              <span className="text-xs font-bold text-white/90 bg-white/10 px-2.5 py-1 rounded-full border border-white/15">
                 {matchResult.matchStatus === 'great'
                   ? '✓ Great match'
                   : matchResult.matchStatus === 'between'
@@ -204,7 +204,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
         </div>
 
         {/* Dynamic Verdict Headline with Fit Badge */}
-        <div className="border-t border-white/10 pt-3.5 flex flex-col sm:flex-row sm:items-baseline gap-1.5 sm:gap-2.5">
+        <div className="border-t border-white/10 pt-3 flex flex-col sm:flex-row sm:items-baseline gap-1.5 sm:gap-2.5">
           <span className="text-xs font-bold uppercase tracking-wider text-[#4ADE80] flex-none">
             Fit Verdict:
           </span>

@@ -75,10 +75,10 @@ export const BrandCard: React.FC<BrandCardProps> = ({
 
   const isPoor = matchStatus === 'poor';
   const cardBorderClass = isPoor
-    ? 'border-red-400/50 shadow-[0_0_15px_rgba(248,113,113,0.15)]'
+    ? 'border-red-400/40 shadow-[0_0_15px_rgba(248,113,113,0.12)]'
     : matchStatus === 'between'
-    ? 'border-amber-400/30'
-    : 'border-white/12';
+    ? 'border-amber-400/25'
+    : 'border-white/10';
 
   return (
     <article
@@ -88,7 +88,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         if (target.closest('button, a')) return;
         onOpenDetail(matchResult);
       }}
-      className={`glass-card group relative p-4.5 sm:p-5 flex flex-col gap-3.5 transition-all duration-200 hover:border-white/25 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 overflow-hidden ${cardBorderClass}`}
+      className={`glass-card group relative p-4.5 sm:p-5 flex flex-col gap-3.5 transition-all duration-200 hover:border-white/20 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 overflow-hidden ${cardBorderClass}`}
     >
       {/* Top Header: Brand Logo on left, Quick Action Toolbar on right */}
       <div className="flex items-center justify-between gap-2 min-h-[36px]">
