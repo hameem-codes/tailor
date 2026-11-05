@@ -100,17 +100,25 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     const baseApparelPath = `${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}/apparel`;
 
     let heroMaterial: THREE.MeshStandardMaterial;
+    let leftCompanionMaterial: THREE.MeshStandardMaterial;
+    let rightCompanionMaterial: THREE.MeshStandardMaterial;
 
     const handleTextureError = (kind: 'diffuse' | 'normal') => {
       return (err: unknown) => {
         console.warn(`ThreeBackground: ${kind} texture failed to load from ${baseApparelPath}. Fallback applied.`, err);
-        if (heroMaterial) {
+        if (heroMaterial && leftCompanionMaterial && rightCompanionMaterial) {
           if (kind === 'diffuse') {
             heroMaterial.map = null;
+            leftCompanionMaterial.map = null;
+            rightCompanionMaterial.map = null;
           } else {
             heroMaterial.normalMap = null;
+            leftCompanionMaterial.normalMap = null;
+            rightCompanionMaterial.normalMap = null;
           }
           heroMaterial.needsUpdate = true;
+          leftCompanionMaterial.needsUpdate = true;
+          rightCompanionMaterial.needsUpdate = true;
         }
       };
     };
@@ -136,7 +144,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     normalTexture.magFilter = THREE.LinearFilter;
 
     // 5. Materials (Distinct, Highly Visible Studio Colorway - NO GREEN)
-    // Solitary Hero Hoodie: Sculptural Studio Heather Silver (#d8dfe8) -> Bright, detailed, and 100% visible!
+    // Center Hero Hoodie: Sculptural Studio Heather Silver (#d8dfe8) -> Bright, detailed, and 100% visible!
     heroMaterial = new THREE.MeshStandardMaterial({
       map: diffuseTexture,
       normalMap: normalTexture,
@@ -144,6 +152,34 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
       roughness: 0.82,
       metalness: 0.08,
       color: 0xd8dfe8, // Bright Studio Heather Silver / Moonlit Platinum
+      side: THREE.FrontSide,
+      transparent: true,
+      alphaTest: 0.02,
+      depthWrite: true,
+    });
+
+    // Left Companion Hoodie: Warm Desert Sand / Earth Taupe (#c8b6a6)
+    leftCompanionMaterial = new THREE.MeshStandardMaterial({
+      map: diffuseTexture,
+      normalMap: normalTexture,
+      normalScale: new THREE.Vector2(0.5, 0.5),
+      roughness: 0.86,
+      metalness: 0.05,
+      color: 0xc8b6a6, // Warm Desert Sand
+      side: THREE.FrontSide,
+      transparent: true,
+      alphaTest: 0.02,
+      depthWrite: true,
+    });
+
+    // Right Companion Hoodie: Smoked Titanium / Slate (#b4bcc8)
+    rightCompanionMaterial = new THREE.MeshStandardMaterial({
+      map: diffuseTexture,
+      normalMap: normalTexture,
+      normalScale: new THREE.Vector2(0.5, 0.5),
+      roughness: 0.84,
+      metalness: 0.12,
+      color: 0xb4bcc8, // Platinum Titanium
       side: THREE.FrontSide,
       transparent: true,
       alphaTest: 0.02,
@@ -190,14 +226,28 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     const baseHoodieGeo = createSmoothHoodieGeometry();
     const originalPositions = new Float32Array(baseHoodieGeo.attributes.position.array);
 
-    // 7. Hero Streetwear Hoodie Group
-    const hoodieGroup = new THREE.Group();
-    rootGroup.add(hoodieGroup);
+    // 7. Streetwear Hoodie Trio Group
+    const hoodieTrioGroup = new THREE.Group();
+    rootGroup.add(hoodieTrioGroup);
 
-    // Pristine Single Hero Hoodie (Front-facing, clean decoupled silhouette)
+    // Center Hero Hoodie (Chalk White, front-facing)
     const centerHoodieMesh = new THREE.Mesh(baseHoodieGeo, heroMaterial);
     centerHoodieMesh.position.set(0, 0, 0);
-    hoodieGroup.add(centerHoodieMesh);
+    hoodieTrioGroup.add(centerHoodieMesh);
+
+    // Left Companion Hoodie (Warm Bone Ivory, angled back in showroom depth)
+    const leftHoodieMesh = new THREE.Mesh(baseHoodieGeo.clone(), leftCompanionMaterial);
+    leftHoodieMesh.position.set(-2.5, -0.08, -0.9);
+    leftHoodieMesh.rotation.y = 0.46;
+    leftHoodieMesh.scale.set(0.88, 0.88, 0.88);
+    hoodieTrioGroup.add(leftHoodieMesh);
+
+    // Right Companion Hoodie (Platinum Silver, angled back in showroom depth)
+    const rightHoodieMesh = new THREE.Mesh(baseHoodieGeo.clone(), rightCompanionMaterial);
+    rightHoodieMesh.position.set(2.5, -0.08, -0.9);
+    rightHoodieMesh.rotation.y = -0.46;
+    rightHoodieMesh.scale.set(0.88, 0.88, 0.88);
+    hoodieTrioGroup.add(rightHoodieMesh);
 
     // 9. Floating Platinum Stardust Particles (ZERO GREEN)
     const particleCount = 100;
@@ -250,6 +300,8 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     // Vectors for smooth interpolation between tabs
     const targetGroupPos = new THREE.Vector3();
     const targetGroupScale = new THREE.Vector3();
+    const targetLeftPos = new THREE.Vector3();
+    const targetRightPos = new THREE.Vector3();
     let targetBaseRotationY = 0;
 
     // Helper to calculate responsive target transformations for the current tab
@@ -259,44 +311,58 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
       if (tab === 1) {
         // TAB 1: Input / Landing ('/')
-        // Prominent, enlarged hero fit on the left side of the screen
+        // Make model ENLARGED and fit the left hero space prominently so user sees it clearly!
         if (isDesktop) {
-          targetGroupPos.set(-1.85, 0.05, -0.1);
-          targetGroupScale.set(2.0, 2.0, 2.0);
+          targetGroupPos.set(-2.0, 0.05, -0.2);
+          targetGroupScale.set(1.95, 1.95, 1.95);
           targetBaseRotationY = 0.12;
+          targetLeftPos.set(-1.5, -0.08, -0.8);
+          targetRightPos.set(1.1, -0.08, -1.0);
         } else if (isTablet) {
-          targetGroupPos.set(-0.95, 0.1, -0.2);
-          targetGroupScale.set(1.7, 1.7, 1.7);
+          targetGroupPos.set(-1.1, 0.1, -0.3);
+          targetGroupScale.set(1.65, 1.65, 1.65);
           targetBaseRotationY = 0.08;
+          targetLeftPos.set(-1.4, -0.08, -0.8);
+          targetRightPos.set(1.1, -0.08, -0.9);
         } else {
           // Mobile: Centered, elevated above fold
           targetGroupPos.set(0, 0.45, -0.5);
           targetGroupScale.set(1.4, 1.4, 1.4);
           targetBaseRotationY = 0;
+          targetLeftPos.set(-1.8, -0.08, -0.9);
+          targetRightPos.set(1.8, -0.08, -0.9);
         }
       } else if (tab === 2) {
         // TAB 2: Results / Loading ('/results', '/loading')
-        // Enlarge into an expansive showroom background behind the brand cards
+        // Enlarge into an expansive, panoramic fashion showroom behind the brand cards!
         if (isDesktop) {
-          targetGroupPos.set(0, 0.08, -0.6);
-          targetGroupScale.set(2.4, 2.4, 2.4);
+          targetGroupPos.set(0, 0.12, -0.8);
+          targetGroupScale.set(2.5, 2.5, 2.5);
           targetBaseRotationY = 0;
+          targetLeftPos.set(-3.0, -0.08, -1.1);
+          targetRightPos.set(3.0, -0.08, -1.1);
         } else {
-          targetGroupPos.set(0, 0.18, -1.0);
-          targetGroupScale.set(1.65, 1.65, 1.65);
+          targetGroupPos.set(0, 0.2, -1.2);
+          targetGroupScale.set(1.7, 1.7, 1.7);
           targetBaseRotationY = 0;
+          targetLeftPos.set(-2.3, -0.08, -1.0);
+          targetRightPos.set(2.3, -0.08, -1.0);
         }
       } else {
         // TAB 3: Brand Detail ('/brand/:id')
-        // Focused mannequin perspective next to the size chart
+        // Focused fitting mannequin perspective next to the size chart
         if (isDesktop) {
-          targetGroupPos.set(-1.75, 0.05, 0.05);
+          targetGroupPos.set(-1.8, 0.05, 0.05);
           targetGroupScale.set(2.15, 2.15, 2.15);
-          targetBaseRotationY = 0.28; // Angled towards chart
+          targetBaseRotationY = 0.32; // Angled towards chart
+          targetLeftPos.set(-2.4, -0.08, -0.9);
+          targetRightPos.set(2.4, -0.08, -0.9);
         } else {
           targetGroupPos.set(0, 0.3, -0.6);
           targetGroupScale.set(1.5, 1.5, 1.5);
           targetBaseRotationY = 0.15;
+          targetLeftPos.set(-2.1, -0.08, -0.9);
+          targetRightPos.set(2.1, -0.08, -0.9);
         }
       }
     }
@@ -324,6 +390,9 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
       rootGroup.position.lerp(targetGroupPos, 0.045);
       rootGroup.scale.lerp(targetGroupScale, 0.045);
 
+      leftHoodieMesh.position.lerp(targetLeftPos, 0.045);
+      rightHoodieMesh.position.lerp(targetRightPos, 0.045);
+
       // Subtle idle turntable drift + mouse parallax
       const idleYaw = Math.sin(elapsed * 0.35 * motionSpeed) * 0.08;
       const desiredYaw = targetBaseRotationY + mouseYaw + idleYaw;
@@ -332,6 +401,8 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
       // Harmonic Floating & Breathing motion (bobbing)
       centerHoodieMesh.position.y = Math.sin(elapsed * 1.3 * motionSpeed) * 0.06;
+      leftHoodieMesh.position.y = targetLeftPos.y + Math.sin((elapsed * 1.3 + 0.8) * motionSpeed) * 0.05;
+      rightHoodieMesh.position.y = targetRightPos.y + Math.sin((elapsed * 1.3 - 0.8) * motionSpeed) * 0.05;
 
       // Smooth Continuous Cloth Breathing Wave on Center Hoodie
       if (centerHoodieMesh && originalPositions) {
@@ -376,6 +447,8 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
       baseHoodieGeo.dispose();
       heroMaterial.dispose();
+      leftCompanionMaterial.dispose();
+      rightCompanionMaterial.dispose();
       diffuseTexture.dispose();
       normalTexture.dispose();
       particleGeometry.dispose();
