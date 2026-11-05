@@ -23,6 +23,7 @@ import {
   isTipDismissed,
   setTipDismissed,
   decodeShareData,
+  encodeShareData,
   DEFAULT_MEASUREMENTS,
 } from './lib/storage';
 import { getInitialBrands, fetchBrandSizes } from './lib/data';
@@ -267,6 +268,19 @@ export const App: React.FC = () => {
     setTipDismissed(true);
   };
 
+  // Share results: encode measurements into a shareable URL and copy to clipboard
+  const handleShare = () => {
+    const encoded = encodeShareData(measurements);
+    if (encoded) {
+      const url = `${window.location.origin}?m=${encoded}`;
+      try {
+        navigator.clipboard.writeText(url);
+      } catch (e) {
+        // clipboard access failed; modal will still show the URL for manual copy
+      }
+    }
+  };
+
   // Compute matches
   const matchResults = useMemo(() => {
     return matchAllBrands(brands, measurements, searchQuery, regionFilter, sortBy);
@@ -389,6 +403,7 @@ export const App: React.FC = () => {
                 sortBy={sortBy}
                 setSortBy={setSortBy}
                 isLoading={brandsLoading}
+                onShare={handleShare}
               />
             }
           />

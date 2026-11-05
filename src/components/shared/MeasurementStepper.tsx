@@ -5,6 +5,7 @@ import {
   kgToLbs,
   lbsToKg,
 } from '../../lib/matching/helpers';
+import { UnitSystem } from '../../types';
 
 interface MeasurementStepperProps {
   label: string;
@@ -20,8 +21,6 @@ interface MeasurementStepperProps {
   className?: string;
   inputClassName?: string;
 }
-
-type UnitSystem = 'metric' | 'imperial';
 
 export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
   label,
