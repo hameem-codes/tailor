@@ -112,7 +112,7 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
                 return (
                   <div
                     key={brandChart.id}
-                    className="glass-card p-5 sm:p-6 flex flex-col gap-4 border border-white/15 rounded-2xl relative bg-white/[0.04] shadow-xl hover:border-white/30 transition-all duration-200 animate-card-pop hover:-translate-y-0.5"
+                    className="glass-card p-5 sm:p-6 flex flex-col gap-4 border border-white/15 rounded-2xl relative bg-white/[0.04] shadow-xl hover:border-white/30 transition-all duration-200 animate-card-pop hover:-translate-y-0.5 overflow-hidden"
                     style={{ animationDelay: `${index * 80 + 40}ms` }}
                   >
                     {/* Top Bar: Brand, Region Tag & Remove button */}

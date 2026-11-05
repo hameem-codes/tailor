@@ -18,12 +18,18 @@ interface BrandCardProps {
 export function renderBrandSizeBadge(sizeStr: string) {
   const match = sizeStr.match(/^([^(]+?)(?:\s*(\([^)]+\)))?$/);
   if (!match || !match[2]) {
-    const isLong = sizeStr.length > 3;
+    const len = sizeStr.length;
+    const sizeClass =
+      len <= 2
+        ? 'text-5xl sm:text-[60px]'
+        : len <= 4
+        ? 'text-4xl sm:text-[46px]'
+        : len <= 6
+        ? 'text-2xl sm:text-3xl'
+        : 'text-xl sm:text-2xl';
     return (
       <span
-        className={`font-barlow font-semibold text-white leading-none ${
-          isLong ? 'text-4xl sm:text-[46px]' : 'text-5xl sm:text-[60px]'
-        }`}
+        className={`font-barlow font-semibold text-white leading-none break-all ${sizeClass}`}
       >
         {sizeStr}
       </span>
@@ -34,11 +40,11 @@ export function renderBrandSizeBadge(sizeStr: string) {
   const secondary = match[2].trim();
 
   return (
-    <div className="flex flex-col items-center justify-center leading-none text-center">
-      <span className="font-barlow text-4xl sm:text-5xl font-semibold text-white leading-none">
+    <div className="flex flex-col items-center justify-center leading-none text-center max-w-full">
+      <span className="font-barlow text-4xl sm:text-5xl font-semibold text-white leading-none break-all">
         {primary}
       </span>
-      <span className="text-[11px] sm:text-xs font-semibold text-secText tracking-wider leading-none mt-1">
+      <span className="text-[11px] sm:text-xs font-semibold text-secText tracking-wider leading-none mt-1 truncate max-w-full">
         {secondary}
       </span>
     </div>
@@ -82,7 +88,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         if (target.closest('button, a')) return;
         onOpenDetail(matchResult);
       }}
-      className={`glass-card group relative p-4.5 sm:p-5 flex flex-col gap-3.5 transition-all duration-200 hover:border-white/25 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 ${cardBorderClass}`}
+      className={`glass-card group relative p-4.5 sm:p-5 flex flex-col gap-3.5 transition-all duration-200 hover:border-white/25 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 overflow-hidden ${cardBorderClass}`}
     >
       {/* Top Header: Brand Logo on left, Quick Action Toolbar on right */}
       <div className="flex items-center justify-between gap-2 min-h-[36px]">

@@ -186,7 +186,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
                 onClick={() => onLoadPreset(p.measurements)}
                 title={`Load ${p.name}: ${p.measurements.gender} ${p.measurements.category} (${detailStr})`}
               >
-                <span className="font-semibold">{p.name}</span>
+                <span className="font-semibold truncate max-w-[140px] sm:max-w-[200px]">{p.name}</span>
                 <span className="text-secText text-[11px] hidden sm:inline">({detailStr})</span>
                 <button
                   type="button"

@@ -108,7 +108,7 @@ export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
             onChange={(e) => handleInput(e.target.value)}
             aria-invalid={!isValid}
             aria-describedby={!isValid ? errorId : undefined}
-            className={`number-input number-input-sm text-white !w-14 !text-2xl sm:!text-[28px] font-barlow font-semibold text-center !p-0 ${inputClassName}`}
+            className={`number-input number-input-sm text-white !w-16 !text-2xl sm:!text-[28px] font-barlow font-semibold text-center !p-0 ${inputClassName}`}
           />
           <span className="text-secText text-xs sm:text-sm font-medium ml-1 select-none flex-none">
             {unitLabel}

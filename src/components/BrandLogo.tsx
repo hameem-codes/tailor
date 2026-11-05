@@ -119,7 +119,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   className = '',
   maxHeight,
   maxWidth,
-  fallbackClassName = 'font-barlow text-2xl sm:text-[28px] font-semibold text-white tracking-wide',
+  fallbackClassName = 'font-barlow text-2xl sm:text-[28px] font-semibold text-white tracking-wide truncate max-w-full',
   hideTextSuffix = false,
 }) => {
   const [hasError, setHasError] = useState(false);
