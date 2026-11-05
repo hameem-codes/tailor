@@ -35,21 +35,21 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="comparison-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-xl animate-fade-in overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 pt-6 sm:p-6 bg-black/85 backdrop-blur-xl animate-fade-in overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className={`relative w-full ${
+        className={`relative w-full my-auto ${
           isTwo ? 'max-w-4xl' : 'max-w-6xl'
-        } glass-card !bg-[#131518]/96 border border-white/20 rounded-[28px] p-5 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.9)] flex flex-col gap-5 my-auto max-h-[92vh] overflow-y-auto animate-modal-pop`}
+        } glass-card !bg-[#131518]/98 border border-white/20 rounded-[24px] sm:rounded-[28px] p-4 sm:p-6 shadow-[0_25px_70px_rgba(0,0,0,0.9)] flex flex-col gap-4 max-h-[86vh] overflow-y-auto animate-modal-pop`}
       >
         {/* Modal Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+        <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3 flex-none">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-full bg-[#1DA84A]/20 text-[#4ADE80] flex items-center justify-center text-sm font-bold">
+              <span className="w-7 h-7 rounded-full bg-[#1DA84A]/20 text-[#4ADE80] flex items-center justify-center text-sm font-bold flex-none">
                 ⚖️
               </span>
               <h2 id="comparison-title" className="font-barlow text-2xl sm:text-3xl font-bold text-white tracking-wide">

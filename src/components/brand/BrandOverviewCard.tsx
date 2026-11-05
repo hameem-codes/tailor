@@ -112,30 +112,30 @@ export const BrandOverviewCard: React.FC<BrandOverviewCardProps> = ({
       </div>
 
       <div className="flex border-t border-white/15 pt-3 mt-0.5">
-        <div className="flex-1 pr-2 sm:pr-3">
-          <div className="font-barlow text-xl sm:text-2xl lg:text-[32px] font-medium text-white">
+        <div className="flex-1 min-w-0 pr-1.5 sm:pr-3">
+          <div className="font-barlow text-lg sm:text-2xl lg:text-[32px] font-medium text-white truncate">
             {Math.round(userPrimaryVal)}
-            <span className="text-xs sm:text-sm text-secText"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
+            <span className="text-[11px] sm:text-sm text-secText"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
           </div>
-          <div className="text-xs sm:text-sm text-secText mt-0.5">
+          <div className="text-[11px] sm:text-sm text-secText mt-0.5 truncate">
             Your {isPants ? 'waist' : 'chest'}
           </div>
         </div>
 
-        <div className="flex-1 px-2 sm:px-3 border-l border-white/15">
-          <div className="font-barlow text-xl sm:text-2xl lg:text-[32px] font-medium text-white truncate">
+        <div className="flex-1 min-w-0 px-1.5 sm:px-3 border-l border-white/15">
+          <div className="font-barlow text-lg sm:text-2xl lg:text-[32px] font-medium text-white truncate">
             {chestRangeText.replace(' cm', '').replace(' in', '')}
           </div>
-          <div className="text-xs sm:text-sm text-secText mt-0.5">
+          <div className="text-[11px] sm:text-sm text-secText mt-0.5 truncate">
             {isPants ? 'Waist' : 'Chest'} range
           </div>
         </div>
 
-        <div className="flex-1 pl-2 sm:pl-3 border-l border-white/15">
-          <div className="font-barlow text-xl sm:text-2xl lg:text-[32px] font-medium text-white truncate">
+        <div className="flex-1 min-w-0 pl-1.5 sm:pl-3 border-l border-white/15">
+          <div className="font-barlow text-lg sm:text-2xl lg:text-[32px] font-medium text-white truncate">
             {waistRangeText.replace(' cm', '').replace(' in', '')}
           </div>
-          <div className="text-xs sm:text-sm text-secText mt-0.5">
+          <div className="text-[11px] sm:text-sm text-secText mt-0.5 truncate">
             {isPants ? 'Hips' : 'Waist'} range
           </div>
         </div>

@@ -51,7 +51,7 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
   };
 
   return (
-    <div className={`w-full max-w-[540px] glass-card p-5 sm:p-7 flex flex-col gap-4 border border-white/12 rounded-[28px] shadow-2xl ${className}`}>
+    <div className={`w-full max-w-[540px] glass-card !bg-[#131518]/96 sm:!bg-[#14161B]/90 backdrop-blur-2xl p-5 sm:p-7 flex flex-col gap-4 border border-white/12 rounded-[28px] shadow-2xl ${className}`}>
       {/* Optional Preset / Extra header toolbar */}
       {extraHeaderActions}
 
@@ -80,15 +80,15 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
 
       {/* Section 2: Height & Weight Steppers */}
       <div className="flex flex-col gap-3 pt-1">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <span className="text-xs sm:text-sm font-semibold text-[#D6D6DC]">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+            <span className="text-xs sm:text-sm font-semibold text-[#D6D6DC] whitespace-nowrap">
               Your measurements
             </span>
             <button
               type="button"
               onClick={onOpenHowToMeasure}
-              className="text-[#4ADE80] font-semibold text-xs sm:text-sm inline-flex items-center hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
+              className="text-[#4ADE80] font-semibold text-xs sm:text-sm inline-flex items-center hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md whitespace-nowrap"
             >
               How to measure
             </button>
@@ -96,7 +96,7 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
           <UnitSelector
             value={measurements.unit}
             onChange={handleUnitToggle}
-            buttonClassName="!min-h-[34px] sm:!min-h-[36px] !px-3 sm:!px-3.5 text-xs sm:text-sm"
+            buttonClassName="!min-h-[32px] sm:!min-h-[36px] !px-2.5 sm:!px-3.5 text-xs sm:text-sm flex-none"
           />
         </div>
 

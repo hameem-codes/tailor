@@ -126,20 +126,18 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           - Mobile (<lg:): Back circle button on left, "Edit measurements" on right
          ========================================================================= */}
       {/* Mobile-only top navigation bar */}
-      <div className="flex lg:hidden justify-between items-center">
+      <div className="flex lg:hidden items-center justify-between">
         <button
           onClick={onEditMeasurements}
-          className="circle-btn btn-press"
-          aria-label="Back to measurements"
+          className="pill-btn btn-press font-medium text-xs sm:text-sm !min-h-[38px] !px-3.5 border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5"
+          aria-label="Back to edit measurements"
         >
-          ←
+          <span>←</span>
+          <span>Edit measurements</span>
         </button>
-        <button
-          onClick={onEditMeasurements}
-          className="pill-btn btn-press font-medium text-sm"
-        >
-          Edit measurements
-        </button>
+        <span className="text-xs font-semibold text-secText uppercase tracking-wider">
+          {genderLabel} · {categoryLabel}
+        </span>
       </div>
 
       {/* Main Title Row: On desktop, title & subtitle on left, "Edit measurements" on right */}
@@ -192,13 +190,13 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           2. TOOLBAR ROW (Search, Region Filter, Sort)
           - Desktop (lg:): Search box + Inline [All] [Global] [Local] pills on left;
                            [Best match] sort + [≡] filter icon on right
-          - Mobile (<lg:): Search box + Sort pill + Filter icon
+          - Mobile (<lg:): Full-width search box + Horizontal scrolling pill toolbar
          ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
         {/* Left Toolbar group */}
-        <div className="flex items-center gap-2.5 flex-1">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto flex-1">
           {/* Search Input Box */}
-          <label className="field-container flex items-center gap-2 px-3.5 py-0 min-h-[42px] flex-1 max-w-sm cursor-text rounded-full">
+          <label className="field-container flex items-center gap-2 px-3.5 py-0 min-h-[42px] w-full sm:max-w-sm cursor-text rounded-full">
             <SearchIcon size={18} className="text-[#D6D6DC] flex-none" />
             <input
               type="text"
@@ -230,13 +228,13 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           />
         </div>
 
-        {/* Right Toolbar group */}
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        {/* Right Toolbar group: Horizontally scrollable chip row on mobile */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto py-0.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:self-auto">
           {/* Saved filter tab */}
           <button
             type="button"
             onClick={() => setShowSavedOnly(!showSavedOnly)}
-            className={`pill-btn btn-press flex-none text-xs sm:text-sm font-semibold !min-h-[40px] !px-3.5 inline-flex items-center gap-1.5 transition-all ${showSavedOnly
+            className={`pill-btn btn-press flex-none text-xs sm:text-sm font-semibold !min-h-[38px] sm:!min-h-[40px] !px-3.5 inline-flex items-center gap-1.5 transition-all ${showSavedOnly
                 ? '!bg-[#1DA84A] text-white !border-[#4ADE80] shadow-md ring-1 ring-[#4ADE80]/30'
                 : '!bg-white/[0.04] text-white/90 border-white/15 hover:border-white/30'
               }`}
@@ -260,7 +258,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           {/* Sort button */}
           <button
             onClick={cycleSort}
-            className="pill-btn btn-press flex-none text-xs sm:text-sm font-medium !min-h-[40px] !px-4"
+            className="pill-btn btn-press flex-none text-xs sm:text-sm font-medium !min-h-[38px] sm:!min-h-[40px] !px-3.5 sm:!px-4"
             aria-label={`Sort: ${getSortLabel()}. Click to change`}
           >
             {getSortLabel()}
@@ -272,28 +270,28 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               setShowExportModal(true);
               onShare?.();
             }}
-            className="pill-btn btn-press flex-none !min-h-[40px] !px-4 text-xs sm:text-sm font-medium"
+            className="pill-btn btn-press flex-none !min-h-[38px] sm:!min-h-[40px] !px-3.5 sm:!px-4 text-xs sm:text-sm font-medium inline-flex items-center"
             aria-label="Share and export results"
           >
-            <ShareIcon size={16} className="mr-1" />
-            Share / Export
+            <ShareIcon size={15} className="mr-1" />
+            <span>Share / Export</span>
           </button>
 
           {/* Filter icon button */}
-          <div className="relative">
+          <div className="relative flex-none">
             <button
               onClick={() => setShowFilterMenu(!showFilterMenu)}
-              className={`circle-btn btn-press flex-none !w-10 !h-10 !min-w-[40px] !min-h-[40px] ${regionFilter !== 'all' ? '!bg-[#1DA84A]' : ''
+              className={`circle-btn btn-press flex-none !w-9 !h-9 sm:!w-10 sm:!h-10 !min-w-[36px] !min-h-[36px] sm:!min-w-[40px] sm:!min-h-[40px] ${regionFilter !== 'all' ? '!bg-[#1DA84A]' : ''
                 }`}
               aria-label="Filter by brand region"
               aria-expanded={showFilterMenu}
             >
-              <FilterIcon size={18} />
+              <FilterIcon size={17} />
             </button>
 
             {/* Filter Popup Menu */}
             {showFilterMenu && (
-              <div className="absolute right-0 top-12 z-30 glass-card p-2 min-w-[150px] shadow-2xl border border-white/20 animate-fade-in">
+              <div className="absolute right-0 top-11 sm:top-12 z-40 glass-card !bg-[#131518]/98 p-2 min-w-[160px] shadow-2xl border border-white/20 animate-fade-in">
                 <div className="text-xs font-semibold text-secText px-3 py-1.5 uppercase tracking-wider">
                   Region
                 </div>
@@ -323,14 +321,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         <div
           role="region"
           aria-label="Onboarding tip"
-          className="flex items-center gap-2 rounded-[18px] bg-black/50 backdrop-blur-md border border-[#4ADE80]/45 p-1.5 pl-4 pr-1.5 animate-fade-in"
+          className="flex items-center gap-2 rounded-[18px] bg-[#131518]/94 backdrop-blur-xl border border-[#4ADE80]/45 p-2 pl-4 pr-2 animate-fade-in shadow-lg"
         >
           <span className="flex-1 text-xs sm:text-sm text-white font-normal leading-snug">
             The white dot is you. The colored bar is the brand's size range.
           </span>
           <button
             onClick={onDismissTip}
-            className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base !bg-transparent hover:!bg-white/10 text-white"
+            className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base !bg-white/10 hover:!bg-white/20 text-white flex-none"
             aria-label="Dismiss tip"
           >
             ×
@@ -339,35 +337,35 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       )}
 
       {/* =========================================================================
-          4. MATCH LEVELS COMPACT HELPER (Small text, closed by default)
+          4. MATCH LEVELS COMPACT HELPER (Dark glass card for guaranteed contrast)
          ========================================================================= */}
       <div className="flex flex-col gap-2 w-full">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-secText">
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            <span className="text-white/80 font-medium">Match levels:</span>
-            <span className="inline-flex items-center gap-1 text-[#4ADE80] font-medium">
-              <CheckIcon size={12} /> Great
+        <div className="glass-card !bg-[#131518]/92 backdrop-blur-xl border border-white/12 rounded-2xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-secText shadow-md">
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+            <span className="text-white font-semibold">Match levels:</span>
+            <span className="inline-flex items-center gap-1 text-[#4ADE80] font-semibold">
+              <CheckIcon size={13} /> Great
             </span>
-            <span className="text-white/20">·</span>
-            <span className="inline-flex items-center gap-1 text-[#FBBF24] font-medium">
-              <WarningTriangleIcon size={12} /> Between
+            <span className="text-white/25">·</span>
+            <span className="inline-flex items-center gap-1 text-[#FBBF24] font-semibold">
+              <WarningTriangleIcon size={13} /> Between
             </span>
-            <span className="text-white/20">·</span>
-            <span className="inline-flex items-center gap-1 text-[#F87171] font-medium">
-              <CrossCircleIcon size={12} /> Poor
+            <span className="text-white/25">·</span>
+            <span className="inline-flex items-center gap-1 text-[#F87171] font-semibold">
+              <CrossCircleIcon size={13} /> Poor
             </span>
           </div>
           <button
             onClick={() => setShowMatchLevels(!showMatchLevels)}
-            className="text-xs text-secText hover:text-white transition-colors underline cursor-pointer py-0.5"
+            className="text-xs text-[#4ADE80] hover:text-white font-semibold transition-colors underline cursor-pointer py-0.5 ml-auto"
             aria-label={showMatchLevels ? 'Hide match levels guide' : 'Show match levels guide'}
           >
-            {showMatchLevels ? 'Hide details' : 'How it works'}
+            {showMatchLevels ? 'Hide' : 'How it works'}
           </button>
         </div>
 
         {showMatchLevels && (
-          <div className="glass-card p-4 flex flex-col gap-3 w-full animate-fade-in border border-white/12">
+          <div className="glass-card !bg-[#131518]/96 backdrop-blur-xl p-4 flex flex-col gap-3 w-full animate-fade-in border border-white/15 rounded-2xl shadow-xl">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
               <div>
                 <span className="text-[#4ADE80] font-semibold text-xs sm:text-sm inline-flex items-center gap-1.5">
@@ -407,10 +405,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         <aside
           role="region"
           aria-label="Brand comparison bar"
-          className="sticky top-4 z-30 w-full glass-card !bg-[#131518]/95 border-2 border-[#4ADE80]/50 p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 animate-fade-in"
+          className="sticky top-2 sm:top-4 z-30 w-full glass-card !bg-[#131518]/96 border-2 border-[#4ADE80]/50 p-3 sm:p-3.5 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 animate-fade-in"
         >
           {/* Left: Indicator & Selected Brand Chips */}
-          <div className="flex items-center gap-2.5 overflow-x-auto min-w-0 py-0.5">
+          <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar min-w-0 py-0.5">
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-white whitespace-nowrap bg-white/10 px-2.5 py-1 rounded-full border border-white/15">
               <span>⚖️</span>
               <span>Compare ({comparedBrandIds.length}/3)</span>
@@ -446,19 +444,19 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2.5 flex-none justify-end">
+          <div className="flex items-center gap-2 flex-none justify-between sm:justify-end">
             <button
               type="button"
               onClick={() => setShowComparisonModal(true)}
               disabled={comparedBrandIds.length < 2}
-              className="primary-btn btn-press !min-h-[38px] !px-5 text-xs sm:text-sm font-bold whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(29,168,74,0.35)]"
+              className="primary-btn btn-press !min-h-[40px] !px-5 text-xs sm:text-sm font-bold flex-1 sm:flex-none justify-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(29,168,74,0.35)]"
             >
               {comparedBrandIds.length < 2 ? 'Pick 1 more brand' : 'Compare side-by-side →'}
             </button>
             <button
               type="button"
               onClick={() => setComparedBrandIds([])}
-              className="pill-btn btn-press !min-h-[38px] !px-3 text-xs text-secText hover:text-white border-white/15"
+              className="pill-btn btn-press !min-h-[40px] !px-3 text-xs text-secText hover:text-white border-white/15 flex-none"
               aria-label="Clear all compared brands"
             >
               Clear

@@ -118,42 +118,54 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
   const brandActionUrl = brandChart.brandUrl || brandChart.sourceUrl;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex flex-col gap-4 sm:gap-6 pb-20 page-transition">
-      {/* Top Header Row: Back button & Breadcrumb / Brand Logo */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+    <div className="w-full max-w-7xl mx-auto min-w-0 overflow-x-hidden px-4 sm:px-6 lg:px-8 py-3 sm:py-6 lg:py-8 flex flex-col gap-4 sm:gap-6 pb-20 page-transition">
+      {/* Top Header Row: Sticky on mobile so back navigation and brand title are always present */}
+      <div className="sticky top-0 z-30 -mx-4 px-4 py-2.5 sm:py-0 sm:mx-0 sm:static bg-[#0d0f12]/94 sm:bg-transparent backdrop-blur-xl sm:backdrop-blur-none border-b border-white/10 sm:border-0 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <button
             onClick={onBack}
-            className="pill-btn btn-press font-medium text-xs sm:text-sm !px-3.5 sm:!px-4 !min-h-[38px] border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5"
+            className="pill-btn btn-press font-medium text-xs sm:text-sm !px-3 sm:!px-4 !min-h-[36px] sm:!min-h-[38px] border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5 flex-none"
             aria-label="Back to results"
           >
-            ← <span className="hidden sm:inline">Back to results</span>
+            <span>←</span>
+            <span>Results</span>
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <BrandLogo
               brand={brandChart.brand}
-              maxHeight={26}
-              fallbackClassName="font-barlow text-2xl font-bold tracking-wide text-white"
+              maxHeight={24}
+              fallbackClassName="font-barlow text-xl sm:text-2xl font-bold tracking-wide text-white truncate"
             />
-            <span className="text-secText text-xs sm:text-sm font-semibold tracking-wide uppercase">
+            <span className="text-secText text-[11px] sm:text-xs font-semibold tracking-wide uppercase whitespace-nowrap hidden xs:inline">
               · {genderLabel} · {categoryLabel}
             </span>
           </div>
         </div>
+
+        {brandActionUrl && (
+          <a
+            href={brandActionUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sm:hidden text-xs text-[#4ADE80] font-semibold hover:underline flex-none whitespace-nowrap"
+          >
+            Visit store ↗
+          </a>
+        )}
       </div>
 
       {/* Dynamic Headline Verdict */}
-      <h1 className="font-barlow text-3xl sm:text-4xl lg:text-5xl font-semibold leading-[1.05] whitespace-pre-line text-white">
+      <h1 className="font-barlow text-2xl sm:text-4xl lg:text-5xl font-semibold leading-[1.1] whitespace-pre-line text-white">
         {verdict}
       </h1>
 
       {/* Size Switcher Sliding Tabs */}
-      <div className="w-full">
+      <div className="w-full overflow-x-auto no-scrollbar py-0.5">
         <SlidingTabs<string>
           ariaLabel="Select size to compare"
-          className="flex gap-2 overflow-x-auto pb-1 max-w-full"
-          buttonClassName="flex-1 min-w-[85px] sm:min-w-[105px] text-center text-xs sm:text-sm font-medium"
+          className="flex gap-2 min-w-full w-max"
+          buttonClassName="flex-none min-w-[76px] sm:min-w-[105px] !min-h-[36px] sm:!min-h-[38px] text-center text-xs sm:text-sm font-medium"
           value={sizes[selectedSizeIdx].label}
           onChange={(val: string) => {
             const idx = sizes.findIndex((s) => s.label === val);

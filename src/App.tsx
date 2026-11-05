@@ -341,7 +341,7 @@ export const App: React.FC = () => {
   }, [currentStep]);
 
   return (
-    <div className="min-h-screen text-white relative w-full overflow-x-hidden flex flex-col">
+    <div className="min-h-screen text-white relative w-full overflow-x-clip flex flex-col">
       {/* 3D Animated Clothes & Atelier Background */}
       <ThreeBackground category={measurements.category} unit={measurements.unit} />
 

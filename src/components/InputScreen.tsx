@@ -54,14 +54,14 @@ export const InputScreen: React.FC<InputScreenProps> = ({
             {!showGuide && (
               <button
                 onClick={() => setShowGuide(true)}
-                className="pill-btn btn-press !text-xs !py-1 !px-2.5 text-[#4ADE80] border-[#4ADE80]/40"
+                className="pill-btn btn-press !text-xs !min-h-[36px] !h-9 !px-3 text-[#4ADE80] border-[#4ADE80]/40 inline-flex items-center"
               >
                 Guide
               </button>
             )}
             <button
               onClick={onOpenAbout}
-              className="circle-btn btn-press text-base font-serif italic !w-9 !h-9"
+              className="circle-btn btn-press text-base font-serif italic !w-9 !h-9 !min-w-[36px] !min-h-[36px]"
               aria-label="About Tailor"
             >
               i
