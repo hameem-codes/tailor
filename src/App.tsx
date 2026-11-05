@@ -110,6 +110,7 @@ const ResultsScreenRoute: React.FC<{
   sortBy: SortOption;
   setSortBy: (s: SortOption) => void;
   isLoading?: boolean;
+  onShare?: () => void;
 }> = (props) => {
   const navigate = useNavigate();
 
