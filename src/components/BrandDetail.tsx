@@ -95,7 +95,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
     const maxBound = cRange[1] + 12;
     const totalSpan = maxBound - minBound;
 
-    const userDotPercent = Math.min(100, Math.max(0, ((userPrimaryVal - minBound) / totalSpan) * 100));
+    const userDotPercent = Math.min(97, Math.max(3, ((userPrimaryVal - minBound) / totalSpan) * 100));
     const primaryBarLeftPercent = Math.min(100, Math.max(0, ((cRange[0] - minBound) / totalSpan) * 100));
     const primaryBarRightPercent = Math.min(100, Math.max(0, ((cRange[1] - minBound) / totalSpan) * 100));
     const primaryBarWidthPercent = Math.max(4, primaryBarRightPercent - primaryBarLeftPercent);
@@ -119,70 +119,134 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto min-w-0 overflow-x-hidden px-4 sm:px-6 lg:px-8 py-3 sm:py-6 lg:py-8 flex flex-col gap-4 sm:gap-6 pb-20 page-transition">
-      {/* Top Header Row: Sticky on mobile so back navigation and brand title are always present */}
-      <div className="sticky top-0 z-30 -mx-4 px-4 py-2.5 sm:py-0 sm:mx-0 sm:static bg-[#0d0f12]/94 sm:bg-transparent backdrop-blur-xl sm:backdrop-blur-none border-b border-white/10 sm:border-0 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <button
-            onClick={onBack}
-            className="pill-btn btn-press font-medium text-xs sm:text-sm !px-3 sm:!px-4 !min-h-[36px] sm:!min-h-[38px] border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5 flex-none"
-            aria-label="Back to results"
-          >
-            <span>←</span>
-            <span>Results</span>
-          </button>
-
-          <div className="flex items-center gap-2 min-w-0">
-            <BrandLogo
-              brand={brandChart.brand}
-              maxHeight={24}
-              fallbackClassName="font-barlow text-xl sm:text-2xl font-bold tracking-wide text-white truncate"
-            />
-            <span className="text-secText text-[11px] sm:text-xs font-semibold tracking-wide uppercase whitespace-nowrap hidden xs:inline">
-              · {genderLabel} · {categoryLabel}
-            </span>
-          </div>
-        </div>
+      {/* Top Header Row: Back navigation & store link */}
+      <div className="flex items-center justify-between gap-3 pt-1">
+        <button
+          onClick={onBack}
+          className="pill-btn btn-press font-semibold text-xs sm:text-sm !px-4 !min-h-[40px] border border-white/20 hover:border-white/40 inline-flex items-center gap-2 text-white bg-white/[0.04]"
+          aria-label="Back to results"
+        >
+          <span>←</span>
+          <span>Back to results</span>
+        </button>
 
         {brandActionUrl && (
           <a
             href={brandActionUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="sm:hidden text-xs text-[#4ADE80] font-semibold hover:underline flex-none whitespace-nowrap"
+            className="pill-btn btn-press !min-h-[40px] !px-4 text-xs sm:text-sm font-semibold !text-[#4ADE80] border-[#4ADE80]/30 hover:border-[#4ADE80]/60 bg-[#1DA84A]/10 inline-flex items-center gap-1.5"
           >
-            Visit store ↗
+            <span>Visit {brandChart.brand} store</span>
+            <span aria-hidden="true">↗</span>
           </a>
         )}
       </div>
 
-      {/* Dynamic Headline Verdict */}
-      <h1 className="font-barlow text-2xl sm:text-4xl lg:text-5xl font-semibold leading-[1.1] whitespace-pre-line text-white">
-        {verdict}
-      </h1>
+      {/* =========================================================================
+          BRAND SHOWCASE HERO (Prominent, High-Visibility Brand Identity)
+          - Positioned below Results navigation and directly above Size Switcher
+          - Features large official brand logo, bold title, and fit status
+         ========================================================================= */}
+      <section
+        aria-label={`${brandChart.brand} overview`}
+        className="glass-card !bg-[#131518]/95 backdrop-blur-2xl border border-white/15 rounded-[24px] sm:rounded-[32px] p-5 sm:p-7 shadow-2xl flex flex-col gap-4 animate-fade-in"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Large Brand Logo + Brand Details */}
+          <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+            {/* Illuminated Logo Emblem Container */}
+            <div className="flex items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-white/[0.07] border border-white/12 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex-none min-w-[96px] sm:min-w-[130px] min-h-[64px] sm:min-h-[80px]">
+              <BrandLogo
+                brand={brandChart.brand}
+                maxHeight={52}
+                maxWidth={220}
+                fallbackClassName="font-barlow text-3xl sm:text-5xl font-extrabold tracking-wide text-white uppercase"
+              />
+            </div>
 
-      {/* Size Switcher Sliding Tabs */}
-      <div className="w-full overflow-x-auto no-scrollbar py-0.5">
-        <SlidingTabs<string>
-          ariaLabel="Select size to compare"
-          className="flex gap-2 min-w-full w-max"
-          buttonClassName="flex-none min-w-[76px] sm:min-w-[105px] !min-h-[36px] sm:!min-h-[38px] text-center text-xs sm:text-sm font-medium"
-          value={sizes[selectedSizeIdx].label}
-          onChange={(val: string) => {
-            const idx = sizes.findIndex((s) => s.label === val);
-            if (idx !== -1) setSelectedSizeIdx(idx);
-          }}
-          options={sizes.map((s, idx) => {
-            const isPrimary = idx === primarySizeIndex;
-            let chipSubtext = 'regular';
-            if (isPrimary) chipSubtext = 'best';
-            else if (idx < primarySizeIndex) chipSubtext = 'snug';
-            else if (idx > primarySizeIndex) chipSubtext = 'loose';
-            return {
-              id: s.label,
-              label: `${s.label} · ${chipSubtext}`,
-            };
-          })}
-        />
+            <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-barlow text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-wide truncate">
+                  {brandChart.brand}
+                </span>
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#4ADE80] bg-[#1DA84A]/20 px-2.5 py-0.5 rounded-full border border-[#4ADE80]/30 flex-none">
+                  {brandChart.region}
+                </span>
+                <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-secText bg-white/[0.06] px-2.5 py-0.5 rounded-full border border-white/10 flex-none">
+                  {genderLabel} · {categoryLabel}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-secText/90 leading-snug">
+                Official {brandChart.brand} size guide & body fit matching
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Best Fit Callout Badge */}
+          <div className="flex items-center sm:flex-col sm:items-end justify-between border-t border-white/10 sm:border-0 pt-3 sm:pt-0 flex-none">
+            <span className="text-xs font-semibold text-secText uppercase tracking-wider">
+              Recommended Size
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-barlow text-3xl sm:text-4xl font-extrabold text-[#4ADE80]">
+                {matchResult.recommendedSize}
+              </span>
+              <span className="text-xs font-bold text-white/90 bg-white/10 px-2.5 py-1 rounded-md border border-white/15">
+                {matchResult.matchStatus === 'great'
+                  ? '✓ Great match'
+                  : matchResult.matchStatus === 'between'
+                  ? '⚠ Between sizes'
+                  : 'Closest fit'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic Verdict Headline with Fit Badge */}
+        <div className="border-t border-white/10 pt-3.5 flex flex-col sm:flex-row sm:items-baseline gap-1.5 sm:gap-2.5">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#4ADE80] flex-none">
+            Fit Verdict:
+          </span>
+          <p className="font-barlow text-xl sm:text-2xl lg:text-3xl font-semibold text-white tracking-wide leading-tight break-words">
+            {verdict}
+          </p>
+        </div>
+      </section>
+
+      {/* Size Switcher Sliding Tabs (Directly above sizes) */}
+      <div className="flex flex-col gap-2 w-full">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs sm:text-sm font-semibold text-secText uppercase tracking-wider">
+            Compare Sizes:
+          </span>
+          <span className="text-xs text-secText/75">
+            Tap a size to preview ruler & proportions
+          </span>
+        </div>
+        <div className="w-full overflow-x-auto no-scrollbar py-0.5">
+          <SlidingTabs<string>
+            ariaLabel="Select size to compare"
+            className="flex gap-2 min-w-full w-max"
+            buttonClassName="flex-none min-w-[76px] sm:min-w-[105px] !min-h-[36px] sm:!min-h-[38px] text-center text-xs sm:text-sm font-medium"
+            value={sizes[selectedSizeIdx].label}
+            onChange={(val: string) => {
+              const idx = sizes.findIndex((s) => s.label === val);
+              if (idx !== -1) setSelectedSizeIdx(idx);
+            }}
+            options={sizes.map((s, idx) => {
+              const isPrimary = idx === primarySizeIndex;
+              let chipSubtext = 'regular';
+              if (isPrimary) chipSubtext = 'best';
+              else if (idx < primarySizeIndex) chipSubtext = 'snug';
+              else if (idx > primarySizeIndex) chipSubtext = 'loose';
+              return {
+                id: s.label,
+                label: `${s.label} · ${chipSubtext}`,
+              };
+            })}
+          />
+        </div>
       </div>
 
       {/* Main Responsive Grid: 2 Columns on desktop, 1 column on mobile */}

@@ -134,7 +134,12 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
             className="flex items-start gap-2 text-[#FCA5A5] text-xs leading-snug px-1 animate-fade-in"
           >
             <WarningTriangleIcon size={14} className="flex-none mt-0.5" />
-            <span>Height should be between 120 and 230 cm. Check the number and try again.</span>
+            <span>
+              {validation.heightError ||
+                (isImperial
+                  ? 'Height should be between 47 and 91 in. Check the number and try again.'
+                  : 'Height should be between 120 and 230 cm. Check the number and try again.')}
+            </span>
           </div>
         )}
         {!validation.weightValid && (
@@ -144,7 +149,12 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
             className="flex items-start gap-2 text-[#FCA5A5] text-xs leading-snug px-1 animate-fade-in"
           >
             <WarningTriangleIcon size={14} className="flex-none mt-0.5" />
-            <span>Weight should be between 30 and 250 kg. Check the number and try again.</span>
+            <span>
+              {validation.weightError ||
+                (isImperial
+                  ? 'Weight should be between 66 and 550 lb. Check the number and try again.'
+                  : 'Weight should be between 30 and 250 kg. Check the number and try again.')}
+            </span>
           </div>
         )}
 

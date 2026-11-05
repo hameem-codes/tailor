@@ -36,7 +36,11 @@ export function formatRange(minCm: number, maxCm: number, unit: UnitSystem): str
 /**
  * Validates height and weight numbers
  */
-export function validateHeightWeight(heightCm: number, weightKg: number): {
+export function validateHeightWeight(
+  heightCm: number,
+  weightKg: number,
+  unit: UnitSystem = 'metric'
+): {
   heightValid: boolean;
   weightValid: boolean;
   heightError?: string;
@@ -45,11 +49,23 @@ export function validateHeightWeight(heightCm: number, weightKg: number): {
   const heightValid = heightCm >= 120 && heightCm <= 230;
   const weightValid = weightKg >= 30 && weightKg <= 250;
 
+  const heightError = heightValid
+    ? undefined
+    : unit === 'imperial'
+    ? 'Height should be between 47 and 91 in. Check the number and try again.'
+    : 'Height should be between 120 and 230 cm. Check the number and try again.';
+
+  const weightError = weightValid
+    ? undefined
+    : unit === 'imperial'
+    ? 'Weight should be between 66 and 550 lb. Check the number and try again.'
+    : 'Weight should be between 30 and 250 kg. Check the number and try again.';
+
   return {
     heightValid,
     weightValid,
-    heightError: heightValid ? undefined : 'Height should be between 120 and 230 cm. Check the number and try again.',
-    weightError: weightValid ? undefined : 'Weight should be between 30 and 250 kg. Check the number and try again.',
+    heightError,
+    weightError,
   };
 }
 

@@ -76,8 +76,8 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
         <div className="min-w-[280px]">
           <div className="flex text-secText text-xs sm:text-sm font-semibold px-3 py-1.5 border-b border-white/10 mb-1">
             <span className="w-16 text-center">Size</span>
-            <span className="flex-1">{isPants ? 'Waist' : 'Chest'}</span>
-            <span className="flex-1">{isPants ? 'Hips' : 'Waist'}</span>
+            <span className="flex-1">{isPants ? 'Waist' : 'Chest'} ({tableUnit === 'imperial' ? 'in' : 'cm'})</span>
+            <span className="flex-1">{isPants ? 'Hips' : 'Waist'} ({tableUnit === 'imperial' ? 'in' : 'cm'})</span>
           </div>
 
           <div className="space-y-1">

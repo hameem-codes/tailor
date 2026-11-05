@@ -82,37 +82,24 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         if (target.closest('button, a')) return;
         onOpenDetail(matchResult);
       }}
-      className={`glass-card group relative p-5 sm:p-6 flex flex-col gap-4 transition-all duration-200 hover:border-white/25 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 ${cardBorderClass}`}
+      className={`glass-card group relative p-4.5 sm:p-5 flex flex-col gap-3.5 transition-all duration-200 hover:border-white/25 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 ${cardBorderClass}`}
     >
-      {/* Top Header: Brand Logo + Actions (Responsive on mobile) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-2 min-h-[36px]">
-        {/* Row 1 on mobile: Logo + Heart button */}
-        <div className="flex items-center justify-between w-full sm:w-auto">
-          <h3 className="flex items-center" aria-label={brandChart.brand}>
-            <BrandLogo brand={brandChart.brand} />
-          </h3>
-          <div className="sm:hidden flex items-center relative z-10">
-            <button
-              type="button"
-              onClick={() => onToggleSave(brandChart.id)}
-              className="circle-btn btn-press !w-9 !h-9 !min-w-[36px] !min-h-[36px] !bg-transparent hover:!bg-white/10"
-              aria-label={isSaved ? `Remove ${brandChart.brand} from saved` : `Save ${brandChart.brand}`}
-            >
-              <HeartIcon filled={isSaved} size={20} />
-            </button>
-          </div>
-        </div>
+      {/* Top Header: Brand Logo on left, Quick Action Toolbar on right */}
+      <div className="flex items-center justify-between gap-2 min-h-[36px]">
+        <h3 className="flex items-center min-w-0 pr-1 truncate" aria-label={brandChart.brand}>
+          <BrandLogo brand={brandChart.brand} />
+        </h3>
 
-        {/* Row 2 on mobile, right cluster on desktop */}
-        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto relative z-10">
+        {/* Action icons: Compare toggle + Save heart */}
+        <div className="flex items-center gap-1.5 flex-none relative z-10">
           {onToggleCompare && (
             <button
               type="button"
               onClick={() => onToggleCompare(brandChart.id)}
-              className={`pill-btn btn-press !text-xs !min-h-[34px] sm:!min-h-[30px] !px-3 sm:!px-2.5 rounded-full transition-all ${
+              className={`pill-btn btn-press !text-[11px] sm:!text-xs !min-h-[28px] sm:!min-h-[30px] !px-2.5 rounded-full whitespace-nowrap transition-all ${
                 isComparing
                   ? '!bg-[#1DA84A] !border-[#4ADE80] text-white font-bold shadow-sm'
-                  : '!bg-white/[0.04] sm:!bg-transparent text-secText hover:text-white border-white/20 hover:border-white/40'
+                  : '!bg-white/[0.04] text-secText hover:text-white border-white/20 hover:border-white/40'
               }`}
               aria-label={isComparing ? `Remove ${brandChart.brand} from comparison` : `Compare ${brandChart.brand}`}
               aria-pressed={isComparing}
@@ -120,58 +107,48 @@ export const BrandCard: React.FC<BrandCardProps> = ({
               {isComparing ? '✓ Comparing' : '+ Compare'}
             </button>
           )}
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => onOpenDetail(matchResult)}
-              aria-label={`View size chart and breakdown for ${brandChart.brand}`}
-              className="text-accent hover:text-white text-xs sm:text-sm font-semibold min-h-[34px] sm:min-h-[36px] px-3.5 sm:px-3 py-1 rounded-full bg-white/[0.06] hover:bg-white/15 border border-white/10 hover:border-white/25 transition-all duration-150 inline-flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              <span>View chart</span>
-              <span aria-hidden="true" className="text-xs transition-transform group-hover:translate-x-0.5">›</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onToggleSave(brandChart.id)}
-              className="hidden sm:inline-flex circle-btn btn-press !w-9 !h-9 !min-w-[36px] !min-h-[36px] !bg-transparent hover:!bg-white/10"
-              aria-label={isSaved ? `Remove ${brandChart.brand} from saved` : `Save ${brandChart.brand}`}
-            >
-              <HeartIcon filled={isSaved} size={20} />
-            </button>
-          </div>
+
+          <button
+            type="button"
+            onClick={() => onToggleSave(brandChart.id)}
+            className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !bg-transparent hover:!bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+            aria-label={isSaved ? `Remove ${brandChart.brand} from saved` : `Save ${brandChart.brand}`}
+          >
+            <HeartIcon filled={isSaved} size={18} />
+          </button>
         </div>
       </div>
 
       {/* Main Size & Match Level Row */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3.5">
         {/* Recommended Size Big Display (Centered) */}
-        <div className="min-w-[76px] sm:min-w-[88px] max-w-[104px] flex-none flex items-center justify-center text-center">
+        <div className="min-w-[72px] sm:min-w-[80px] max-w-[96px] flex-none flex items-center justify-center text-center">
           {renderBrandSizeBadge(recommendedSize)}
         </div>
 
         {/* Match Details */}
         <div className="flex-1 min-w-0">
           {matchStatus === 'great' && (
-            <span className="text-[#4ADE80] font-semibold text-base inline-flex items-center gap-1.5">
+            <span className="text-[#4ADE80] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
               <CheckIcon size={16} /> Great match
             </span>
           )}
           {matchStatus === 'between' && (
-            <span className="text-[#FBBF24] font-semibold text-base inline-flex items-center gap-1.5">
+            <span className="text-[#FBBF24] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
               <WarningTriangleIcon size={16} /> Between sizes
             </span>
           )}
           {matchStatus === 'poor' && (
-            <span className="text-[#F87171] font-semibold text-base inline-flex items-center gap-1.5">
+            <span className="text-[#F87171] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
               <CrossCircleIcon size={16} /> Poor match
             </span>
           )}
 
-          <div className="text-[17px] font-medium text-white mt-1.5 truncate">
+          <div className="text-sm sm:text-base font-medium text-white mt-1 break-words leading-snug">
             {chestRangeText}
           </div>
 
-          <div className="text-base text-[#D6D6DC] leading-snug mt-0.5 line-clamp-2">
+          <div className="text-xs sm:text-sm text-[#D6D6DC] leading-snug mt-0.5 line-clamp-2">
             {tip}
           </div>
         </div>
@@ -189,7 +166,19 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         secondaryBarColor={ruler.secondaryBarColor}
         accessibleDescription={`${brandChart.brand} size ${recommendedSize}. ${userValText}, size range ${chestRangeText}`}
       />
+
+      {/* Card Footer: Clean "View size chart & details →" CTA spanning bottom */}
+      <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs sm:text-sm font-semibold select-none mt-auto">
+        <span className="text-[#4ADE80] group-hover:text-white transition-colors flex items-center gap-1.5">
+          View size chart & details
+        </span>
+        <span
+          aria-hidden="true"
+          className="text-secText group-hover:text-white transition-all duration-200 group-hover:translate-x-1 text-sm font-bold"
+        >
+          →
+        </span>
+      </div>
     </article>
   );
 };
-

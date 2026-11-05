@@ -104,6 +104,7 @@ export interface BrandLogoProps {
   brand: string;
   className?: string;
   maxHeight?: number;
+  maxWidth?: number;
   fallbackClassName?: string;
   hideTextSuffix?: boolean;
 }
@@ -117,6 +118,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   brand,
   className = '',
   maxHeight,
+  maxWidth,
   fallbackClassName = 'font-barlow text-2xl sm:text-[28px] font-semibold text-white tracking-wide',
   hideTextSuffix = false,
 }) => {
@@ -143,24 +145,31 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   const renderHeight = maxHeight ?? config.height;
 
   return (
-    <div className="inline-flex items-center gap-2 select-none" title={brand}>
+    <div className="inline-flex items-center gap-2.5 select-none" title={brand}>
       <img
         src={getLogoSrc(config.src)}
         alt={config.alt}
         loading="lazy"
         decoding="async"
-        className={`object-contain max-w-[130px] transition-opacity duration-200 ${
+        className={`object-contain transition-opacity duration-200 ${
+          maxWidth ? '' : 'max-w-[130px] sm:max-w-[160px]'
+        } ${
           config.invertOnDark ? 'brightness-0 invert' : ''
         } ${className}`}
         style={{
           height: `${renderHeight}px`,
           maxHeight: `${renderHeight}px`,
+          ...(maxWidth ? { maxWidth: `${maxWidth}px` } : {}),
           ...config.style,
         }}
         onError={() => setHasError(true)}
       />
       {config.textSuffix && !hideTextSuffix && (
-        <span className="font-barlow text-2xl font-bold tracking-wider text-white">
+        <span
+          className={`font-barlow font-bold tracking-wider text-white ${
+            renderHeight >= 40 ? 'text-3xl sm:text-4xl' : 'text-2xl'
+          }`}
+        >
           {config.textSuffix}
         </span>
       )}

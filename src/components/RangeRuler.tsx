@@ -25,6 +25,11 @@ export const RangeRuler: React.FC<RangeRulerProps> = ({
   className = '',
   accessibleDescription,
 }) => {
+  // Clamp dot position safely within track bounds (0 to 100)
+  const clampedPercent = Number.isFinite(userDotPercent)
+    ? Math.max(0, Math.min(100, userDotPercent))
+    : 50;
+
   return (
     <div
       className={`ruler-track ${className}`}
@@ -55,15 +60,26 @@ export const RangeRuler: React.FC<RangeRulerProps> = ({
         />
       )}
 
-      {/* User Dot Indicator with Label */}
+      {/* User Dot Indicator with Label:
+          - Dynamic translateX(-${clampedPercent}%) prevents the label from ever spilling outside the card box.
+          - At 0% (left end), translateX(0%) anchors text to the right into the track.
+          - At 100% (right end), translateX(-100%) anchors text to the left into the track.
+          - At 50%, text is centered directly over the dot. */}
       <div
         aria-hidden="true"
         className="ruler-dot"
         style={{
-          left: `${userDotPercent}%`,
+          left: `${clampedPercent}%`,
         }}
       >
-        <span className="ruler-dot-label">{userValueText}</span>
+        <span
+          className="ruler-dot-label"
+          style={{
+            transform: `translateX(-${clampedPercent}%)`,
+          }}
+        >
+          {userValueText}
+        </span>
       </div>
     </div>
   );

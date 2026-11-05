@@ -124,7 +124,8 @@ export const BrandOverviewCard: React.FC<BrandOverviewCardProps> = ({
 
         <div className="flex-1 min-w-0 px-1.5 sm:px-3 border-l border-white/15">
           <div className="font-barlow text-lg sm:text-2xl lg:text-[32px] font-medium text-white truncate">
-            {chestRangeText.replace(' cm', '').replace(' in', '')}
+            {chestRangeText.replace(/\s*(cm|in)/g, '')}
+            <span className="text-[11px] sm:text-sm text-secText font-normal"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
           </div>
           <div className="text-[11px] sm:text-sm text-secText mt-0.5 truncate">
             {isPants ? 'Waist' : 'Chest'} range
@@ -133,7 +134,8 @@ export const BrandOverviewCard: React.FC<BrandOverviewCardProps> = ({
 
         <div className="flex-1 min-w-0 pl-1.5 sm:pl-3 border-l border-white/15">
           <div className="font-barlow text-lg sm:text-2xl lg:text-[32px] font-medium text-white truncate">
-            {waistRangeText.replace(' cm', '').replace(' in', '')}
+            {waistRangeText.replace(/\s*(cm|in)/g, '')}
+            <span className="text-[11px] sm:text-sm text-secText font-normal"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
           </div>
           <div className="text-[11px] sm:text-sm text-secText mt-0.5 truncate">
             {isPants ? 'Hips' : 'Waist'} range

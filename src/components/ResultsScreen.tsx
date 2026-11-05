@@ -151,7 +151,9 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               {genderLabel} · {categoryLabel} · {primaryDim} ·{' '}
               {showSavedOnly ? (
                 <>
-                  <strong className="text-white">{filteredResults.length} saved brands</strong>{' '}
+                  <strong className="text-white">
+                    {filteredResults.length} saved {filteredResults.length === 1 ? 'brand' : 'brands'}
+                  </strong>{' '}
                   <button
                     type="button"
                     onClick={() => setShowSavedOnly(false)}
@@ -161,7 +163,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                   </button>
                 </>
               ) : (
-                `${filteredResults.length} brands`
+                <span>
+                  <strong>{filteredResults.length}</strong> {filteredResults.length === 1 ? 'brand' : 'brands'}
+                  {searchQuery.trim() ? ` matching "${searchQuery.trim()}"` : ''}
+                </span>
               )}
             </span>
             {isLoading && (
@@ -229,7 +234,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         </div>
 
         {/* Right Toolbar group: Horizontally scrollable chip row on mobile */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto py-0.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:self-auto">
+        <div className="flex items-center gap-2 flex-nowrap overflow-x-auto no-scrollbar w-full sm:w-auto py-0.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:self-auto">
           {/* Saved filter tab */}
           <button
             type="button"

@@ -26,7 +26,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
 }) => {
   const [showGuide, setShowGuide] = useState<boolean>(!hasStoredMeasurements());
 
-  const validation = validateHeightWeight(measurements.height, measurements.weight);
+  const validation = validateHeightWeight(measurements.height, measurements.weight, measurements.unit);
   const isFormValid = validation.heightValid && validation.weightValid;
 
   return (
