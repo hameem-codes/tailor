@@ -36,7 +36,7 @@ export const FitSelector: React.FC<FitSelectorProps> = ({
       <div className="text-base font-semibold text-white">Preferred fit</div>
       <SlidingTabs<FitPreference>
         ariaLabel="Preferred fit"
-        className={`grid grid-cols-3 gap-2 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+        className={`overflow-x-auto no-scrollbar flex flex-col gap-2 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
         buttonClassName={`w-full text-center capitalize ${buttonClassName}`}
         value={value}
         onChange={(f) => !disabled && onChange(f)}

@@ -96,7 +96,7 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
           <UnitSelector
             value={measurements.unit}
             onChange={handleUnitToggle}
-            buttonClassName="!min-h-[32px] sm:!min-h-[36px] !px-2.5 sm:!px-3.5 text-xs sm:text-sm flex-none"
+            buttonClassName="!min-h-[44px] sm:!min-h-[36px] !px-2.5 sm:!px-3.5 text-xs sm:text-sm flex-none"
           />
         </div>
 

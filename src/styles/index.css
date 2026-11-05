@@ -3,6 +3,16 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    --tailor-vh: 100vh;
+  }
+
+  @supports (height: 100dvh) {
+    html {
+      --tailor-vh: 100dvh;
+    }
+  }
+
   :root {
     --bg-dark: #0a0a0b;
     --bg-mid: #141517;

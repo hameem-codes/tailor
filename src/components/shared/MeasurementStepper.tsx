@@ -92,7 +92,7 @@ export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
         <button
           type="button"
           onClick={() => stepValue(-step)}
-          className="circle-btn circle-btn-sm btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base !font-bold flex items-center justify-center border border-white/10 hover:border-white/30 active:scale-95 transition-all select-none"
+          className="circle-btn btn-press !w-10 !h-10 !min-w-[44px] !min-h-[44px] !text-base !font-bold flex items-center justify-center border border-white/10 hover:border-white/30 active:scale-95 transition-all select-none"
           aria-label={`Decrease ${label}`}
           disabled={value <= min}
         >
@@ -118,7 +118,7 @@ export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
         <button
           type="button"
           onClick={() => stepValue(step)}
-          className="circle-btn circle-btn-sm btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base !font-bold flex items-center justify-center border border-white/10 hover:border-white/30 active:scale-95 transition-all select-none"
+          className="circle-btn btn-press !w-10 !h-10 !min-w-[44px] !min-h-[44px] !text-base !font-bold flex items-center justify-center border border-white/10 hover:border-white/30 active:scale-95 transition-all select-none"
           aria-label={`Increase ${label}`}
           disabled={value >= max}
         >

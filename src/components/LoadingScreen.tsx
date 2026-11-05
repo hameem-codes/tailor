@@ -30,7 +30,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
   return (
     <main
-      className="w-full min-h-[calc(100vh-80px)] flex flex-col justify-between p-4 sm:p-6 lg:px-8 py-6 max-w-[420px] md:max-w-3xl lg:max-w-6xl mx-auto page-transition"
+      className="w-full min-h-[calc(var(--tailor-vh)-80px)] flex flex-col justify-between p-4 sm:p-6 lg:px-8 py-6 max-w-[420px] md:max-w-3xl lg:max-w-6xl mx-auto page-transition"
       aria-busy="true"
     >
       <div className="flex flex-col gap-4">

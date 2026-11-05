@@ -54,14 +54,14 @@ export const InputScreen: React.FC<InputScreenProps> = ({
             {!showGuide && (
               <button
                 onClick={() => setShowGuide(true)}
-                className="pill-btn btn-press !text-xs !min-h-[36px] !h-9 !px-3 text-[#4ADE80] border-[#4ADE80]/40 inline-flex items-center"
+                className="pill-btn btn-press !text-xs !min-h-[44px] !h-10 !px-3 text-[#4ADE80] border-[#4ADE80]/40 inline-flex items-center"
               >
                 Guide
               </button>
             )}
             <button
               onClick={onOpenAbout}
-              className="circle-btn btn-press text-base font-serif italic !w-9 !h-9 !min-w-[36px] !min-h-[36px]"
+              className="circle-btn btn-press text-base font-serif italic !w-10 !h-10 !min-w-[44px] !min-h-[44px]"
               aria-label="About Tailor"
             >
               i
@@ -80,7 +80,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
         </div>
 
         {/* Responsive 2-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-16 items-start lg:items-center min-h-[calc(100vh-220px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-16 items-start lg:items-center min-h-[calc(var(--tailor-vh)-220px)]">
           {/* Left Column (Desktop Hero): hidden on mobile, visible on lg+ */}
           <section className="hidden lg:flex col-span-5 flex-col justify-center">
             <div className="backdrop-blur-xl bg-black/45 border border-white/10 rounded-[32px] p-6 lg:p-8 shadow-2xl">

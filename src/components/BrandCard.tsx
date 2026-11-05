@@ -117,10 +117,10 @@ export const BrandCard: React.FC<BrandCardProps> = ({
           <button
             type="button"
             onClick={() => onToggleSave(brandChart.id)}
-            className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !bg-transparent hover:!bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+            className="circle-btn btn-press !w-10 !h-10 !min-w-[44px] !min-h-[44px] !bg-transparent hover:!bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
             aria-label={isSaved ? `Remove ${brandChart.brand} from saved` : `Save ${brandChart.brand}`}
           >
-            <HeartIcon filled={isSaved} size={18} />
+            <HeartIcon filled={isSaved} size={20} />
           </button>
         </div>
       </div>

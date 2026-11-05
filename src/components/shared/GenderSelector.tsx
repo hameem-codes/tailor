@@ -22,7 +22,7 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
     <div
       role="radiogroup"
       aria-label="Gender selection"
-      className={`grid grid-cols-3 gap-2 ${className}`}
+      className={`grid grid-cols-2 sm:grid-cols-3 gap-2 ${className}`}
     >
       {options.map((g) => (
         <button

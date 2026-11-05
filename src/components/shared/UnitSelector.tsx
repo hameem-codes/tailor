@@ -29,7 +29,7 @@ export const UnitSelector: React.FC<UnitSelectorProps> = ({
       <SlidingTabs<'metric' | 'imperial'>
         ariaLabel={ariaLabel}
         className={`flex gap-1.5 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
-        buttonClassName={`!min-h-[38px] !px-3 text-xs sm:text-sm ${buttonClassName}`}
+        buttonClassName={`!min-h-[44px] !px-3 text-xs sm:text-sm ${buttonClassName}`}
         value={value}
         onChange={(u) => !disabled && onChange(u)}
         options={UNIT_OPTIONS}

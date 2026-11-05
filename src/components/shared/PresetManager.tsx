@@ -2,65 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { UserMeasurements } from '../../types';
 import {
   MeasurementPreset,
+  RecentSearchItem,
   loadMeasurementPresets,
   saveMeasurementPreset,
   deleteMeasurementPreset,
+  loadRecentSearches,
 } from '../../lib/storage';
 
 interface PresetManagerProps {
   measurements: UserMeasurements;
   onLoadPreset: (measurements: UserMeasurements) => void;
   className?: string;
-}
-
-const RECENT_SEARCHES_KEY = 'tailor_recent_searches_v1';
-
-export interface RecentSearchItem {
-  id: string;
-  measurements: UserMeasurements;
-  timestamp: string;
-  label: string;
-}
-
-export function loadRecentSearches(): RecentSearchItem[] {
-  try {
-    const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-export function saveRecentSearch(measurements: UserMeasurements): void {
-  try {
-    const current = loadRecentSearches();
-    const isPants = measurements.category === 'pants';
-    const primaryStr = isPants
-      ? `${measurements.waist || 80}cm waist`
-      : `${measurements.chest || 96}cm chest`;
-    const label = `${measurements.gender} ${measurements.category} (${Math.round(measurements.height)}cm, ${primaryStr})`;
-
-    const filtered = current.filter(
-      (item) =>
-        !(
-          item.measurements.gender === measurements.gender &&
-          item.measurements.category === measurements.category &&
-          Math.round(item.measurements.height) === Math.round(measurements.height) &&
-          Math.round(item.measurements.weight) === Math.round(measurements.weight)
-        )
-    );
-
-    const newItem: RecentSearchItem = {
-      id: crypto.randomUUID(),
-      measurements,
-      timestamp: new Date().toISOString(),
-      label,
-    };
-
-    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify([newItem, ...filtered].slice(0, 4)));
-  } catch (e) {
-    // ignore
-  }
 }
 
 export const PresetManager: React.FC<PresetManagerProps> = ({
@@ -141,7 +93,6 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
               value={newPresetName}
               onChange={(e) => setNewPresetName(e.target.value)}
               placeholder="e.g. Myself, Partner, Dad..."
-              autoFocus
               className="flex-1 bg-black/40 border border-white/20 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-white outline-none focus:border-[#4ADE80]"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSavePreset();

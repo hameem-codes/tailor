@@ -8,6 +8,13 @@ const ONBOARDING_SEEN_KEY = 'tailor_onboarding_seen_v1';
 const MEASUREMENT_PRESETS_KEY = 'tailor_measurement_presets_v1';
 const TABLE_PREFERENCES_KEY = 'tailor_table_preferences_v1';
 
+export function generateId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
+
 export const DEFAULT_MEASUREMENTS: UserMeasurements = {
   gender: 'men',
   category: 't-shirt',
@@ -142,7 +149,7 @@ export function saveMeasurementPreset(preset: Omit<MeasurementPreset, 'id' | 'cr
     const current = loadMeasurementPresets();
     const newPreset: MeasurementPreset = {
       ...preset,
-      id: crypto.randomUUID(),
+      id: generateId(),
       createdAt: new Date().toISOString(),
     };
     const updated = [newPreset, ...current].slice(0, 10);
@@ -186,6 +193,56 @@ export function saveTablePreferences(prefs: TablePreferences): void {
     localStorage.setItem(TABLE_PREFERENCES_KEY, JSON.stringify(prefs));
   } catch (e) {
     console.warn('[Tailor] Failed to save table preferences:', e);
+  }
+}
+
+const RECENT_SEARCHES_KEY = 'tailor_recent_searches_v1';
+
+export interface RecentSearchItem {
+  id: string;
+  measurements: UserMeasurements;
+  timestamp: string;
+  label: string;
+}
+
+export function loadRecentSearches(): RecentSearchItem[] {
+  try {
+    const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveRecentSearch(measurements: UserMeasurements): void {
+  try {
+    const current = loadRecentSearches();
+    const isPants = measurements.category === 'pants';
+    const primaryStr = isPants
+      ? `${measurements.waist || 80}cm waist`
+      : `${measurements.chest || 96}cm chest`;
+    const label = `${measurements.gender} ${measurements.category} (${Math.round(measurements.height)}cm, ${primaryStr})`;
+
+    const filtered = current.filter(
+      (item) =>
+        !(
+          item.measurements.gender === measurements.gender &&
+          item.measurements.category === measurements.category &&
+          Math.round(item.measurements.height) === Math.round(measurements.height) &&
+          Math.round(item.measurements.weight) === Math.round(measurements.weight)
+        )
+    );
+
+    const newItem: RecentSearchItem = {
+      id: generateId(),
+      measurements,
+      timestamp: new Date().toISOString(),
+      label,
+    };
+
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify([newItem, ...filtered].slice(0, 4)));
+  } catch (e) {
+    // ignore
   }
 }
 

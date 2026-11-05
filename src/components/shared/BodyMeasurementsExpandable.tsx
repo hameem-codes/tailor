@@ -67,7 +67,7 @@ export const BodyMeasurementsExpandable: React.FC<BodyMeasurementsExpandableProp
         </div>
         <button
           type="button"
-          className="pill-btn btn-press !border-[#4ADE80] !text-[#4ADE80] !font-semibold !text-xs sm:!text-sm !min-h-[34px] !px-3"
+          className="pill-btn btn-press !border-[#4ADE80] !text-[#4ADE80] !font-semibold !text-xs sm:!text-sm !min-h-[44px] !px-3"
           aria-expanded={open}
         >
           {open ? 'Hide' : '+ Add'}

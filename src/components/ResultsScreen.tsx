@@ -129,7 +129,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       <div className="flex lg:hidden items-center justify-between">
         <button
           onClick={onEditMeasurements}
-          className="pill-btn btn-press font-medium text-xs sm:text-sm !min-h-[38px] !px-3.5 border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5"
+          className="pill-btn btn-press font-medium text-xs sm:text-sm !min-h-[44px] !px-3.5 border border-white/20 hover:border-white/40 inline-flex items-center gap-1.5"
           aria-label="Back to edit measurements"
         >
           <span>←</span>
@@ -286,7 +286,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           <div className="relative flex-none">
             <button
               onClick={() => setShowFilterMenu(!showFilterMenu)}
-              className={`circle-btn btn-press flex-none !w-9 !h-9 sm:!w-10 sm:!h-10 !min-w-[36px] !min-h-[36px] sm:!min-w-[40px] sm:!min-h-[40px] ${regionFilter !== 'all' ? '!bg-[#1DA84A]' : ''
+              className={`circle-btn btn-press flex-none !w-10 !h-10 sm:!w-10 sm:!h-10 !min-w-[44px] !min-h-[44px] ${regionFilter !== 'all' ? '!bg-[#1DA84A]' : ''
                 }`}
               aria-label="Filter by brand region"
               aria-expanded={showFilterMenu}
@@ -296,7 +296,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
             {/* Filter Popup Menu */}
             {showFilterMenu && (
-              <div className="absolute right-0 top-11 sm:top-12 z-40 glass-card !bg-[#131518]/98 p-2 min-w-[160px] shadow-2xl border border-white/20 animate-fade-in">
+              <div className="absolute left-0 sm:left-auto right-0 sm:right-0 top-11 sm:top-12 z-40 glass-card !bg-[#131518]/98 p-2 min-w-[160px] max-w-[260px] w-full shadow-2xl border border-white/20 animate-fade-in">
                 <div className="text-xs font-semibold text-secText px-3 py-1.5 uppercase tracking-wider">
                   Region
                 </div>

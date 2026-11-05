@@ -27,7 +27,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
     <div
       role="radiogroup"
       aria-label="Clothing category selection"
-      className={`grid grid-cols-4 gap-1.5 sm:gap-2 ${className}`}
+      className={`grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 ${className}`}
     >
       {CATEGORY_OPTIONS.map((c) => (
         <button

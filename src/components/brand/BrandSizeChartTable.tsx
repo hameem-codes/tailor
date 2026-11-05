@@ -50,8 +50,8 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
           <span className="text-secText text-xs sm:text-sm font-medium">Unit</span>
           <SlidingTabs<UnitSystem>
             ariaLabel="Table unit"
-            className="flex gap-1"
-            buttonClassName="!min-h-[34px] !py-0 !px-3 text-xs sm:text-sm"
+            className="flex gap-1 overflow-x-auto no-scrollbar"
+            buttonClassName="!min-h-[34px] !py-0 !px-3 text-xs sm:text-sm flex-none"
             value={tableUnit}
             onChange={onUnitChange}
             options={tableUnitOptions}
@@ -62,8 +62,8 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
           <span className="text-secText text-xs sm:text-sm font-medium">Type</span>
           <SlidingTabs<ChartType>
             ariaLabel="Measurement type"
-            className="flex gap-1"
-            buttonClassName="!min-h-[34px] !py-0 !px-3 text-xs sm:text-sm"
+            className="flex gap-1 overflow-x-auto no-scrollbar"
+            buttonClassName="!min-h-[34px] !py-0 !px-3 text-xs sm:text-sm flex-none"
             value={tableMeasurementType}
             onChange={onMeasurementTypeChange}
             options={measurementTypeOptions}
