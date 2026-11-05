@@ -5,7 +5,6 @@ import {
   kgToLbs,
   lbsToKg,
 } from '../../lib/matching/helpers';
-import { UnitSystem } from '../../types';
 
 interface MeasurementStepperProps {
   label: string;
@@ -21,6 +20,8 @@ interface MeasurementStepperProps {
   className?: string;
   inputClassName?: string;
 }
+
+type UnitSystem = 'metric' | 'imperial';
 
 export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
   label,
@@ -73,19 +74,21 @@ export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
 
   return (
     <div
-      className={`field-container flex items-center justify-between !py-2.5 !px-3 sm:!px-3.5 gap-2 overflow-hidden ${
+      className={`field-container flex flex-col justify-between !py-2.5 !px-3.5 gap-1.5 overflow-hidden ${
         !isValid ? 'field-container-error' : ''
       } ${className}`}
     >
-      <label
-        htmlFor={errorId || label.toLowerCase().replace(' ', '-') + '-input'}
-        className="font-semibold text-sm sm:text-base text-white flex-shrink min-w-0 truncate select-none"
-      >
-        {label}
-      </label>
+      <div className="flex items-center justify-between">
+        <label
+          htmlFor={errorId || label.toLowerCase().replace(' ', '-') + '-input'}
+          className="font-semibold text-sm sm:text-base text-white select-none"
+        >
+          {label}
+        </label>
+      </div>
 
       {/* Symmetrical stepper control group: [ - ]  [ value unit ]  [ + ] */}
-      <div className="flex items-center gap-1 sm:gap-1.5 flex-none ml-auto">
+      <div className="flex items-center justify-between w-full pt-0.5">
         <button
           type="button"
           onClick={() => stepValue(-step)}
@@ -96,7 +99,7 @@ export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
           −
         </button>
 
-        <div className="flex items-baseline justify-center px-0.5 min-w-[56px] sm:min-w-[62px]">
+        <div className="flex items-baseline justify-center">
           <input
             id={errorId || label.toLowerCase().replace(' ', '-') + '-input'}
             type="number"
@@ -105,7 +108,7 @@ export const MeasurementStepper: React.FC<MeasurementStepperProps> = ({
             onChange={(e) => handleInput(e.target.value)}
             aria-invalid={!isValid}
             aria-describedby={!isValid ? errorId : undefined}
-            className={`number-input number-input-sm text-white !w-11 sm:!w-12 !text-2xl sm:!text-[26px] font-barlow font-semibold text-center !p-0 ${inputClassName}`}
+            className={`number-input number-input-sm text-white !w-14 !text-2xl sm:!text-[28px] font-barlow font-semibold text-center !p-0 ${inputClassName}`}
           />
           <span className="text-secText text-xs sm:text-sm font-medium ml-1 select-none flex-none">
             {unitLabel}

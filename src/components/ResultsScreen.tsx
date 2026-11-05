@@ -236,11 +236,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           <button
             type="button"
             onClick={() => setShowSavedOnly(!showSavedOnly)}
-            className={`pill-btn btn-press flex-none text-xs sm:text-sm font-semibold !min-h-[40px] !px-3.5 inline-flex items-center gap-1.5 transition-all ${
-              showSavedOnly
+            className={`pill-btn btn-press flex-none text-xs sm:text-sm font-semibold !min-h-[40px] !px-3.5 inline-flex items-center gap-1.5 transition-all ${showSavedOnly
                 ? '!bg-[#1DA84A] text-white !border-[#4ADE80] shadow-md ring-1 ring-[#4ADE80]/30'
                 : '!bg-white/[0.04] text-white/90 border-white/15 hover:border-white/30'
-            }`}
+              }`}
             aria-label={showSavedOnly ? 'Show all brands' : 'Filter by saved brands'}
             aria-pressed={showSavedOnly}
           >
@@ -251,9 +250,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             />
             <span>Saved</span>
             <span
-              className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
-                showSavedOnly ? 'bg-white/25 text-white' : 'bg-white/10 text-secText'
-              }`}
+              className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${showSavedOnly ? 'bg-white/25 text-white' : 'bg-white/10 text-secText'
+                }`}
             >
               {savedBrandIds.length}
             </span>
@@ -285,9 +283,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowFilterMenu(!showFilterMenu)}
-              className={`circle-btn btn-press flex-none !w-10 !h-10 !min-w-[40px] !min-h-[40px] ${
-                regionFilter !== 'all' ? '!bg-[#1DA84A]' : ''
-              }`}
+              className={`circle-btn btn-press flex-none !w-10 !h-10 !min-w-[40px] !min-h-[40px] ${regionFilter !== 'all' ? '!bg-[#1DA84A]' : ''
+                }`}
               aria-label="Filter by brand region"
               aria-expanded={showFilterMenu}
             >
@@ -307,9 +304,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                       setRegionFilter(r);
                       setShowFilterMenu(false);
                     }}
-                    className={`w-full text-left px-3 py-2 text-sm rounded-lg capitalize transition-colors ${
-                      regionFilter === r ? 'bg-[#1DA84A] text-white font-semibold' : 'text-secText hover:bg-white/10'
-                    }`}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-lg capitalize transition-colors ${regionFilter === r ? 'bg-[#1DA84A] text-white font-semibold' : 'text-secText hover:bg-white/10'
+                      }`}
                   >
                     {r === 'all' ? 'All regions' : `${r} only`}
                   </button>
