@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveLocalFeedback } from '../lib/storage';
+import { HangerIcon } from './Icons';
 
 interface AboutScreenProps {
   brandContext?: string;
@@ -12,6 +13,34 @@ interface FAQItem {
   title: string;
   content: string;
 }
+
+interface FeedbackButtonConfig {
+  key: 'well' | 'tight' | 'loose';
+  emoji: string;
+  label: string;
+  active: string;
+}
+
+const FEEDBACK_BUTTONS: FeedbackButtonConfig[] = [
+  {
+    key: 'well',
+    emoji: '✅',
+    label: 'Fit well',
+    active: 'bg-gradient-to-br from-[#1DA84A] to-[#15803d] border-[#4ADE80] text-white shadow-[0_4px_16px_rgba(29,168,74,0.35)]',
+  },
+  {
+    key: 'tight',
+    emoji: '😬',
+    label: 'Too tight',
+    active: 'bg-gradient-to-br from-[#FBBF24] to-[#D97706] border-[#FDE68A] text-black shadow-[0_4px_16px_rgba(251,191,36,0.3)]',
+  },
+  {
+    key: 'loose',
+    emoji: '👕',
+    label: 'Too loose',
+    active: 'bg-gradient-to-br from-[#F87171] to-[#DC2626] border-[#FECACA] text-white shadow-[0_4px_16px_rgba(248,113,113,0.3)]',
+  },
+];
 
 const FAQ_ITEMS: FAQItem[] = [
   {
@@ -31,6 +60,36 @@ const FAQ_ITEMS: FAQItem[] = [
     title: 'How accurate is this?',
     content:
       'Accuracy is highest when chest, waist, and fit preference are provided. Tailor uses calibrated multi-dimensional bounds to calculate confidence. Results are designed as an expert buying guide.',
+  },
+];
+
+const steps = [
+  {
+    num: 1,
+    icon: '📏',
+    title: 'Enter measurements',
+    desc: 'Provide height, weight, and key body dimensions in cm or inches.',
+    color: 'from-[#1DA84A]/20 to-[#1DA84A]/5',
+    border: 'border-[#4ADE80]/20',
+    glow: 'shadow-[0_0_30px_rgba(29,168,74,0.15)]',
+  },
+  {
+    num: 2,
+    icon: '⚖️',
+    title: 'Compare charts',
+    desc: 'We calibrate your numbers against official dimension charts across 10+ brands.',
+    color: 'from-[#3B82F6]/20 to-[#3B82F6]/5',
+    border: 'border-[#60A5FA]/20',
+    glow: 'shadow-[0_0_30px_rgba(59,130,246,0.12)]',
+  },
+  {
+    num: 3,
+    icon: '✅',
+    title: 'Get your size',
+    desc: 'Review your recommended size, match level, and visual ruler range per brand.',
+    color: 'from-[#8B5CF6]/20 to-[#8B5CF6]/5',
+    border: 'border-[#A78BFA]/20',
+    glow: 'shadow-[0_0_30px_rgba(139,92,246,0.12)]',
   },
 ];
 
@@ -65,136 +124,203 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
   };
 
   return (
-    <div className="relative min-h-[100dvh] w-full max-w-[640px] sm:max-w-[800px] lg:max-w-[1024px] mx-auto flex flex-col py-6 page-transition">
-      {/* Dark Scrim overlay ensuring 20-25% background opacity and strict WCAG AA contrast */}
+    <div className="relative min-h-[100dvh] w-full flex flex-col page-transition">
+      {/* Full-screen dark gradient scrim for readability */}
       <div
-        className="fixed inset-0 pointer-events-none -z-10 bg-gradient-to-b from-[#0a0a0b]/80 via-[#0a0a0b]/92 to-[#0a0a0b]/98 backdrop-blur-md"
+        className="fixed inset-0 pointer-events-none z-0 bg-gradient-to-br from-[#0a0a0b]/75 via-[#0d0e10]/85 to-[#0a0a0b]/95"
         aria-hidden="true"
       />
 
-      {/* Main Content Container */}
-      <div className="flex flex-col gap-6">
-        {/* Header: 44px back button + "About Tailor" in Barlow Condensed */}
-        <div className="flex items-center gap-3">
+      {/* Scrollable content wrapper */}
+      <div className="relative z-10 w-full max-w-[720px] lg:max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-32 flex flex-col gap-8 sm:gap-10">
+
+        {/* ── HEADER ───────────────────────────────── */}
+        <div className="flex items-center gap-4 animate-fade-in">
           <button
             onClick={handleGoBack}
-            className="circle-btn btn-press !w-[44px] !h-[44px] !min-w-[44px] !min-h-[44px] !bg-white/10 hover:!bg-white/20 text-white rounded-full flex items-center justify-center text-lg font-bold transition-colors focus-visible:ring-2 focus-visible:ring-accent"
+            className="circle-btn btn-press !w-[44px] !h-[44px] !min-w-[44px] !min-h-[44px] !bg-white/10 hover:!bg-white/18 border border-white/15 text-white text-lg transition-all focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Go back"
           >
             ←
           </button>
-          <h1 className="font-barlow text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-wide leading-none">
-            About Tailor
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <HangerIcon size={28} className="text-[#4ADE80]" />
+            <h1 className="font-barlow text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-wide leading-none">
+              About Tailor
+            </h1>
+          </div>
         </div>
 
-        {/* Hero Section: Short headline, intro, 3 small chips */}
-        <section aria-labelledby="about-hero-title" className="flex flex-col gap-3">
-          <h2
-            id="about-hero-title"
-            className="font-barlow text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-wide leading-tight"
-          >
-            One size language for every brand
-          </h2>
-          <p className="text-[16px] sm:text-[17px] lg:text-[18px] leading-relaxed text-[#E4E4E8]">
-            Tailor matches your body measurements to real brand size charts, so a Medium means the same thing everywhere.
-          </p>
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/[0.08] text-white border border-white/15">
-              <span className="text-[#4ADE80]">●</span> 10+ brands
+        {/* ── HERO SECTION ─────────────────────────── */}
+        <section
+          aria-labelledby="about-hero-title"
+          className="glass-card p-6 sm:p-8 flex flex-col gap-5 animate-fade-in"
+        >
+          {/* Top accent line */}
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-gradient-to-r from-[#4ADE80]/50 to-transparent" />
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#4ADE80]">
+              The Mission
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/[0.08] text-white border border-white/15">
-              <span className="text-[#4ADE80]">🛡️</span> Stays on your device
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/[0.08] text-white border border-white/15">
-              <span className="text-[#4ADE80]">✓</span> Free
-            </span>
+            <div className="h-px flex-1 bg-gradient-to-l from-[#4ADE80]/50 to-transparent" />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <h2
+              id="about-hero-title"
+              className="font-barlow text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-wide leading-tight"
+            >
+              One size language for every brand
+            </h2>
+            <p className="text-sm sm:text-base lg:text-[17px] leading-relaxed text-[#C8C8D0]">
+              Tailor matches your body measurements to real brand size charts, so a{' '}
+              <span className="text-white font-semibold">Medium means the same thing everywhere</span>.
+              Stop guessing — start buying with confidence.
+            </p>
+          </div>
+
+          {/* Feature chips */}
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              { icon: '●', label: '10+ brands', color: 'text-[#4ADE80]' },
+              { icon: '🛡️', label: 'Stays on device', color: 'text-[#60A5FA]' },
+              { icon: '✓', label: '100% Free', color: 'text-[#A78BFA]' },
+              { icon: '📊', label: 'Official size charts', color: 'text-[#FBBF24]' },
+            ].map((chip) => (
+              <span
+                key={chip.label}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.07] text-white border border-white/12 hover:bg-white/[0.12] transition-colors"
+              >
+                <span className={chip.color}>{chip.icon}</span>
+                {chip.label}
+              </span>
+            ))}
           </div>
         </section>
 
-        {/* "How it works" 3-step visual */}
-        <section aria-labelledby="how-it-works-title" className="flex flex-col gap-3">
-          <h3
-            id="how-it-works-title"
-            className="font-barlow text-xl sm:text-2xl lg:text-3xl font-bold uppercase tracking-wider text-white"
-          >
-            How it works
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Step 1 */}
-            <div className="glass-card !bg-white/[0.04] p-4 sm:p-5 rounded-2xl border border-white/10 flex flex-col gap-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm sm:text-base flex items-center justify-center flex-none">
-                1
-              </div>
-              <h4 className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">Enter measurements</h4>
-              <p className="text-xs sm:text-[13px] lg:text-sm text-secText leading-relaxed">
-                Provide height, weight, and key body dimensions in cm or inches.
-              </p>
-            </div>
+        {/* ── HOW IT WORKS ─────────────────────────── */}
+        <section aria-labelledby="how-it-works-title" className="flex flex-col gap-4 animate-fade-in">
+          <div className="flex items-center gap-3 px-1">
+            <h3
+              id="how-it-works-title"
+              className="font-barlow text-xl sm:text-2xl font-bold uppercase tracking-widest text-white"
+            >
+              How it works
+            </h3>
+            <div className="h-px flex-1 bg-white/10" />
+          </div>
 
-            {/* Step 2 */}
-            <div className="glass-card !bg-white/[0.04] p-4 sm:p-5 rounded-2xl border border-white/10 flex flex-col gap-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm sm:text-base flex items-center justify-center flex-none">
-                2
-              </div>
-              <h4 className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">Compare charts</h4>
-              <p className="text-xs sm:text-[13px] lg:text-sm text-secText leading-relaxed">
-                We calibrate your numbers against official dimension charts across 10+ brands.
-              </p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {steps.map((step, i) => (
+              <div
+                key={step.num}
+                className={`relative glass-card bg-gradient-to-br ${step.color} ${step.border} border p-5 sm:p-6 flex flex-col gap-3 ${step.glow} overflow-hidden animate-fade-in`}
+                style={{ animationDelay: `${i * 80}ms` }}
+              >
+                {/* Large background step number */}
+                <span
+                  className="absolute right-4 top-2 font-barlow font-black text-7xl sm:text-8xl text-white/[0.04] leading-none select-none pointer-events-none"
+                  aria-hidden="true"
+                >
+                  {step.num}
+                </span>
 
-            {/* Step 3 */}
-            <div className="glass-card !bg-white/[0.04] p-4 sm:p-5 rounded-2xl border border-white/10 flex flex-col gap-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm sm:text-base flex items-center justify-center flex-none">
-                3
+                {/* Step badge + icon */}
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-[#1DA84A]/25 border border-[#4ADE80]/30 text-[#4ADE80] font-bold text-sm flex items-center justify-center flex-none shadow-[0_0_12px_rgba(29,168,74,0.2)]">
+                    {step.num}
+                  </div>
+                  <span className="text-xl" role="img" aria-hidden="true">{step.icon}</span>
+                </div>
+
+                <div className="flex flex-col gap-1.5 relative z-10">
+                  <h4 className="font-barlow font-bold text-lg sm:text-xl text-white tracking-wide leading-tight">
+                    {step.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-[#A0A0AA] leading-relaxed">
+                    {step.desc}
+                  </p>
+                </div>
+
+                {/* Step connector arrow — desktop only */}
+                {i < steps.length - 1 && (
+                  <div
+                    className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-6 h-6 bg-[#1DA84A]/20 border border-[#4ADE80]/30 rounded-full items-center justify-center text-[#4ADE80] text-xs font-bold shadow-sm"
+                    aria-hidden="true"
+                  >
+                    →
+                  </div>
+                )}
               </div>
-              <h4 className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">Get your size</h4>
-              <p className="text-xs sm:text-[13px] lg:text-sm text-secText leading-relaxed">
-                Review your recommended size, match level, and visual ruler range per brand.
-              </p>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* Accordions: One glass container, rows >= 56px, label left, rotating chevron right, only 1 open at a time */}
-        <section aria-labelledby="faq-title" className="flex flex-col gap-3">
-          <div className="glass-card !bg-white/[0.04] p-0 rounded-2xl border border-white/12 divide-y divide-white/10 overflow-hidden shadow-lg">
-            {FAQ_ITEMS.map((item) => {
+        {/* ── FAQ ACCORDIONS ───────────────────────── */}
+        <section aria-labelledby="faq-title" className="flex flex-col gap-4 animate-fade-in">
+          <div className="flex items-center gap-3 px-1">
+            <h3
+              id="faq-title"
+              className="font-barlow text-xl sm:text-2xl font-bold uppercase tracking-widest text-white"
+            >
+              FAQs
+            </h3>
+            <div className="h-px flex-1 bg-white/10" />
+          </div>
+
+          <div className="glass-card p-0 overflow-hidden divide-y divide-white/8">
+            {FAQ_ITEMS.map((item, i) => {
               const isOpen = openAccordion === item.id;
               return (
-                <div key={item.id} className="transition-colors">
+                <div key={item.id} className="group">
                   <button
                     type="button"
                     id={`accordion-btn-${item.id}`}
                     aria-expanded={isOpen}
                     aria-controls={`accordion-panel-${item.id}`}
                     onClick={() => toggleAccordion(item.id)}
-                    className="w-full min-h-[56px] px-5 py-4 flex items-center justify-between text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors hover:bg-white/[0.03]"
+                    className="w-full min-h-[60px] px-5 sm:px-6 py-4 flex items-center justify-between gap-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-all hover:bg-white/[0.04]"
                   >
-                    <span className="font-semibold text-[15px] sm:text-base lg:text-lg text-white pr-4 leading-snug">
-                      {item.title}
-                    </span>
+                    {/* Left: index + title */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-[11px] font-bold text-[#4ADE80]/60 font-mono flex-none">
+                        0{i + 1}
+                      </span>
+                      <span className="font-semibold text-sm sm:text-base text-white leading-snug truncate">
+                        {item.title}
+                      </span>
+                    </div>
+
+                    {/* Right: animated chevron */}
                     <span
                       aria-hidden="true"
-                      className={`text-secText font-bold text-sm transition-transform duration-200 flex-none ${
-                        isOpen ? 'rotate-180 text-white' : ''
+                      className={`w-7 h-7 rounded-full flex items-center justify-center flex-none transition-all duration-250 text-xs font-bold ${
+                        isOpen
+                          ? 'bg-[#1DA84A]/25 text-[#4ADE80] border border-[#4ADE80]/30 rotate-180'
+                          : 'bg-white/[0.06] text-white/50 border border-white/10 group-hover:text-white/80'
                       }`}
                     >
                       ▼
                     </span>
                   </button>
+
+                  {/* Answer panel */}
                   <div
                     id={`accordion-panel-${item.id}`}
                     role="region"
                     aria-labelledby={`accordion-btn-${item.id}`}
                     aria-hidden={!isOpen}
-                    className={`overflow-hidden transition-all duration-300 ease-out px-5 ${
-                      isOpen ? 'max-h-[500px] pb-5 opacity-100 visible' : 'max-h-0 pb-0 opacity-0 invisible pointer-events-none'
+                    className={`overflow-hidden transition-all duration-300 ease-out ${
+                      isOpen
+                        ? 'max-h-[500px] opacity-100 visible'
+                        : 'max-h-0 opacity-0 invisible pointer-events-none'
                     }`}
                   >
-                    <p className="text-[16px] sm:text-[17px] lg:text-[18px] leading-relaxed text-[#D6D6DC]">
-                      {item.content}
-                    </p>
+                    <div className="px-5 sm:px-6 pb-5 pt-1 border-t border-white/5">
+                      <p className="text-sm sm:text-[15px] leading-relaxed text-[#C0C0CA]">
+                        {item.content}
+                      </p>
+                    </div>
                   </div>
                 </div>
               );
@@ -202,74 +328,70 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
           </div>
         </section>
 
-        {/* "Sample data" notice card with info icon */}
-        <div className="glass-card !bg-white/[0.03] p-4 sm:p-5 rounded-2xl border border-white/10 flex items-start gap-3">
-          <span className="text-[#4ADE80] text-lg flex-none mt-0.5" aria-hidden="true">
-            ℹ️
-          </span>
-          <p className="text-xs sm:text-sm text-secText leading-relaxed">
-            <strong className="text-white">Sample data:</strong> Brand sizes are sample data for portfolio demonstration, not official charts.
+        {/* ── SAMPLE DATA NOTICE ───────────────────── */}
+        <div className="glass-card p-4 sm:p-5 flex items-start gap-3 border border-amber-500/20 bg-amber-500/[0.04] animate-fade-in">
+          <span className="text-xl flex-none mt-0.5" aria-hidden="true">⚠️</span>
+          <p className="text-xs sm:text-sm text-[#A0A0AA] leading-relaxed">
+            <strong className="text-amber-300">Sample data:</strong>{' '}
+            Brand sizes shown are sample data for portfolio demonstration purposes, not official brand charts.
           </p>
         </div>
 
-        {/* "Did this size fit you?" Feedback Chips */}
-        <section aria-labelledby="feedback-title" className="glass-card !bg-white/[0.04] p-5 rounded-2xl border border-white/12 flex flex-col gap-3">
-          <h4 id="feedback-title" className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">
-            Did this size fit you?
-          </h4>
-          <div className={`grid gap-2 ${feedbackGiven ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-3 lg:grid-cols-3'}`}>
-            <button
-              type="button"
-              onClick={() => handleFeedback('well')}
-              className={`h-[44px] min-h-[44px] rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center justify-center border focus-visible:ring-2 focus-visible:ring-accent ${
-                feedbackGiven === 'well'
-                  ? 'bg-[#1DA84A] border-[#4ADE80] text-white shadow-md'
-                  : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border-white/15'
-              }`}
-            >
-              Fit well
-            </button>
-            <button
-              type="button"
-              onClick={() => handleFeedback('tight')}
-              className={`h-[44px] min-h-[44px] rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center justify-center border focus-visible:ring-2 focus-visible:ring-accent ${
-                feedbackGiven === 'tight'
-                  ? 'bg-[#FBBF24] border-[#FDE68A] text-black shadow-md'
-                  : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border-white/15'
-              }`}
-            >
-              Too tight
-            </button>
-            <button
-              type="button"
-              onClick={() => handleFeedback('loose')}
-              className={`h-[44px] min-h-[44px] rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center justify-center border focus-visible:ring-2 focus-visible:ring-accent ${
-                feedbackGiven === 'loose'
-                  ? 'bg-[#F87171] border-[#FECACA] text-white shadow-md'
-                  : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border-white/15'
-              }`}
-            >
-              Too loose
-            </button>
+        {/* ── DID THIS FIT? FEEDBACK ───────────────── */}
+        <section
+          aria-labelledby="feedback-title"
+          className="glass-card p-5 sm:p-6 flex flex-col gap-4 animate-fade-in"
+        >
+          <div className="flex flex-col gap-1">
+            <h4 id="feedback-title" className="font-barlow text-lg sm:text-xl font-bold text-white tracking-wide">
+              Did this size fit you?
+            </h4>
+            <p className="text-xs text-[#A0A0AA]">
+              Your feedback is saved locally and helps improve accuracy.
+            </p>
           </div>
-          {feedbackGiven && (
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-[#4ADE80] font-medium animate-fade-in pt-1">
-              <span>✓</span>
-              <span>Thanks for the feedback! Saved locally on your device.</span>
+
+          {feedbackGiven ? (
+            <div className="flex flex-col items-center gap-3 py-4 animate-fade-in text-center">
+              <span className="text-3xl">🎉</span>
+              <p className="text-sm text-[#4ADE80] font-semibold">Thanks for the feedback!</p>
+              <p className="text-xs text-[#A0A0AA]">Saved locally on your device.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              {FEEDBACK_BUTTONS.map((btn) => (
+                <button
+                  key={btn.key}
+                  type="button"
+                  onClick={() => handleFeedback(btn.key)}
+                  className={`flex flex-col items-center justify-center gap-1.5 h-[72px] rounded-2xl font-semibold text-xs transition-all border btn-press focus-visible:ring-2 focus-visible:ring-accent ${'bg-white/[0.05] hover:bg-white/[0.10] text-white border-white/12 hover:border-white/25'}`}
+                >
+                  <span className="text-xl">{btn.emoji}</span>
+                  <span>{btn.label}</span>
+                </button>
+              ))}
             </div>
           )}
         </section>
+
+        {/* ── MADE WITH ────────────────────────────── */}
+        <div className="flex items-center justify-center gap-2 text-xs text-white/25 animate-fade-in pb-2">
+          <HangerIcon size={14} className="opacity-40" />
+          <span>Tailor — your personal fit guide</span>
+        </div>
       </div>
 
-      {/* Sticky Bottom "Back to results" button (solid green, 56px, safe-area inset) */}
-      <div className="sticky bottom-0 left-0 right-0 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/95 to-transparent z-20 mt-6">
-        <button
-          type="button"
-          onClick={handleGoBack}
-          className="primary-btn btn-press w-full h-[56px] min-h-[56px] text-base font-bold shadow-[0_4px_20px_rgba(29,168,74,0.35)] focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          Back to results
-        </button>
+      {/* ── STICKY BOTTOM CTA ────────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 px-4 sm:px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 bg-gradient-to-t from-[#0a0a0b] via-[#0a0a0b]/90 to-transparent pointer-events-none">
+        <div className="pointer-events-auto max-w-[720px] lg:max-w-[900px] mx-auto">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="primary-btn btn-press w-full h-[56px] min-h-[56px] text-base font-bold shadow-[0_8px_32px_rgba(29,168,74,0.4)] focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            ← Back to results
+          </button>
+        </div>
       </div>
     </div>
   );
