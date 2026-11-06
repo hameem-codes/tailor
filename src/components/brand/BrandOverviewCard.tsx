@@ -2,6 +2,7 @@ import React from 'react';
 import { BrandMatchResult, UnitSystem } from '../../types';
 import { RangeRuler } from '../RangeRuler';
 import { CheckIcon, WarningTriangleIcon, CrossCircleIcon, LockIcon } from '../Icons';
+import { formatDimension } from '../../lib/matching/helpers';
 
 interface BrandOverviewCardProps {
   matchResult: BrandMatchResult;
@@ -73,7 +74,7 @@ export const BrandOverviewCard: React.FC<BrandOverviewCardProps> = ({
 }) => {
   const { brandChart, confidence, confidenceReason } = matchResult;
   const currentSize = brandChart.sizes[selectedSizeIdx] || brandChart.sizes[0];
-  const userPrimaryText = `${Math.round(userPrimaryVal)} ${tableUnit === 'imperial' ? 'in' : 'cm'}`;
+  const userPrimaryText = formatDimension(userPrimaryVal, tableUnit);
 
   return (
     <div className={`glass-card p-5 sm:p-6 flex flex-col gap-4 rounded-[24px] sm:rounded-[28px] shadow-xl overflow-hidden ${className}`}>
@@ -120,7 +121,7 @@ export const BrandOverviewCard: React.FC<BrandOverviewCardProps> = ({
       <div className="flex border-t border-white/10 pt-3 mt-0.5">
         <div className="flex-1 min-w-0 pr-1.5 sm:pr-3">
           <div className="font-barlow text-base sm:text-2xl lg:text-[28px] font-medium text-white truncate">
-            {Math.round(userPrimaryVal)}
+            {formatDimension(userPrimaryVal, tableUnit).replace(/ (cm|in)$/, '')}
             <span className="text-[11px] sm:text-sm text-secText"> {tableUnit === 'imperial' ? 'in' : 'cm'}</span>
           </div>
           <div className="text-[11px] sm:text-sm text-secText mt-0.5 truncate">

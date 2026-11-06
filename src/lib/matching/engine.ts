@@ -3,6 +3,7 @@ import {
   UserMeasurements,
   BrandMatchResult,
   SizeEvaluation,
+  SizeItem,
   MatchStatus,
   ConfidenceLevel
 } from '../../types';
@@ -89,24 +90,39 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
 
   // 4. Evaluate each size
   const evaluations: SizeEvaluation[] = brandChart.sizes.map((size, index) => {
-    // Normalized ranges accounting for garment ease
-    let chestMin = (size.chest ? size.chest[0] : (size.garmentChest ? size.garmentChest[0] - ease.chest : 80));
-    let chestMax = (size.chest ? size.chest[1] : (size.garmentChest ? size.garmentChest[1] - ease.chest : 88));
-    let waistMin = size.waist ? size.waist[0] : 70;
-    let waistMax = size.waist ? size.waist[1] : 78;
-    let hipsMin = size.hips ? size.hips[0] : 85;
-    let hipsMax = size.hips ? size.hips[1] : 95;
+    // Garment-measured values must be converted to a body-equivalent range by
+    // subtracting the ease allowance. Body-measured values are used as-is.
+    const garmentChestBody = size.garmentChest
+      ? ([size.garmentChest[0] - ease.chest, size.garmentChest[1] - ease.chest] as [number, number])
+      : undefined;
+    const garmentWaistBody = size.garmentWaist
+      ? ([size.garmentWaist[0] - ease.waist, size.garmentWaist[1] - ease.waist] as [number, number])
+      : undefined;
+
+    // Normalized ranges, preferring body measurements and only falling back to
+    // garment-derived or neutral defaults so a missing field never invents a
+    // large phantom distance for the user.
+    const chestMin = size.chest ? size.chest[0] : garmentChestBody ? garmentChestBody[0] : 80;
+    const chestMax = size.chest ? size.chest[1] : garmentChestBody ? garmentChestBody[1] : 88;
+    const waistMin = size.waist ? size.waist[0] : garmentWaistBody ? garmentWaistBody[0] : 70;
+    const waistMax = size.waist ? size.waist[1] : garmentWaistBody ? garmentWaistBody[1] : 78;
+    const hipsMin = size.hips ? size.hips[0] : 85;
+    const hipsMax = size.hips ? size.hips[1] : 95;
 
     let dPrimary = 0;
     let dSecondary = 0;
     let relativePosition: 'tight' | 'ideal' | 'roomy' = 'ideal';
 
     if (isPants) {
-      if (primaryUserVal < waistMin) {
-        dPrimary = waistMin - primaryUserVal;
+      // Pants use the waist as the primary dimension; the waist range comes from
+      // the body field or, failing that, the garment field converted to body.
+      const pantsWaistMin = size.waist ? size.waist[0] : garmentWaistBody ? garmentWaistBody[0] : 70;
+      const pantsWaistMax = size.waist ? size.waist[1] : garmentWaistBody ? garmentWaistBody[1] : 78;
+      if (primaryUserVal < pantsWaistMin) {
+        dPrimary = pantsWaistMin - primaryUserVal;
         relativePosition = 'roomy';
-      } else if (primaryUserVal > waistMax) {
-        dPrimary = primaryUserVal - waistMax;
+      } else if (primaryUserVal > pantsWaistMax) {
+        dPrimary = primaryUserVal - pantsWaistMax;
         relativePosition = 'tight';
       }
 
@@ -147,6 +163,21 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
   });
 
   // 5. Find candidate best size indices
+  // A size range for the chart's primary dimension (waist for pants, chest for
+  // tops). Never dereferences an undefined field: explicit body values win,
+  // then garment values converted to body, then a tight neutral default.
+  const primaryRangeOf = (size: SizeItem): [number, number] => {
+    const garmentPrimary = isPants
+      ? size.garmentWaist
+        ? ([size.garmentWaist[0] - ease.waist, size.garmentWaist[1] - ease.waist] as [number, number])
+        : undefined
+      : size.garmentChest
+        ? ([size.garmentChest[0] - ease.chest, size.garmentChest[1] - ease.chest] as [number, number])
+        : undefined;
+    const bodyPrimary = isPants ? size.waist : size.chest;
+    return bodyPrimary ?? garmentPrimary ?? (isPants ? [70, 78] : [80, 88]);
+  };
+
   let sortedByScore = [...evaluations].sort((a, b) => a.score - b.score);
   let bestEval = sortedByScore[0];
   let primaryIndex = bestEval.sizeIndex;
@@ -160,13 +191,11 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
     const smallerIdx = primaryIndex > 0 ? primaryIndex - 1 : undefined;
     const largerIdx = primaryIndex < brandChart.sizes.length - 1 ? primaryIndex + 1 : undefined;
 
-    const currentSize = brandChart.sizes[primaryIndex];
-    const currentPrimaryRange = isPants ? currentSize.waist! : (currentSize.chest ?? [80, 88]);
+    const currentPrimaryRange = primaryRangeOf(brandChart.sizes[primaryIndex]);
 
     // Check gap / boundary with smaller size
     if (smallerIdx !== undefined) {
-      const smallerSize = brandChart.sizes[smallerIdx];
-      const smallerRange = isPants ? smallerSize.waist! : (smallerSize.chest ?? [70, 78]);
+      const smallerRange = primaryRangeOf(brandChart.sizes[smallerIdx]);
 
       // If user is between smallerMax and currentMin, and both are within 2.5cm
       if (primaryUserVal >= smallerRange[1] - 0.5 && primaryUserVal <= currentPrimaryRange[0] + 0.5) {
@@ -179,8 +208,7 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
 
     // Check gap / boundary with larger size
     if (!isBetweenSizes && largerIdx !== undefined) {
-      const largerSize = brandChart.sizes[largerIdx];
-      const largerRange = isPants ? largerSize.waist! : (largerSize.chest ?? [90, 98]);
+      const largerRange = primaryRangeOf(brandChart.sizes[largerIdx]);
 
       if (primaryUserVal >= currentPrimaryRange[1] - 0.5 && primaryUserVal <= largerRange[0] + 0.5) {
         if (evaluations[largerIdx].score <= 2.5 && evaluations[primaryIndex].score <= 2.5) {
@@ -272,9 +300,20 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
     verdict = `No size is close. Try another brand or fit.`;
   }
 
-  // Primary and secondary ranges for text
-  const primaryRange = isPants ? (primarySize.waist ?? [70, 78]) : (primarySize.chest ?? [88, 95]);
-  const waistRange = primarySize.waist ?? [70, 78];
+  // Primary and secondary ranges for text (garment charts are reported as body
+  // measurements so the numbers stay comparable to what the user entered).
+  const primaryRange = primaryRangeOf(primarySize);
+  const displayWaistRange = (size: SizeItem): [number, number] =>
+    size.waist ??
+    (size.garmentWaist
+      ? ([size.garmentWaist[0] - ease.waist, size.garmentWaist[1] - ease.waist] as [number, number])
+      : [70, 78]);
+  const displayChestRange = (size: SizeItem): [number, number] =>
+    size.chest ??
+    (size.garmentChest
+      ? ([size.garmentChest[0] - ease.chest, size.garmentChest[1] - ease.chest] as [number, number])
+      : [80, 88]);
+  const waistRange = displayWaistRange(primarySize);
 
   let chestRangeText = '';
   if (isPants) {
@@ -282,8 +321,8 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
   } else if (matchStatus === 'between' && secondaryIndex !== undefined) {
     const sA = brandChart.sizes[Math.min(primaryIndex, secondaryIndex)];
     const sB = brandChart.sizes[Math.max(primaryIndex, secondaryIndex)];
-    const rA = sA.chest ?? [80, 88];
-    const rB = sB.chest ?? [89, 96];
+    const rA = displayChestRange(sA);
+    const rB = displayChestRange(sB);
     chestRangeText = `Chest ${sA.label} ${formatRange(rA[0], rA[1], user.unit)} · ${sB.label} ${formatRange(rB[0], rB[1], user.unit)}`;
   } else {
     chestRangeText = `Chest ${formatRange(primaryRange[0], primaryRange[1], user.unit)}`;
@@ -293,9 +332,9 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
 
   // 9. Ruler Visualization Math
   // Domain scale covers all sizes with padding
-  const allRanges = brandChart.sizes.map(s => isPants ? (s.waist ?? [70, 80]) : (s.chest ?? [80, 90]));
-  const globalMin = Math.min(...allRanges.map(r => r[0]), primaryUserVal) - 6;
-  const globalMax = Math.max(...allRanges.map(r => r[1]), primaryUserVal) + 6;
+  const allRanges = brandChart.sizes.map((s) => primaryRangeOf(s));
+  const globalMin = Math.min(...allRanges.map((r) => r[0]), primaryUserVal) - 6;
+  const globalMax = Math.max(...allRanges.map((r) => r[1]), primaryUserVal) + 6;
   const scaleSpan = Math.max(globalMax - globalMin, 1);
 
   const userDotPercent = Math.min(Math.max(((primaryUserVal - globalMin) / scaleSpan) * 100, 4), 96);
@@ -314,8 +353,7 @@ export function matchBrand(brandChart: BrandChart, user: UserMeasurements): Bran
   let secondaryBarColor: string | undefined = undefined;
 
   if (matchStatus === 'between' && secondaryIndex !== undefined) {
-    const secSize = brandChart.sizes[secondaryIndex];
-    const secRange = isPants ? (secSize.waist ?? [70, 78]) : (secSize.chest ?? [80, 88]);
+    const secRange = primaryRangeOf(brandChart.sizes[secondaryIndex]);
     secondaryBarLeftPercent = Math.min(Math.max(((secRange[0] - globalMin) / scaleSpan) * 100, 2), 94);
     secondaryBarWidthPercent = Math.min(Math.max(((secRange[1] - secRange[0]) / scaleSpan) * 100, 5), 90);
     secondaryBarColor = '#FBBF24';
@@ -372,8 +410,15 @@ export function matchAllBrands(
 
   // 3. Search query filter
   if (searchQuery.trim()) {
-    const q = searchQuery.toLowerCase().trim();
-    results = results.filter(r => r.brandChart.brand.toLowerCase().includes(q));
+    const raw = searchQuery.toLowerCase().trim();
+    // Normalise by dropping punctuation so "HM" finds "H&M" and "levi s" finds "Levi's".
+    const normalizedQuery = raw.replace(/[^a-z0-9]/g, '');
+    results = results.filter((r) => {
+      const brandLower = r.brandChart.brand.toLowerCase();
+      if (normalizedQuery.length === 0) return brandLower.includes(raw);
+      const normalizedBrand = brandLower.replace(/[^a-z0-9]/g, '');
+      return normalizedBrand.includes(normalizedQuery);
+    });
   }
 
   // 4. Region filter

@@ -115,7 +115,7 @@ export const InputScreen: React.FC<InputScreenProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowGuide(!showGuide)}
-                  className="text-xs text-[#4ADE80] hover:underline font-semibold"
+                  className="text-xs text-[#4ADE80] hover:underline font-semibold !min-h-[44px] inline-flex items-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   {showGuide ? 'Hide quick start guide' : 'Show quick start walkthrough →'}
                 </button>

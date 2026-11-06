@@ -55,27 +55,34 @@ export const BodyMeasurementsExpandable: React.FC<BodyMeasurementsExpandableProp
 
   return (
     <div className={`field-container !p-0 overflow-hidden ${className}`}>
-      <div
+      <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="min-h-[56px] flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer select-none"
+        aria-expanded={open}
+        aria-controls="body-measurements-panel"
+        className="w-full min-h-[56px] flex items-center justify-between gap-3 px-3.5 py-2.5 cursor-pointer select-none text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-[inherit]"
       >
-        <div>
+        <span className="block">
           <span className="font-semibold text-sm sm:text-base text-white block">
             {title}
           </span>
           <span className="text-secText text-xs block">Improves accuracy</span>
-        </div>
-        <button
-          type="button"
-          className="pill-btn btn-press !border-[#4ADE80] !text-[#4ADE80] !font-semibold !text-xs sm:!text-sm !min-h-[44px] !px-3"
-          aria-expanded={open}
+        </span>
+        <span
+          className={`pill-btn btn-press !border-[#4ADE80] !text-[#4ADE80] !font-semibold !text-xs sm:!text-sm !min-h-[44px] !px-3 pointer-events-none ${
+            open ? '!bg-white/[0.06]' : ''
+          }`}
+          aria-hidden="true"
         >
           {open ? 'Hide' : '+ Add'}
-        </button>
-      </div>
+        </span>
+      </button>
 
       {open && (
-        <div className="flex border-t border-white/15 px-3.5 py-3 gap-3 animate-fade-in">
+        <div
+          id="body-measurements-panel"
+          className="flex border-t border-white/15 px-3.5 py-3 gap-3 animate-fade-in"
+        >
           {!isPants && (
             <div className="flex-1">
               <label htmlFor="chest-val" className="text-secText text-xs sm:text-sm block mb-1">

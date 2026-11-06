@@ -7,6 +7,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // Unit tests only: Playwright specs live in tests/e2e and run via `test:e2e`.
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['**/node_modules/**', '**/dist/**', 'tests/e2e/**'],
   },
 });
 

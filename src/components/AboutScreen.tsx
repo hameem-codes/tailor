@@ -65,14 +65,14 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
   };
 
   return (
-    <div className="relative min-h-[100dvh] w-full max-w-[640px] mx-auto flex flex-col justify-between px-4 sm:px-6 py-6 pb-0 page-transition">
+    <div className="relative min-h-[100dvh] w-full max-w-[640px] sm:max-w-[800px] lg:max-w-[1024px] mx-auto flex flex-col py-6 page-transition">
       {/* Dark Scrim overlay ensuring 20-25% background opacity and strict WCAG AA contrast */}
       <div
         className="fixed inset-0 pointer-events-none -z-10 bg-gradient-to-b from-[#0a0a0b]/80 via-[#0a0a0b]/92 to-[#0a0a0b]/98 backdrop-blur-md"
         aria-hidden="true"
       />
 
-      {/* Main Content Container with exactly 24px vertical section gap */}
+      {/* Main Content Container */}
       <div className="flex flex-col gap-6">
         {/* Header: 44px back button + "About Tailor" in Barlow Condensed */}
         <div className="flex items-center gap-3">
@@ -83,73 +83,73 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
           >
             ←
           </button>
-          <h1 className="font-barlow text-3xl sm:text-4xl font-bold text-white tracking-wide leading-none">
+          <h1 className="font-barlow text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-wide leading-none">
             About Tailor
           </h1>
         </div>
 
-        {/* Hero Section: Short headline, 16-17px intro, 3 small chips */}
+        {/* Hero Section: Short headline, intro, 3 small chips */}
         <section aria-labelledby="about-hero-title" className="flex flex-col gap-3">
           <h2
             id="about-hero-title"
-            className="font-barlow text-2xl sm:text-3xl font-semibold text-white tracking-wide leading-tight"
+            className="font-barlow text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-wide leading-tight"
           >
             One size language for every brand
           </h2>
-          <p className="text-[16px] sm:text-[17px] leading-relaxed text-[#E4E4E8]">
+          <p className="text-[16px] sm:text-[17px] lg:text-[18px] leading-relaxed text-[#E4E4E8]">
             Tailor matches your body measurements to real brand size charts, so a Medium means the same thing everywhere.
           </p>
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.08] text-white border border-white/15">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/[0.08] text-white border border-white/15">
               <span className="text-[#4ADE80]">●</span> 10+ brands
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.08] text-white border border-white/15">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/[0.08] text-white border border-white/15">
               <span className="text-[#4ADE80]">🛡️</span> Stays on your device
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/[0.08] text-white border border-white/15">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/[0.08] text-white border border-white/15">
               <span className="text-[#4ADE80]">✓</span> Free
             </span>
           </div>
         </section>
 
-        {/* "How it works" 3-step visual (numbered icons: Enter measurements, Compare charts, Get your size) */}
+        {/* "How it works" 3-step visual */}
         <section aria-labelledby="how-it-works-title" className="flex flex-col gap-3">
           <h3
             id="how-it-works-title"
-            className="font-barlow text-xl sm:text-2xl font-bold uppercase tracking-wider text-white"
+            className="font-barlow text-xl sm:text-2xl lg:text-3xl font-bold uppercase tracking-wider text-white"
           >
             How it works
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Step 1 */}
-            <div className="glass-card !bg-white/[0.04] p-4 rounded-2xl border border-white/10 flex flex-col gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm flex items-center justify-center flex-none">
+            <div className="glass-card !bg-white/[0.04] p-4 sm:p-5 rounded-2xl border border-white/10 flex flex-col gap-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm sm:text-base flex items-center justify-center flex-none">
                 1
               </div>
-              <h4 className="font-semibold text-[15px] sm:text-base text-white">Enter measurements</h4>
-              <p className="text-xs sm:text-[13px] text-secText leading-relaxed">
+              <h4 className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">Enter measurements</h4>
+              <p className="text-xs sm:text-[13px] lg:text-sm text-secText leading-relaxed">
                 Provide height, weight, and key body dimensions in cm or inches.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="glass-card !bg-white/[0.04] p-4 rounded-2xl border border-white/10 flex flex-col gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm flex items-center justify-center flex-none">
+            <div className="glass-card !bg-white/[0.04] p-4 sm:p-5 rounded-2xl border border-white/10 flex flex-col gap-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm sm:text-base flex items-center justify-center flex-none">
                 2
               </div>
-              <h4 className="font-semibold text-[15px] sm:text-base text-white">Compare charts</h4>
-              <p className="text-xs sm:text-[13px] text-secText leading-relaxed">
+              <h4 className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">Compare charts</h4>
+              <p className="text-xs sm:text-[13px] lg:text-sm text-secText leading-relaxed">
                 We calibrate your numbers against official dimension charts across 10+ brands.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="glass-card !bg-white/[0.04] p-4 rounded-2xl border border-white/10 flex flex-col gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm flex items-center justify-center flex-none">
+            <div className="glass-card !bg-white/[0.04] p-4 sm:p-5 rounded-2xl border border-white/10 flex flex-col gap-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] font-bold text-sm sm:text-base flex items-center justify-center flex-none">
                 3
               </div>
-              <h4 className="font-semibold text-[15px] sm:text-base text-white">Get your size</h4>
-              <p className="text-xs sm:text-[13px] text-secText leading-relaxed">
+              <h4 className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">Get your size</h4>
+              <p className="text-xs sm:text-[13px] lg:text-sm text-secText leading-relaxed">
                 Review your recommended size, match level, and visual ruler range per brand.
               </p>
             </div>
@@ -171,7 +171,7 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
                     onClick={() => toggleAccordion(item.id)}
                     className="w-full min-h-[56px] px-5 py-4 flex items-center justify-between text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors hover:bg-white/[0.03]"
                   >
-                    <span className="font-semibold text-[15px] sm:text-base text-white pr-4 leading-snug">
+                    <span className="font-semibold text-[15px] sm:text-base lg:text-lg text-white pr-4 leading-snug">
                       {item.title}
                     </span>
                     <span
@@ -187,11 +187,12 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
                     id={`accordion-panel-${item.id}`}
                     role="region"
                     aria-labelledby={`accordion-btn-${item.id}`}
+                    aria-hidden={!isOpen}
                     className={`overflow-hidden transition-all duration-300 ease-out px-5 ${
-                      isOpen ? 'max-h-60 pb-5 opacity-100' : 'max-h-0 pb-0 opacity-0 pointer-events-none'
+                      isOpen ? 'max-h-[500px] pb-5 opacity-100 visible' : 'max-h-0 pb-0 opacity-0 invisible pointer-events-none'
                     }`}
                   >
-                    <p className="text-[16px] sm:text-[17px] leading-relaxed text-[#D6D6DC]">
+                    <p className="text-[16px] sm:text-[17px] lg:text-[18px] leading-relaxed text-[#D6D6DC]">
                       {item.content}
                     </p>
                   </div>
@@ -211,12 +212,12 @@ export const AboutScreen: React.FC<AboutScreenProps> = ({
           </p>
         </div>
 
-        {/* "Did this size fit you?" Feedback Chips (44px tall, equal width, selected state + toast message) */}
+        {/* "Did this size fit you?" Feedback Chips */}
         <section aria-labelledby="feedback-title" className="glass-card !bg-white/[0.04] p-5 rounded-2xl border border-white/12 flex flex-col gap-3">
-          <h4 id="feedback-title" className="font-semibold text-[15px] sm:text-base text-white">
+          <h4 id="feedback-title" className="font-semibold text-[15px] sm:text-base lg:text-lg text-white">
             Did this size fit you?
           </h4>
-          <div className="grid grid-cols-3 gap-2">
+          <div className={`grid gap-2 ${feedbackGiven ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-3 lg:grid-cols-3'}`}>
             <button
               type="button"
               onClick={() => handleFeedback('well')}

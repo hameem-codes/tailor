@@ -88,7 +88,7 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
             <button
               type="button"
               onClick={onOpenHowToMeasure}
-              className="text-[#4ADE80] font-semibold text-xs sm:text-sm inline-flex items-center hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md whitespace-nowrap"
+              className="text-[#4ADE80] font-semibold text-xs sm:text-sm inline-flex items-center hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md !min-h-[44px] -my-2 whitespace-nowrap"
             >
               How to measure
             </button>
@@ -96,7 +96,7 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
           <UnitSelector
             value={measurements.unit}
             onChange={handleUnitToggle}
-            buttonClassName="!min-h-[44px] sm:!min-h-[36px] !px-2.5 sm:!px-3.5 text-xs sm:text-sm flex-none"
+            buttonClassName="!px-2.5 sm:!px-3.5 text-xs sm:text-sm flex-none"
           />
         </div>
 

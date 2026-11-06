@@ -15,6 +15,8 @@ const regionOptions: SlidingTabOption<RegionFilter>[] = [
 
 interface ResultsScreenProps {
   results: BrandMatchResult[];
+  /** Unfiltered results (ignores search/region/sort) used to resolve compare chips. */
+  allResults?: BrandMatchResult[];
   measurements: UserMeasurements;
   savedBrandIds: string[];
   tipDismissed: boolean;
@@ -34,6 +36,7 @@ interface ResultsScreenProps {
 
 export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   results,
+  allResults,
   measurements,
   savedBrandIds,
   tipDismissed,
@@ -57,6 +60,24 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   const [showComparisonModal, setShowComparisonModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
+  // Dismiss the region filter menu on Escape or an outside click
+  useEffect(() => {
+    if (!showFilterMenu) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowFilterMenu(false);
+    };
+    const onPointerDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest('[data-filter-menu]')) setShowFilterMenu(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('mousedown', onPointerDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('mousedown', onPointerDown);
+    };
+  }, [showFilterMenu]);
+
   const isPants = measurements.category === 'pants';
   const primaryDim = isPants
     ? `Waist ${formatDimension(measurements.waist || 80, measurements.unit)}`
@@ -74,15 +95,21 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   }, [searchQuery, regionFilter, sortBy, showSavedOnly]);
 
   const filteredResults = useMemo(() => {
-    if (showSavedOnly && savedBrandIds.length > 0) {
-      return results.filter(r => savedBrandIds.includes(r.brandChart.id));
+    if (showSavedOnly) {
+      // When the Saved filter is on, show only saved brands — even when the
+      // saved list is empty, so the "No saved brands yet" empty state appears
+      // instead of every brand mislabelled as "saved".
+      return results.filter((r) => savedBrandIds.includes(r.brandChart.id));
     }
     return results;
   }, [results, savedBrandIds, showSavedOnly]);
 
+  // Compare chips must survive search/region filtering, so they resolve against
+  // the complete result set rather than the currently filtered one.
+  const allMatches = allResults ?? results;
   const comparedMatches = useMemo(() => {
-    return results.filter((r) => comparedBrandIds.includes(r.brandChart.id));
-  }, [results, comparedBrandIds]);
+    return allMatches.filter((r) => comparedBrandIds.includes(r.brandChart.id));
+  }, [allMatches, comparedBrandIds]);
 
   const handleToggleCompare = (brandId: string) => {
     setComparedBrandIds((prev) => {
@@ -185,7 +212,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         {/* Desktop-only "Edit measurements" pill button */}
         <button
           onClick={onEditMeasurements}
-          className="hidden lg:inline-flex pill-btn btn-press font-medium text-sm !px-5 !min-h-[42px] border border-white/20 hover:border-white/40"
+          className="hidden lg:inline-flex pill-btn btn-press font-medium text-sm !px-5 border border-white/20 hover:border-white/40"
         >
           Edit measurements
         </button>
@@ -197,11 +224,11 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                            [Best match] sort + [≡] filter icon on right
           - Mobile (<lg:): Full-width search box + Horizontal scrolling pill toolbar
          ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-3 relative">
         {/* Left Toolbar group */}
-        <div className="flex items-center gap-2.5 w-full sm:w-auto flex-1">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto flex-1 min-w-0">
           {/* Search Input Box */}
-          <label className="field-container flex items-center gap-2 px-3.5 py-0 min-h-[42px] w-full sm:max-w-sm cursor-text rounded-full">
+          <label className="field-container flex items-center gap-2 px-3.5 py-0 min-h-[44px] flex-1 min-w-0 sm:max-w-sm cursor-text rounded-full">
             <SearchIcon size={18} className="text-[#D6D6DC] flex-none" />
             <input
               type="text"
@@ -209,7 +236,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search brands"
               aria-label="Search brands"
-              className="bg-transparent border-0 text-white font-normal text-sm sm:text-[15px] outline-none w-full placeholder:text-[#D6D6DC]"
+              className="bg-transparent border-0 text-white font-normal text-sm sm:text-[15px] outline-none w-full !min-h-[44px] placeholder:text-[#D6D6DC]"
             />
             {searchQuery && (
               <button
@@ -222,11 +249,12 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             )}
           </label>
 
-          {/* Desktop-only Segmented Region Pills: [ All ] [ Global ] [ Local ] */}
+          {/* Region pills below lg are redundant with the filter icon menu, and
+              at sm-lg widths they squeezed the search box to zero width. */}
           <SlidingTabs<RegionFilter>
             ariaLabel="Brand region filter"
-            className="hidden sm:inline-flex items-center gap-1.5"
-            buttonClassName="!min-h-[38px] !px-4 text-xs sm:text-sm capitalize"
+            className="hidden lg:inline-flex items-center gap-1.5"
+            buttonClassName="!px-4 text-xs sm:text-sm capitalize"
             value={regionFilter}
             onChange={(r) => setRegionFilter(r)}
             options={regionOptions}
@@ -239,11 +267,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           <button
             type="button"
             onClick={() => setShowSavedOnly(!showSavedOnly)}
-            className={`pill-btn btn-press flex-none text-xs sm:text-sm font-semibold !min-h-[38px] sm:!min-h-[40px] !px-3.5 inline-flex items-center gap-1.5 transition-all ${showSavedOnly
+            className={`pill-btn btn-press flex-none text-xs sm:text-sm font-semibold !px-3.5 inline-flex items-center gap-1.5 transition-all ${showSavedOnly
                 ? '!bg-[#1DA84A] text-white !border-[#4ADE80] shadow-md ring-1 ring-[#4ADE80]/30'
                 : '!bg-white/[0.04] text-white/90 border-white/15 hover:border-white/30'
               }`}
-            aria-label={showSavedOnly ? 'Show all brands' : 'Filter by saved brands'}
+            aria-label={
+              `Saved ${savedBrandIds.length} - ` +
+              (showSavedOnly ? 'show all brands' : 'filter by saved brands')
+            }
             aria-pressed={showSavedOnly}
           >
             <HeartIcon
@@ -253,6 +284,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             />
             <span>Saved</span>
             <span
+              aria-hidden="true"
               className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${showSavedOnly ? 'bg-white/25 text-white' : 'bg-white/10 text-secText'
                 }`}
             >
@@ -263,7 +295,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           {/* Sort button */}
           <button
             onClick={cycleSort}
-            className="pill-btn btn-press flex-none text-xs sm:text-sm font-medium !min-h-[38px] sm:!min-h-[40px] !px-3.5 sm:!px-4"
+            className="pill-btn btn-press flex-none text-xs sm:text-sm font-medium !px-3.5 sm:!px-4"
             aria-label={`Sort: ${getSortLabel()}. Click to change`}
           >
             {getSortLabel()}
@@ -275,15 +307,15 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               setShowExportModal(true);
               onShare?.();
             }}
-            className="pill-btn btn-press flex-none !min-h-[38px] sm:!min-h-[40px] !px-3.5 sm:!px-4 text-xs sm:text-sm font-medium inline-flex items-center"
-            aria-label="Share and export results"
+            className="pill-btn btn-press flex-none !px-3.5 sm:!px-4 text-xs sm:text-sm font-medium inline-flex items-center"
+            aria-label="Share / Export results"
           >
             <ShareIcon size={15} className="mr-1" />
             <span>Share / Export</span>
           </button>
 
           {/* Filter icon button */}
-          <div className="relative flex-none">
+          <div className="relative flex-none" data-filter-menu>
             <button
               onClick={() => setShowFilterMenu(!showFilterMenu)}
               className={`circle-btn btn-press flex-none !w-10 !h-10 sm:!w-10 sm:!h-10 !min-w-[44px] !min-h-[44px] ${regionFilter !== 'all' ? '!bg-[#1DA84A]' : ''
@@ -333,7 +365,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </span>
           <button
             onClick={onDismissTip}
-            className="circle-btn btn-press !w-8 !h-8 !min-w-[32px] !min-h-[32px] !text-base !bg-white/10 hover:!bg-white/20 text-white flex-none"
+            className="circle-btn btn-press !text-base !bg-white/10 hover:!bg-white/20 text-white flex-none"
             aria-label="Dismiss tip"
           >
             ×
@@ -362,8 +394,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </div>
           <button
             onClick={() => setShowMatchLevels(!showMatchLevels)}
-            className="text-xs text-[#4ADE80] hover:text-white font-semibold transition-colors underline cursor-pointer py-0.5 ml-auto"
-            aria-label={showMatchLevels ? 'Hide match levels guide' : 'Show match levels guide'}
+            className="text-xs text-[#4ADE80] hover:text-white font-semibold transition-colors underline cursor-pointer !min-h-[44px] -my-2 ml-auto rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label={
+              showMatchLevels ? 'Hide match levels guide' : 'How it works - match levels guide'
+            }
           >
             {showMatchLevels ? 'Hide' : 'How it works'}
           </button>
@@ -432,7 +466,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                   <button
                     type="button"
                     onClick={() => setComparedBrandIds((prev) => prev.filter((id) => id !== m.brandChart.id))}
-                    className="text-secText hover:text-red-400 ml-1 p-0.5 text-sm leading-none transition-colors"
+                    className="text-secText hover:text-red-400 ml-1 !w-11 !h-11 !min-w-[44px] !min-h-[44px] flex items-center justify-center rounded-full text-sm leading-none transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     aria-label={`Remove ${m.brandChart.brand}`}
                   >
                     ×
@@ -454,14 +488,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               type="button"
               onClick={() => setShowComparisonModal(true)}
               disabled={comparedBrandIds.length < 2}
-              className="primary-btn btn-press !min-h-[40px] !px-5 text-xs sm:text-sm font-bold flex-1 sm:flex-none justify-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(29,168,74,0.35)]"
+              className="primary-btn btn-press !px-5 text-xs sm:text-sm font-bold flex-1 sm:flex-none justify-center whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(29,168,74,0.35)]"
             >
               {comparedBrandIds.length < 2 ? 'Pick 1 more brand' : 'Compare side-by-side →'}
             </button>
             <button
               type="button"
               onClick={() => setComparedBrandIds([])}
-              className="pill-btn btn-press !min-h-[40px] !px-3 text-xs text-secText hover:text-white border-white/15 flex-none"
+              className="pill-btn btn-press !px-3 text-xs text-secText hover:text-white border-white/15 flex-none"
               aria-label="Clear all compared brands"
             >
               Clear

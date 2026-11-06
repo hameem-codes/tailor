@@ -374,13 +374,31 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
 
     // 12. Animation Loop (Smooth Inter-Tab Lerp + Cloth Breathing)
     let animationFrameId: number;
-    const clock = new THREE.Clock();
+
+    // THREE.Clock is deprecated in the current three.js build and logs a console
+    // warning on every mount. A plain monotonic clock gives identical
+    // getDelta()/getElapsedTime() behaviour without that noise.
+    const now = () =>
+      typeof performance !== 'undefined' && typeof performance.now === 'function'
+        ? performance.now()
+        : Date.now();
+    let lastTime = now() / 1000;
+    let elapsed = 0;
+
+    const getDelta = () => {
+      const t = now() / 1000;
+      let delta = t - lastTime;
+      lastTime = t;
+      if (!Number.isFinite(delta) || delta < 0) delta = 0;
+      if (delta > 0.1) delta = 0.1;
+      return delta;
+    };
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      const delta = getDelta();
+      elapsed += delta;
       const motionSpeed = prefersReducedMotion ? 0.1 : 1.0;
 
       // Update target based on live currentTab
@@ -465,6 +483,7 @@ export const ThreeBackground: React.FC<ThreeBackgroundProps> = ({
     <div
       ref={mountRef}
       className="fixed inset-0 pointer-events-none -z-10 overflow-hidden"
+      style={{ zIndex: -10 }}
       aria-hidden="true"
     />
   );

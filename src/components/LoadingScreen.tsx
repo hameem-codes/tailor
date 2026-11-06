@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { UserMeasurements } from '../types';
 import { formatDimension } from '../lib/matching/helpers';
 
@@ -20,16 +20,27 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     ? `${formatDimension(measurements.waist || 80, measurements.unit)} waist`
     : `${formatDimension(measurements.chest || 96, measurements.unit)} chest`;
 
+  // Keep onFinished in a ref: the parent passes an inline arrow, which would
+  // otherwise have a new identity on every render and restart this timer
+  // mid-animation whenever the app re-rendered.
+  const onFinishedRef = useRef(onFinished);
+  useEffect(() => {
+    onFinishedRef.current = onFinished;
+  }, [onFinished]);
+
   // Display ~1100ms loading animation for a smooth, delightful progress bar fill
   useEffect(() => {
     const timer = setTimeout(() => {
-      onFinished();
+      onFinishedRef.current();
     }, 1150);
     return () => clearTimeout(timer);
-  }, [onFinished]);
+  }, []);
 
   return (
-    <main
+    // NOTE: a <div>, not a <main>. App already renders the page's single <main>
+    // landmark; a second one triggered landmark-no-duplicate-main /
+    // landmark-main-is-top-level / landmark-unique axe violations.
+    <div
       className="w-full min-h-[calc(var(--tailor-vh)-80px)] flex flex-col justify-between p-4 sm:p-6 lg:px-8 py-6 max-w-[420px] md:max-w-3xl lg:max-w-6xl mx-auto page-transition"
       aria-busy="true"
     >
@@ -54,7 +65,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
           <div className="hidden md:block">
             <button
               onClick={onCancel}
-              className="pill-btn btn-press flex-none !px-6 !min-h-[42px] text-sm font-medium border border-white/25 hover:border-white/45 text-white transition-all"
+              className="pill-btn btn-press flex-none !px-6 text-sm font-medium border border-white/25 hover:border-white/45 text-white transition-all"
             >
               Cancel
             </button>
@@ -127,11 +138,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
       <div className="pt-6 md:hidden">
         <button
           onClick={onCancel}
-          className="pill-btn btn-press w-full !min-h-[48px] text-sm font-medium border border-white/25 hover:border-white/45 text-white transition-all"
+          className="pill-btn btn-press w-full text-sm font-medium border border-white/25 hover:border-white/45 text-white transition-all"
         >
           Cancel
         </button>
       </div>
-    </main>
+    </div>
   );
 };

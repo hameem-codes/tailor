@@ -187,7 +187,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
             onOpenDetail(matchResult);
           }}
           className="w-full h-[48px] min-h-[48px] px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors flex items-center justify-between text-sm sm:text-[15px] font-semibold text-[#4ADE80] group-hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          aria-label={`View size chart and details for ${brandChart.brand}`}
+          aria-label={`View size chart & details for ${brandChart.brand}`}
         >
           <span className="truncate">View size chart & details</span>
           <span

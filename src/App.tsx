@@ -98,6 +98,7 @@ const LoadingScreenRoute: React.FC<{
 // Route wrapper: Screen 3 (Results)
 const ResultsScreenRoute: React.FC<{
   results: BrandMatchResult[];
+  allResults: BrandMatchResult[];
   measurements: UserMeasurements;
   savedBrandIds: string[];
   tipDismissed: boolean;
@@ -185,9 +186,9 @@ const BrandDetailRoute: React.FC<{
       <div className="w-full max-w-[560px] mx-auto min-h-[calc(100dvh-140px)] flex flex-col items-center justify-center p-6 text-center page-transition">
         <div className="glass-card p-8 flex flex-col items-center text-center gap-3 border border-white/12 w-full max-w-md shadow-2xl">
           <HangerIcon size={48} className="text-[#D6D6DC] my-1" />
-          <h2 className="font-barlow text-3xl sm:text-4xl font-semibold text-white">
+          <h1 className="font-barlow text-3xl sm:text-4xl font-semibold text-white">
             Brand not found
-          </h2>
+          </h1>
           <p className="text-secText text-sm sm:text-base leading-relaxed mb-2">
             We couldn't locate this brand's size guide or it might have been removed.
           </p>
@@ -286,6 +287,12 @@ export const App: React.FC = () => {
   const matchResults = useMemo(() => {
     return matchAllBrands(brands, measurements, searchQuery, regionFilter, sortBy);
   }, [brands, measurements, searchQuery, regionFilter, sortBy]);
+
+  // Unfiltered matches: only category and gender are applied. Used by the
+  // comparison tray so a selected brand is never dropped by an active search.
+  const allMatchResults = useMemo(() => {
+    return matchAllBrands(brands, measurements);
+  }, [brands, measurements]);
 
   // Handle share URL param on mount
   useEffect(() => {
@@ -395,6 +402,7 @@ export const App: React.FC = () => {
             element={
               <ResultsScreenRoute
                 results={matchResults}
+                allResults={allMatchResults}
                 measurements={measurements}
                 savedBrandIds={savedBrandIds}
                 tipDismissed={tipDismissed}

@@ -133,10 +133,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
 
   if (!config || hasError) {
     return (
-      <span
-        className={`inline-block tracking-wide select-none ${fallbackClassName}`}
-        aria-label={brand}
-      >
+      <span className={`inline-block tracking-wide select-none ${fallbackClassName}`}>
         {brand}
       </span>
     );

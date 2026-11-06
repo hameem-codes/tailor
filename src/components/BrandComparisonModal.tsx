@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { BrandMatchResult, UserMeasurements } from '../types';
 import { RangeRuler } from './RangeRuler';
 import { formatDimension } from '../lib/matching/helpers';
+import { useModalBehavior } from './shared/useModalBehavior';
 
 interface BrandComparisonModalProps {
   isOpen: boolean;
@@ -21,15 +22,10 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
   onRemoveBrand,
   onOpenDetail,
 }) => {
-  // Lock background scrolling while modal/bottom-sheet is open
-  useEffect(() => {
-    if (!isOpen) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isOpen]);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  // Lock background scroll, trap focus, close on Escape, restore focus on close.
+  useModalBehavior(isOpen, onClose, sheetRef);
 
   if (!isOpen) return null;
 
@@ -49,6 +45,7 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
     >
       {/* Bottom Sheet on Mobile / Modal on Tablet & Desktop */}
       <div
+        ref={sheetRef}
         className="w-full h-auto max-h-[85dvh] sm:max-w-[720px] glass-card !bg-[#131518]/98 border border-white/15 rounded-t-[28px] sm:rounded-[28px] p-4.5 sm:p-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col gap-3.5 shadow-[0_-10px_40px_rgba(0,0,0,0.7)] sm:shadow-[0_25px_70px_rgba(0,0,0,0.85)] animate-slide-up sm:animate-modal-pop overflow-hidden"
       >
         {/* Mobile Drag Handle */}
@@ -138,7 +135,7 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
                         <button
                           type="button"
                           onClick={() => onRemoveBrand(brandChart.id)}
-                          className="w-7 h-7 min-w-[28px] min-h-[28px] rounded-full bg-white/10 hover:bg-red-500/20 text-secText hover:text-red-400 flex items-center justify-center text-sm font-bold transition-colors flex-none"
+                          className="!w-11 !h-11 !min-w-[44px] !min-h-[44px] rounded-full bg-white/10 hover:bg-red-500/20 text-secText hover:text-red-400 flex items-center justify-center text-sm font-bold transition-colors flex-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                           aria-label={`Remove ${brandChart.brand} from comparison`}
                         >
                           ×
@@ -199,7 +196,7 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
                           onClose();
                           onOpenDetail(m);
                         }}
-                        className="w-full h-[40px] min-h-[40px] px-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] active:bg-white/[0.15] text-[11px] sm:text-xs font-semibold text-[#4ADE80] flex items-center justify-center transition-colors mt-auto"
+                        className="w-full h-[44px] min-h-[44px] px-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] active:bg-white/[0.15] text-[11px] sm:text-xs font-semibold text-[#4ADE80] flex items-center justify-center transition-colors mt-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                       >
                         View details →
                       </button>
@@ -216,7 +213,7 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
           <span>Comparing {matches.length}/3 brands</span>
           <button
             onClick={onClose}
-            className="pill-btn btn-press !min-h-[38px] !px-4 text-xs font-semibold !bg-white/10 hover:!bg-white/20 text-white"
+            className="pill-btn btn-press !px-4 text-xs font-semibold !bg-white/10 hover:!bg-white/20 text-white"
           >
             Close
           </button>

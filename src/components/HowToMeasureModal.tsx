@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
+import { useModalBehavior } from './shared/useModalBehavior';
 
 interface HowToMeasureModalProps {
   isOpen: boolean;
@@ -12,23 +13,9 @@ export const HowToMeasureModal: React.FC<HowToMeasureModalProps> = ({
   showHips = false,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    // Trap focus to close button upon opening
-    closeBtnRef.current?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  // Escape to close, focus trapped, background scroll locked, focus restored.
+  useModalBehavior(isOpen, onClose, modalRef);
 
   if (!isOpen) return null;
 
@@ -51,7 +38,6 @@ export const HowToMeasureModal: React.FC<HowToMeasureModalProps> = ({
             How to measure
           </h2>
           <button
-            ref={closeBtnRef}
             onClick={onClose}
             className="circle-btn btn-press"
             aria-label="Close how to measure modal"

@@ -51,7 +51,7 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
           <SlidingTabs<UnitSystem>
             ariaLabel="Table unit"
             className="flex gap-1 overflow-x-auto no-scrollbar"
-            buttonClassName="!min-h-[34px] !py-0 !px-3 text-xs sm:text-sm flex-none"
+            buttonClassName="!py-0 !px-3 !min-w-[44px] text-xs sm:text-sm flex-none"
             value={tableUnit}
             onChange={onUnitChange}
             options={tableUnitOptions}
@@ -63,7 +63,7 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
           <SlidingTabs<ChartType>
             ariaLabel="Measurement type"
             className="flex gap-1 overflow-x-auto no-scrollbar"
-            buttonClassName="!min-h-[34px] !py-0 !px-3 text-xs sm:text-sm flex-none"
+            buttonClassName="!py-0 !px-3 !min-w-[44px] text-xs sm:text-sm flex-none"
             value={tableMeasurementType}
             onChange={onMeasurementTypeChange}
             options={measurementTypeOptions}
@@ -92,20 +92,27 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
                   ? s.garmentWaist
                   : s.waist ?? [70, 78];
 
-              const col1Range = isPants ? s.waist ?? [70, 78] : chestR;
-              const col2Range = isPants ? s.hips ?? [85, 95] : waistR;
+              const garmentWaist = s.garmentWaist;
+              const col1Range = isPants
+                ? s.waist ?? (garmentWaist ?? [70, 78])
+                : chestR;
+              const col2Range = isPants
+                ? s.hips ?? [85, 95]
+                : tableMeasurementType === 'garment' && s.garmentWaist
+                  ? s.garmentWaist
+                  : waistR;
 
               return (
                 <button
                   key={s.label}
                   type="button"
                   onClick={() => onSelectSize(idx)}
-                  className={`w-full flex items-center px-3 py-2 text-xs sm:text-sm text-left rounded-[14px] transition-all duration-200 cursor-pointer ${
+                  className={`w-full flex items-center !min-h-[44px] px-3 py-2 text-xs sm:text-sm text-left rounded-[14px] transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     isCurrent
                       ? 'bg-gradient-to-r from-[#1DA84A] to-[#15803d] text-white font-bold shadow-[0_4px_16px_rgba(29,168,74,0.3)] ring-1 ring-[#4ADE80]/50'
                       : 'hover:bg-white/[0.07] text-white/90'
                   }`}
-                  aria-selected={isCurrent}
+                  aria-pressed={isCurrent}
                 >
                   <span className="w-16 text-center font-bold">{s.label}</span>
                   <span className="flex-1">
@@ -123,14 +130,14 @@ export const BrandSizeChartTable: React.FC<BrandSizeChartTableProps> = ({
 
       {/* Source Citation */}
       <div className="text-xs text-secText pt-2 border-t border-white/10 flex items-center justify-between flex-wrap gap-2">
-        <span>
+        <span className="inline-flex items-center flex-wrap gap-x-1 !min-h-[44px]">
           Source:{' '}
           {sourceUrl ? (
             <a
               href={sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#4ADE80] hover:underline"
+              className="text-[#4ADE80] hover:underline !min-h-[44px] inline-flex items-center rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               {source}
             </a>

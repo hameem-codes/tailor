@@ -62,7 +62,7 @@ export const OnboardingWalkthrough: React.FC<OnboardingWalkthroughProps> = ({
         </div>
         <button
           onClick={handleDismiss}
-          className="text-xs text-secText hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
+          className="text-xs text-secText hover:text-white transition-colors !px-3 !min-h-[44px] rounded-lg hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           aria-label="Dismiss guide"
         >
           Got it ×
@@ -72,28 +72,30 @@ export const OnboardingWalkthrough: React.FC<OnboardingWalkthroughProps> = ({
       {/* Steps Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 relative z-10">
         {steps.map((s) => (
-          <div
+          <button
             key={s.step}
+            type="button"
             onClick={() => setActiveStep(s.step)}
-            className={`p-3 rounded-2xl border transition-all cursor-pointer ${
+            aria-pressed={activeStep === s.step}
+            className={`p-3 rounded-2xl border transition-all text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               activeStep === s.step
                 ? 'bg-white/10 border-[#4ADE80]/60 ring-1 ring-[#4ADE80]/40'
                 : 'bg-white/5 border-white/10 hover:bg-white/8'
             }`}
           >
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-base">{s.icon}</span>
+            <span className="flex items-center gap-2 mb-1">
+              <span className="text-base" aria-hidden="true">{s.icon}</span>
               <span className="text-xs font-bold text-white tracking-wide uppercase">
                 Step {s.step}
               </span>
-            </div>
-            <div className="text-xs sm:text-[13px] font-semibold text-white mb-0.5">
+            </span>
+            <span className="block text-xs sm:text-[13px] font-semibold text-white mb-0.5">
               {s.title}
-            </div>
-            <div className="text-xs text-secText leading-relaxed">
+            </span>
+            <span className="block text-xs text-secText leading-relaxed">
               {s.desc}
-            </div>
-          </div>
+            </span>
+          </button>
         ))}
       </div>
 
@@ -103,7 +105,7 @@ export const OnboardingWalkthrough: React.FC<OnboardingWalkthroughProps> = ({
           <button
             type="button"
             onClick={onOpenHowToMeasure}
-            className="text-[#4ADE80] font-semibold hover:underline inline-flex items-center gap-1"
+            className="text-[#4ADE80] font-semibold hover:underline inline-flex items-center gap-1 !min-h-[44px] rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             Don't have a tape measure? See tips →
           </button>
@@ -113,7 +115,7 @@ export const OnboardingWalkthrough: React.FC<OnboardingWalkthroughProps> = ({
         <button
           type="button"
           onClick={handleDismiss}
-          className="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full transition-colors"
+          className="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 !px-3.5 !min-h-[44px] rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           Dismiss guide
         </button>

@@ -22,7 +22,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
       {/* Left: Brand Logo */}
       <button
         onClick={() => navigate('/')}
-        className="flex items-center gap-2.5 text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg"
+        className="flex items-center gap-2.5 text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg !min-h-[44px]"
         aria-label="Tailor home"
       >
         <HangerIcon size={26} className="text-white group-hover:text-accent transition-colors" />
@@ -36,7 +36,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
         {/* Step 1: Measurements */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-xs md:text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full py-1 px-2"
+          className="flex items-center gap-2 text-xs md:text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full py-1 px-2 !min-h-[44px]"
         >
           <span
             className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
@@ -67,8 +67,8 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             if (canGoToResults || currentStep > 2) navigate('/results');
           }}
           disabled={!canGoToResults && currentStep < 2}
-          className={`flex items-center gap-2 text-xs md:text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full py-1 px-2 ${
-            !canGoToResults && currentStep < 2 ? 'cursor-not-allowed opacity-45' : 'cursor-pointer'
+          className={`flex items-center gap-2 text-xs md:text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full py-1 px-2 !min-h-[44px] ${
+            !canGoToResults && currentStep < 2 ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
           }`}
         >
           <span
@@ -118,14 +118,14 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
         <button
           type="button"
           onClick={onOpenHowToMeasure}
-          className="pill-btn btn-press !min-h-[38px] !px-3.5 text-xs sm:text-sm font-medium border border-white/20 hover:border-white/40"
+          className="pill-btn btn-press !min-h-[44px] !px-3.5 text-xs sm:text-sm font-medium border border-white/20 hover:border-white/40"
         >
           How to measure
         </button>
         <button
           type="button"
           onClick={onOpenAbout}
-          className="pill-btn btn-press !min-h-[38px] !px-3.5 text-xs sm:text-sm font-medium border border-white/20 hover:border-white/40"
+          className="pill-btn btn-press !min-h-[44px] !px-3.5 text-xs sm:text-sm font-medium border border-white/20 hover:border-white/40"
         >
           About
         </button>

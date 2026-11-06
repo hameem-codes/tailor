@@ -50,6 +50,46 @@ export function SlidingTabs<T extends string>({
     setPillRect({ left, top, width, height });
   }, [activeIndex]);
 
+  // WAI-ARIA radiogroup keyboard model: arrows move the selection within the
+  // group (one tab stop for the whole group), Tab leaves it.
+  const moveSelection = (delta: number) => {
+    const count = options.length;
+    if (count === 0) return;
+    const next = (activeIndex + delta + count) % count;
+    const option = options[next];
+    if (!option) return;
+    onChange(option.id);
+    // Keep DOM focus on the newly selected radio.
+    requestAnimationFrame(() => {
+      buttonRefs.current[next]?.focus();
+    });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        moveSelection(1);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        moveSelection(-1);
+        break;
+      case 'Home':
+        e.preventDefault();
+        moveSelection(-activeIndex);
+        break;
+      case 'End':
+        e.preventDefault();
+        moveSelection(options.length - 1 - activeIndex);
+        break;
+      default:
+        break;
+    }
+  };
+
   // Recalculate on value change or options length change
   useLayoutEffect(() => {
     updatePill();
@@ -90,6 +130,7 @@ export function SlidingTabs<T extends string>({
       role="radiogroup"
       aria-label={ariaLabel}
       className={`relative ${className}`}
+      onKeyDown={handleKeyDown}
     >
       {/* Animated Sliding Active White Pill */}
       {pillRect && (
@@ -119,6 +160,7 @@ export function SlidingTabs<T extends string>({
             role="radio"
             aria-checked={isSelected}
             aria-label={opt.ariaLabel}
+            tabIndex={isSelected ? 0 : -1}
             onClick={() => onChange(opt.id)}
             className={`pill-btn btn-press relative z-10 select-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#4ADE80] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0b] ${buttonClassName} ${
               isSelected

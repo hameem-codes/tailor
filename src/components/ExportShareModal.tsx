@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { BrandMatchResult, UserMeasurements } from '../types';
 import { encodeShareData } from '../lib/storage';
+import { useModalBehavior } from './shared/useModalBehavior';
 import { CheckIcon, ShareIcon } from './Icons';
 
 interface ExportShareModalProps {
@@ -18,6 +19,10 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Escape to close, focus trapped, background scroll locked, focus restored.
+  useModalBehavior(isOpen, onClose, panelRef);
 
   if (!isOpen) return null;
 
@@ -69,7 +74,10 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
       setCopiedSummary(true);
       setTimeout(() => setCopiedSummary(false), 2500);
     } catch (e) {
-      console.warn('Failed to copy summary:', e);
+      // Clipboard may be unavailable (insecure context, denied permission).
+      // The summary stays on screen for manual copy, so swallow the error
+      // rather than logging a console warning.
+      void e;
     }
   };
 
@@ -99,7 +107,8 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Revoke on the next tick so the download has actually started.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   return (
@@ -112,7 +121,10 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-lg glass-card !bg-[#12141a]/92 backdrop-blur-3xl border border-white/12 rounded-t-[28px] sm:rounded-[28px] p-5 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.85)] flex flex-col gap-4 sm:gap-5 max-h-[90dvh] overflow-y-auto animate-modal-pop">
+      <div
+        ref={panelRef}
+        className="relative w-full max-w-lg glass-card !bg-[#12141a]/92 backdrop-blur-3xl border border-white/12 rounded-t-[28px] sm:rounded-[28px] p-5 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.85)] flex flex-col gap-4 sm:gap-5 max-h-[90dvh] overflow-y-auto animate-modal-pop"
+      >
         {/* Modal Header */}
         <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-3.5">
           <div className="flex items-center gap-2.5">
@@ -130,7 +142,7 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="circle-btn btn-press !w-8 !h-8 text-base flex-none"
+            className="circle-btn btn-press text-base flex-none"
             aria-label="Close export dialog"
           >
             ×
@@ -152,12 +164,13 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
               type="text"
               readOnly
               value={shareUrl}
-              className="flex-1 bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-xs text-white/90 font-mono truncate outline-none select-all"
+              aria-label="Shareable URL with your measurements"
+              className="flex-1 bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-xs text-white/90 font-mono truncate outline-none select-all focus-visible:ring-2 focus-visible:ring-accent"
             />
             <button
               onClick={handleCopyLink}
-              className={`pill-btn btn-press !min-h-[38px] !px-3.5 text-xs font-semibold whitespace-nowrap flex-none ${
-                copiedLink ? '!bg-[#1DA84A] text-white' : ''
+              className={`pill-btn btn-press !px-3.5 text-xs font-semibold whitespace-nowrap flex-none ${
+                copiedLink ? '!bg-[#15803D] text-white' : ''
               }`}
             >
               {copiedLink ? 'Copied' : 'Copy link'}
@@ -180,8 +193,8 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
           </div>
           <button
             onClick={handleCopySummary}
-            className={`pill-btn btn-press !min-h-[38px] !px-3.5 text-xs font-semibold whitespace-nowrap flex-none ${
-              copiedSummary ? '!bg-[#1DA84A] text-white' : ''
+            className={`pill-btn btn-press !px-3.5 text-xs font-semibold whitespace-nowrap flex-none ${
+              copiedSummary ? '!bg-[#15803D] text-white' : ''
             }`}
           >
             {copiedSummary ? '✓ Copied' : 'Copy summary'}
@@ -200,7 +213,7 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
           </div>
           <button
             onClick={handleDownloadJson}
-            className="pill-btn btn-press !min-h-[38px] !px-3.5 text-xs font-semibold whitespace-nowrap flex-none hover:border-[#4ADE80]"
+            className="pill-btn btn-press !px-3.5 text-xs font-semibold whitespace-nowrap flex-none hover:border-[#4ADE80]"
           >
             Download .json
           </button>
@@ -210,7 +223,7 @@ export const ExportShareModal: React.FC<ExportShareModalProps> = ({
         <div className="flex justify-end pt-2 border-t border-white/10">
           <button
             onClick={onClose}
-            className="pill-btn btn-press !min-h-[36px] !px-5 text-xs font-medium"
+            className="pill-btn btn-press !px-5 text-xs font-medium"
           >
             Done
           </button>

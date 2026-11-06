@@ -25,6 +25,13 @@ dist-ssr
 coverage
 *.log
 screenshot_*.png
+screenshots/
+audit-*.json
 reference/
 nvidia-bench/
+.kilo/
+scripts/debug-*.mjs
+scripts/bisect-*.cjs
+scripts/parse-check.cjs
+scripts/patch*.cjs
 

@@ -40,7 +40,10 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
   const categoryLabel = measurements.category.charAt(0).toUpperCase() + measurements.category.slice(1);
 
   const sizes = brandChart.sizes;
-  const currentSize = sizes[selectedSizeIdx] || sizes[0];
+  // Guard against an out-of-range selection (e.g. after a preset or unit change).
+  const safeSizeIdx =
+    selectedSizeIdx >= 0 && selectedSizeIdx < sizes.length ? selectedSizeIdx : 0;
+  const currentSize = sizes[safeSizeIdx] || sizes[0];
 
   // Dynamic calculations based on selectedSizeIdx
   const { verdict, matchLabel, matchColor, rulerProps, chestRangeText, waistRangeText } = useMemo(() => {
@@ -123,7 +126,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
       <div className="flex items-center justify-between gap-3 pt-1">
         <button
           onClick={onBack}
-          className="pill-btn btn-press font-semibold text-xs sm:text-sm !px-4 !min-h-[40px] border border-white/20 hover:border-white/40 inline-flex items-center gap-2 text-white bg-white/[0.04]"
+          className="pill-btn btn-press font-semibold text-xs sm:text-sm !px-4 border border-white/20 hover:border-white/40 inline-flex items-center gap-2 text-white bg-white/[0.04]"
           aria-label="Back to results"
         >
           <span>←</span>
@@ -135,7 +138,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
             href={brandActionUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="pill-btn btn-press !min-h-[40px] !px-4 text-xs sm:text-sm font-semibold !text-[#4ADE80] border-[#4ADE80]/30 hover:border-[#4ADE80]/60 bg-[#1DA84A]/10 inline-flex items-center gap-1.5"
+            className="pill-btn btn-press !px-4 text-xs sm:text-sm font-semibold !text-[#4ADE80] border-[#4ADE80]/30 hover:border-[#4ADE80]/60 bg-[#1DA84A]/10 inline-flex items-center gap-1.5"
           >
             <span>Visit {brandChart.brand} store</span>
             <span aria-hidden="true">↗</span>
@@ -167,9 +170,10 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
 
             <div className="flex flex-col gap-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-barlow text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-wide truncate">
+                {/* The brand name is this page's level-one heading. */}
+                <h1 className="font-barlow text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-wide truncate">
                   {brandChart.brand}
-                </span>
+                </h1>
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#4ADE80] bg-[#1DA84A]/20 px-2.5 py-0.5 rounded-full border border-[#4ADE80]/30 flex-none">
                   {brandChart.region}
                 </span>
@@ -228,14 +232,14 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
           <SlidingTabs<string>
             ariaLabel="Select size to compare"
             className="flex gap-2 min-w-full w-max"
-            buttonClassName="flex-none min-w-[76px] sm:min-w-[105px] !min-h-[36px] sm:!min-h-[38px] text-center text-xs sm:text-sm font-medium"
-            value={sizes[selectedSizeIdx].label}
+            buttonClassName="flex-none min-w-[76px] sm:min-w-[105px] text-center text-xs sm:text-sm font-medium"
+            value={sizes[safeSizeIdx].label}
             onChange={(val: string) => {
               const idx = sizes.findIndex((s) => s.label === val);
               if (idx !== -1) setSelectedSizeIdx(idx);
             }}
             options={sizes.map((s, idx) => {
-              const isPrimary = idx === primarySizeIndex;
+              const isPrimary = idx === safeSizeIdx;
               let chipSubtext = 'regular';
               if (isPrimary) chipSubtext = 'best';
               else if (idx < primarySizeIndex) chipSubtext = 'snug';
@@ -271,7 +275,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               href={brandActionUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:flex primary-btn btn-press w-full text-center items-center justify-center no-underline !min-h-[48px] font-bold"
+              className="hidden lg:flex primary-btn btn-press w-full text-center items-center justify-center no-underline font-bold"
             >
               View on {brandChart.brand}
             </a>
@@ -299,7 +303,7 @@ export const BrandDetail: React.FC<BrandDetailProps> = ({
               href={brandActionUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="lg:hidden flex primary-btn btn-press w-full text-center items-center justify-center no-underline !min-h-[48px] font-bold mt-2"
+              className="lg:hidden flex primary-btn btn-press w-full text-center items-center justify-center no-underline font-bold mt-2"
             >
               View on {brandChart.brand}
             </a>

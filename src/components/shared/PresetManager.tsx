@@ -67,7 +67,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
           <button
             type="button"
             onClick={() => setIsCreating(true)}
-            className="text-xs text-[#4ADE80] hover:underline font-semibold inline-flex items-center gap-1"
+            className="text-xs text-[#4ADE80] hover:underline font-semibold inline-flex items-center gap-1 !min-h-[44px] rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             + Save current fit
           </button>
@@ -82,7 +82,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
             <button
               type="button"
               onClick={() => setIsCreating(false)}
-              className="text-secText hover:text-white text-xs"
+              className="text-secText hover:text-white text-xs !min-h-[44px] px-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               Cancel
             </button>
@@ -116,7 +116,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
                 key={tag}
                 type="button"
                 onClick={() => handleSavePreset(tag)}
-                className="text-[11px] bg-white/10 hover:bg-white/20 text-white px-2 py-0.5 rounded-full transition-colors"
+                className="text-[11px] bg-white/10 hover:bg-white/20 text-white !px-2.5 !min-h-[32px] rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 + {tag}
               </button>
@@ -133,19 +133,22 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
             return (
               <div
                 key={p.id}
-                className="inline-flex items-center rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 transition-all text-xs text-white pl-3 pr-1.5 py-1 gap-1.5 group cursor-pointer"
-                onClick={() => onLoadPreset(p.measurements)}
+                className="inline-flex items-center rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 transition-all text-xs text-white pl-3 pr-1.5 py-1 gap-1.5 group"
                 title={`Load ${p.name}: ${p.measurements.gender} ${p.measurements.category} (${detailStr})`}
               >
-                <span className="font-semibold truncate max-w-[140px] sm:max-w-[200px]">{p.name}</span>
-                <span className="text-secText text-[11px] hidden sm:inline">({detailStr})</span>
+                {/* Load is a real button so it is keyboard operable */}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeletePreset(p.id);
-                  }}
-                  className="w-4 h-4 rounded-full flex items-center justify-center text-secText hover:text-red-400 hover:bg-white/10 transition-colors ml-0.5"
+                  onClick={() => onLoadPreset(p.measurements)}
+                  className="!min-h-[32px] flex items-center gap-1.5 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <span className="font-semibold truncate max-w-[140px] sm:max-w-[200px]">{p.name}</span>
+                  <span className="text-secText text-[11px] hidden sm:inline">({detailStr})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeletePreset(p.id)}
+                  className="!w-8 !h-8 !min-w-[32px] !min-h-[32px] rounded-full flex items-center justify-center text-secText hover:text-red-400 hover:bg-white/10 transition-colors ml-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   aria-label={`Delete ${p.name}`}
                 >
                   ×
@@ -165,7 +168,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
               key={item.id}
               type="button"
               onClick={() => onLoadPreset(item.measurements)}
-              className="text-secText hover:text-white bg-white/[0.04] hover:bg-white/10 px-2 py-0.5 rounded-lg border border-white/5 transition-colors truncate max-w-[200px]"
+              className="text-secText hover:text-white bg-white/[0.04] hover:bg-white/10 !px-2.5 !min-h-[32px] rounded-lg border border-white/5 transition-colors truncate max-w-[200px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               title={`Load search: ${item.label}`}
             >
               {item.label}

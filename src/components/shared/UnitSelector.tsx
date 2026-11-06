@@ -25,11 +25,13 @@ export const UnitSelector: React.FC<UnitSelectorProps> = ({
   ariaLabel = 'Unit of measurement',
 }) => {
   return (
-    <div className={`flex gap-1.5 ${className}`} role="radiogroup" aria-label={ariaLabel}>
+    // No role here: SlidingTabs already renders the radiogroup, and nesting two
+    // groups with the same label was reported as duplicated interactive content.
+    <div className={`flex gap-1.5 ${className}`}>
       <SlidingTabs<'metric' | 'imperial'>
         ariaLabel={ariaLabel}
         className={`flex gap-1.5 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
-        buttonClassName={`!min-h-[44px] !px-3 text-xs sm:text-sm ${buttonClassName}`}
+        buttonClassName={`!px-3 text-xs sm:text-sm ${buttonClassName}`}
         value={value}
         onChange={(u) => !disabled && onChange(u)}
         options={UNIT_OPTIONS}
