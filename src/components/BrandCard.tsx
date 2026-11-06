@@ -3,7 +3,6 @@ import { BrandMatchResult, UserMeasurements } from '../types';
 import { RangeRuler } from './RangeRuler';
 import { CheckIcon, WarningTriangleIcon, CrossCircleIcon, HeartIcon } from './Icons';
 import { formatDimension } from '../lib/matching/helpers';
-import { BrandLogo } from './BrandLogo';
 
 interface BrandCardProps {
   matchResult: BrandMatchResult;
@@ -21,9 +20,9 @@ export function renderBrandSizeBadge(sizeStr: string) {
     const len = sizeStr.length;
     const sizeClass =
       len <= 2
-        ? 'text-5xl sm:text-[60px]'
+        ? 'text-5xl sm:text-[56px]'
         : len <= 4
-        ? 'text-4xl sm:text-[46px]'
+        ? 'text-3xl sm:text-[40px]'
         : len <= 6
         ? 'text-2xl sm:text-3xl'
         : 'text-xl sm:text-2xl';
@@ -41,7 +40,7 @@ export function renderBrandSizeBadge(sizeStr: string) {
 
   return (
     <div className="flex flex-col items-center justify-center leading-none text-center max-w-full">
-      <span className="font-barlow text-4xl sm:text-5xl font-semibold text-white leading-none break-all">
+      <span className="font-barlow text-3xl sm:text-4xl font-semibold text-white leading-none break-all">
         {primary}
       </span>
       <span className="text-[11px] sm:text-xs font-semibold text-secText tracking-wider leading-none mt-1 truncate max-w-full">
@@ -88,24 +87,30 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         if (target.closest('button, a')) return;
         onOpenDetail(matchResult);
       }}
-      className={`glass-card group relative p-4.5 sm:p-5 flex flex-col gap-3.5 transition-all duration-200 hover:border-white/20 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 overflow-hidden ${cardBorderClass}`}
+      className={`glass-card group relative p-5 sm:p-6 rounded-2xl flex flex-col gap-4 transition-all duration-200 hover:border-white/20 cursor-pointer focus-within:ring-2 focus-within:ring-accent/50 ${cardBorderClass}`}
     >
-      {/* Top Header: Brand Logo on left, Quick Action Toolbar on right */}
-      <div className="flex items-center justify-between gap-2 min-h-[36px]">
-        <h3 className="flex items-center min-w-0 pr-1 truncate" aria-label={brandChart.brand}>
-          <BrandLogo brand={brandChart.brand} />
-        </h3>
+      {/* Top Header: 120x40px Wordmark Box on left, Quick Action Toolbar on right */}
+      <div className="flex items-center justify-between gap-3 min-h-[44px]">
+        {/* Consistent Plain-Text Wordmark in 120x40px Box (Barlow Condensed, uppercase, 28px) */}
+        <div
+          className="w-[120px] h-[40px] flex items-center justify-start flex-none overflow-hidden"
+          title={brandChart.brand}
+        >
+          <span className="font-barlow text-[28px] font-bold uppercase tracking-wider text-white leading-none truncate">
+            {brandChart.brand}
+          </span>
+        </div>
 
-        {/* Action icons: Compare toggle + Save heart */}
+        {/* Action icons: Compare toggle + Save heart with 44px minimum tap target */}
         <div className="flex items-center gap-1.5 flex-none relative z-10">
           {onToggleCompare && (
             <button
               type="button"
               onClick={() => onToggleCompare(brandChart.id)}
-              className={`pill-btn btn-press !text-[11px] sm:!text-xs !min-h-[28px] sm:!min-h-[30px] !px-2.5 rounded-full whitespace-nowrap transition-all ${
+              className={`pill-btn btn-press !min-h-[44px] !h-[44px] !px-3.5 rounded-full whitespace-nowrap text-xs font-semibold flex items-center justify-center transition-all ${
                 isComparing
                   ? '!bg-[#1DA84A] !border-[#4ADE80] text-white font-bold shadow-sm'
-                  : '!bg-white/[0.04] text-secText hover:text-white border-white/20 hover:border-white/40'
+                  : '!bg-white/[0.06] text-secText hover:text-white border border-white/20 hover:border-white/40'
               }`}
               aria-label={isComparing ? `Remove ${brandChart.brand} from comparison` : `Compare ${brandChart.brand}`}
               aria-pressed={isComparing}
@@ -117,7 +122,7 @@ export const BrandCard: React.FC<BrandCardProps> = ({
           <button
             type="button"
             onClick={() => onToggleSave(brandChart.id)}
-            className="circle-btn btn-press !w-10 !h-10 !min-w-[44px] !min-h-[44px] !bg-transparent hover:!bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+            className="circle-btn btn-press !w-[44px] !h-[44px] !min-w-[44px] !min-h-[44px] !bg-transparent hover:!bg-white/10 rounded-full flex items-center justify-center text-white/80 hover:text-white transition-colors"
             aria-label={isSaved ? `Remove ${brandChart.brand} from saved` : `Save ${brandChart.brand}`}
           >
             <HeartIcon filled={isSaved} size={20} />
@@ -125,15 +130,15 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         </div>
       </div>
 
-      {/* Main Size & Match Level Row */}
-      <div className="flex items-center gap-3.5">
-        {/* Recommended Size Big Display (Centered) */}
-        <div className="min-w-[72px] sm:min-w-[80px] max-w-[96px] flex-none flex items-center justify-center text-center">
+      {/* Main Size & Match Level Row - Fixed 84px Grid Column for size letter alignment */}
+      <div className="grid grid-cols-[84px_1fr] items-center gap-4">
+        {/* Recommended Size Big Display (84px width column) */}
+        <div className="w-[84px] flex items-center justify-center text-center">
           {renderBrandSizeBadge(recommendedSize)}
         </div>
 
         {/* Match Details */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex flex-col justify-center">
           {matchStatus === 'great' && (
             <span className="text-[#4ADE80] font-semibold text-sm sm:text-base inline-flex items-center gap-1.5">
               <CheckIcon size={16} /> Great match
@@ -173,17 +178,25 @@ export const BrandCard: React.FC<BrandCardProps> = ({
         accessibleDescription={`${brandChart.brand} size ${recommendedSize}. ${userValText}, size range ${chestRangeText}`}
       />
 
-      {/* Card Footer: Clean "View size chart & details →" CTA spanning bottom */}
-      <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs sm:text-sm font-semibold select-none mt-auto">
-        <span className="text-[#4ADE80] group-hover:text-white transition-colors flex items-center gap-1.5">
-          View size chart & details
-        </span>
-        <span
-          aria-hidden="true"
-          className="text-secText group-hover:text-white transition-all duration-200 group-hover:translate-x-1 text-sm font-bold"
+      {/* Card Footer: Full-width 48px button inside card padding with hairline divider */}
+      <div className="pt-3 border-t border-white/10 mt-auto">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenDetail(matchResult);
+          }}
+          className="w-full h-[48px] min-h-[48px] px-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors flex items-center justify-between text-sm sm:text-[15px] font-semibold text-[#4ADE80] group-hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          aria-label={`View size chart and details for ${brandChart.brand}`}
         >
-          →
-        </span>
+          <span className="truncate">View size chart & details</span>
+          <span
+            aria-hidden="true"
+            className="text-secText group-hover:text-white transition-transform duration-200 group-hover:translate-x-1 ml-2 flex-none font-bold text-base"
+          >
+            →
+          </span>
+        </button>
       </div>
     </article>
   );

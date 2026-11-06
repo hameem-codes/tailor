@@ -182,7 +182,7 @@ const BrandDetailRoute: React.FC<{
 
   if (!brandChart) {
     return (
-      <div className="w-full max-w-[560px] mx-auto min-h-[calc(100vh-140px)] flex flex-col items-center justify-center p-6 text-center page-transition">
+      <div className="w-full max-w-[560px] mx-auto min-h-[calc(100dvh-140px)] flex flex-col items-center justify-center p-6 text-center page-transition">
         <div className="glass-card p-8 flex flex-col items-center text-center gap-3 border border-white/12 w-full max-w-md shadow-2xl">
           <HangerIcon size={48} className="text-[#D6D6DC] my-1" />
           <h2 className="font-barlow text-3xl sm:text-4xl font-semibold text-white">
@@ -341,7 +341,10 @@ export const App: React.FC = () => {
   }, [currentStep]);
 
   return (
-    <div className="min-h-screen text-white relative w-full overflow-x-clip flex flex-col">
+    <div className="min-h-[100dvh] text-white relative w-full max-w-full overflow-x-clip flex flex-col">
+      {/* Dedicated Fixed Background Layer without iOS jitter */}
+      <div className="app-fixed-bg" aria-hidden="true" />
+
       {/* 3D Animated Clothes & Atelier Background */}
       <ThreeBackground category={measurements.category} unit={measurements.unit} />
 

@@ -4,7 +4,10 @@
 
 @layer base {
   html {
-    --tailor-vh: 100vh;
+    max-width: 100%;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+    --tailor-vh: 100dvh;
   }
 
   @supports (height: 100dvh) {
@@ -30,14 +33,34 @@
   body {
     margin: 0;
     padding: 0;
-    background: radial-gradient(120% 55% at 85% 0, #454b52, #141517 55%, #0a0a0b);
-    background-attachment: fixed;
+    max-width: 100%;
+    min-height: 100dvh;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
+    background-color: #0a0a0b;
     color: #ffffff;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-size: 14px;
     line-height: 1.4;
-    min-height: 100vh;
-    overflow-x: clip;
+  }
+
+  /* Fixed background layer without iOS background-attachment jitter */
+  .app-fixed-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(120% 55% at 85% 0, #454b52, #141517 55%, #0a0a0b);
+    transform: translateZ(0);
+    pointer-events: none;
+  }
+
+  /* Main scrolling layout containers */
+  main, .main-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    touch-action: pan-y;
   }
 
   /* Accessibility focus outline */
@@ -48,11 +71,11 @@
 }
 
 @layer components {
-  /* Premium Frosted Glass Card */
+  /* Premium Frosted Glass Card - 12px blur max to prevent iOS scroll jank */
   .glass-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(18, 20, 26, 0.50) 45%, rgba(12, 14, 18, 0.60) 100%);
-    backdrop-filter: blur(32px) saturate(170%);
-    -webkit-backdrop-filter: blur(32px) saturate(170%);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
     border: 1px solid rgba(255, 255, 255, 0.09);
     border-radius: 28px;
     box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.10);
@@ -509,4 +532,12 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Remove hover transforms on touch devices to prevent sticky hover jank during scrolling */
+@media (hover: none) {
+  *:hover {
+    transform: none !important;
+  }
+}
+
 

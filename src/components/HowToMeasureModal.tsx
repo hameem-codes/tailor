@@ -44,7 +44,7 @@ export const HowToMeasureModal: React.FC<HowToMeasureModalProps> = ({
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md glass-card p-6 rounded-t-[28px] sm:rounded-[28px] border border-white/15 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-md glass-card p-6 rounded-t-[28px] sm:rounded-[28px] border border-white/15 max-h-[90dvh] overflow-y-auto"
       >
         <div className="flex justify-between items-center mb-4">
           <h2 id="measure-modal-title" className="font-barlow text-3xl sm:text-4xl font-semibold">

@@ -234,7 +234,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         </div>
 
         {/* Right Toolbar group: Horizontally scrollable chip row on mobile */}
-        <div className="flex items-center gap-2 flex-nowrap overflow-x-auto no-scrollbar w-full sm:w-auto py-0.5 -mx-1 px-1 sm:mx-0 sm:px-0 sm:self-auto">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto py-0.5 px-0 sm:self-auto">
           {/* Saved filter tab */}
           <button
             type="button"
@@ -476,7 +476,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           - Tablet (md:): 2 columns
           - Mobile (<md:): 1 column
          ========================================================================= */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {displayedResults.length > 0 ? (
           displayedResults.map((match) => (
             <BrandCard

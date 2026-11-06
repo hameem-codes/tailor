@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { BrandMatchResult, UserMeasurements } from '../types';
-import { BrandLogo } from './BrandLogo';
 import { RangeRuler } from './RangeRuler';
-import { CheckIcon, WarningTriangleIcon, CrossCircleIcon, LockIcon } from './Icons';
 import { formatDimension } from '../lib/matching/helpers';
-import { renderBrandSizeBadge } from './BrandCard';
 
 interface BrandComparisonModalProps {
   isOpen: boolean;
@@ -23,46 +21,58 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
   onRemoveBrand,
   onOpenDetail,
 }) => {
+  // Lock background scrolling while modal/bottom-sheet is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const isPants = measurements.category === 'pants';
   const userVal = isPants ? (measurements.waist || 80) : (measurements.chest || 96);
   const userValText = `You: ${formatDimension(userVal, measurements.unit)}`;
-  const isTwo = matches.length === 2;
 
-  return (
+  const modalContent = (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="comparison-title"
-      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 pt-6 sm:p-6 bg-black/85 backdrop-blur-xl animate-fade-in overflow-y-auto"
+      className="fixed inset-0 z-50 flex flex-col justify-end sm:justify-center sm:items-center bg-black/60 backdrop-blur-sm animate-fade-in p-0 sm:p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
+      {/* Bottom Sheet on Mobile / Modal on Tablet & Desktop */}
       <div
-        className={`relative w-full my-auto ${
-          isTwo ? 'max-w-4xl' : 'max-w-6xl'
-        } glass-card !bg-[#12141a]/92 backdrop-blur-3xl border border-white/12 rounded-[24px] sm:rounded-[28px] p-4 sm:p-6 shadow-[0_25px_70px_rgba(0,0,0,0.85)] flex flex-col gap-4 max-h-[86vh] overflow-y-auto animate-modal-pop`}
+        className="w-full h-auto max-h-[85dvh] sm:max-w-[720px] glass-card !bg-[#131518]/98 border border-white/15 rounded-t-[28px] sm:rounded-[28px] p-4.5 sm:p-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col gap-3.5 shadow-[0_-10px_40px_rgba(0,0,0,0.7)] sm:shadow-[0_25px_70px_rgba(0,0,0,0.85)] animate-slide-up sm:animate-modal-pop overflow-hidden"
       >
-        {/* Modal Header */}
-        <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3 flex-none">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-full bg-[#1DA84A]/20 text-[#4ADE80] flex items-center justify-center text-sm font-bold flex-none">
-                ⚖️
-              </span>
-              <h2 id="comparison-title" className="font-barlow text-2xl sm:text-3xl font-bold text-white tracking-wide">
+        {/* Mobile Drag Handle */}
+        <div className="sm:hidden w-10 h-1.5 bg-white/20 rounded-full mx-auto -mt-1 mb-1 flex-none" />
+
+        {/* Header: Title, one-line subtitle, 44px close button */}
+        <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3 flex-none">
+          <div className="min-w-0 pr-2">
+            <div className="flex items-center gap-2">
+              <span className="text-base flex-none" aria-hidden="true">⚖️</span>
+              <h2
+                id="comparison-title"
+                className="font-barlow text-2xl sm:text-3xl font-bold text-white tracking-wide truncate"
+              >
                 Brand Fit Comparison
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-secText mt-1">
-              Side-by-side size recommendations & ruler ranges for {measurements.gender} {measurements.category} ({userValText})
+            <p className="text-xs sm:text-[13px] text-secText mt-0.5 truncate">
+              Side-by-side fit recommendations for your measurements ({userValText})
             </p>
           </div>
           <button
             onClick={onClose}
-            className="circle-btn btn-press !w-9 !h-9 text-lg flex-none !bg-white/10 hover:!bg-white/20 text-white"
+            className="circle-btn btn-press !w-[44px] !h-[44px] !min-w-[44px] !min-h-[44px] flex-none !bg-white/10 hover:!bg-white/20 text-white rounded-full flex items-center justify-center text-xl font-bold"
             aria-label="Close comparison"
           >
             ×
@@ -70,150 +80,143 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
         </div>
 
         {matches.length < 2 ? (
-          <div className="py-12 flex flex-col items-center text-center gap-3 animate-fade-in">
-            <span className="text-4xl">⚖️</span>
-            <h3 className="text-lg font-semibold text-white">Select at least 2 brands</h3>
+          <div className="py-8 flex flex-col items-center text-center gap-3 animate-fade-in">
+            <span className="text-3xl">⚖️</span>
+            <h3 className="text-base font-semibold text-white">Select at least 2 brands</h3>
             <p className="text-xs sm:text-sm text-secText max-w-sm">
-              Check the "+ Compare" button on any brand card on your results screen to compare 2 or 3 brands side by side.
+              Use the "+ Compare" button on brand cards to compare 2 or 3 brands side by side.
             </p>
             <button
               onClick={onClose}
-              className="primary-btn btn-press !min-h-[40px] !px-5 text-xs sm:text-sm font-semibold mt-2"
+              className="primary-btn btn-press !min-h-[44px] !px-5 text-xs sm:text-sm font-semibold mt-2"
             >
               Back to brands
             </button>
           </div>
         ) : (
           <>
-            {/* Animated Comparative Summary Pill */}
-            <div className="flex items-center gap-3 bg-white/[0.04] border border-white/10 rounded-2xl p-3 sm:p-3.5 text-xs sm:text-sm text-[#D6D6DC] animate-card-pop">
-              <div className="w-7 h-7 rounded-full bg-[#1DA84A]/25 text-[#4ADE80] flex items-center justify-center flex-none font-bold text-sm">
-                ✓
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-white font-semibold">Comparison overview: </span>
-                <span>
-                  {matches.map(m => `${m.brandChart.brand} (${m.recommendedSize})`).join(' vs ')}. Review each brand's exact range below to match your fit preference.
-                </span>
-              </div>
-              <span className="hidden sm:inline-flex text-[11px] font-bold text-[#4ADE80] bg-[#1DA84A]/15 px-2.5 py-1 rounded-full border border-[#4ADE80]/30 whitespace-nowrap">
-                {matches.length} brands compared
-              </span>
+            {/* Compressed single-line overview */}
+            <div className="flex items-center gap-2 bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2 text-xs text-[#D6D6DC] flex-none">
+              <span className="text-[#4ADE80] font-bold text-sm flex-none">✓</span>
+              <p className="truncate flex-1">
+                <strong className="text-white">Overview: </strong>
+                {matches.map((m) => `${m.brandChart.brand} (${m.recommendedSize})`).join(' vs ')}
+              </p>
             </div>
 
-            {/* Comparison Columns: Fully spans 2 columns when 2 brands, 3 columns when 3 brands */}
-            <div
-              className={`grid grid-cols-1 ${
-                isTwo ? 'md:grid-cols-2 gap-5 sm:gap-6' : 'md:grid-cols-3 gap-4 sm:gap-5'
-              }`}
-            >
-              {matches.map((m, index) => {
-                const { brandChart, recommendedSize, matchStatus, tip, chestRangeText, ruler, confidence, confidenceReason } = m;
-                return (
-                  <div
-                    key={brandChart.id}
-                    className="glass-card p-5 sm:p-6 flex flex-col gap-4 border border-white/15 rounded-2xl relative bg-white/[0.04] shadow-xl hover:border-white/30 transition-all duration-200 animate-card-pop hover:-translate-y-0.5 overflow-hidden"
-                    style={{ animationDelay: `${index * 80 + 40}ms` }}
-                  >
-                    {/* Top Bar: Brand, Region Tag & Remove button */}
-                    <div className="flex items-center justify-between min-h-[38px] border-b border-white/10 pb-3">
-                      <div className="flex items-center gap-2">
-                        <BrandLogo brand={brandChart.brand} maxHeight={24} />
-                        <span className="text-[10px] font-semibold text-secText uppercase tracking-wider bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-                          {brandChart.region}
+            {/* Scrollable body with overscroll-behavior contain */}
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain flex flex-col gap-3 pr-0.5">
+              {/* Compact side-by-side layout: 2 columns on mobile for 2 brands */}
+              <div
+                className={`grid ${
+                  matches.length === 2
+                    ? 'grid-cols-2 gap-2.5 sm:gap-4'
+                    : 'grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4'
+                }`}
+              >
+                {matches.map((m, index) => {
+                  const {
+                    brandChart,
+                    recommendedSize,
+                    matchStatus,
+                    tip,
+                    chestRangeText,
+                    ruler,
+                  } = m;
+
+                  return (
+                    <div
+                      key={brandChart.id}
+                      className="glass-card p-3.5 sm:p-4 flex flex-col gap-2.5 border border-white/15 rounded-2xl relative bg-white/[0.04] shadow-md transition-all duration-200 animate-card-pop overflow-hidden"
+                      style={{ animationDelay: `${index * 60 + 30}ms` }}
+                    >
+                      {/* Top Bar: Brand Wordmark + Small Remove Icon Button */}
+                      <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-white/10 min-h-[32px]">
+                        <div className="truncate font-barlow font-bold text-lg sm:text-xl uppercase tracking-wider text-white">
+                          {brandChart.brand}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveBrand(brandChart.id)}
+                          className="w-7 h-7 min-w-[28px] min-h-[28px] rounded-full bg-white/10 hover:bg-red-500/20 text-secText hover:text-red-400 flex items-center justify-center text-sm font-bold transition-colors flex-none"
+                          aria-label={`Remove ${brandChart.brand} from comparison`}
+                        >
+                          ×
+                        </button>
+                      </div>
+
+                      {/* Size Letter & Match Label */}
+                      <div className="flex flex-col items-center justify-center text-center py-1">
+                        <span className="font-barlow text-3xl sm:text-4xl font-bold text-white leading-none">
+                          {recommendedSize}
+                        </span>
+                        <span
+                          className={`text-[11px] sm:text-xs font-semibold mt-1 px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
+                            matchStatus === 'great'
+                              ? 'bg-[#1DA84A]/20 text-[#4ADE80] border border-[#4ADE80]/30'
+                              : matchStatus === 'between'
+                              ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
+                              : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                          }`}
+                        >
+                          {matchStatus === 'great'
+                            ? '✓ Great match'
+                            : matchStatus === 'between'
+                            ? '⚠ Between sizes'
+                            : '✕ Poor match'}
                         </span>
                       </div>
+
+                      {/* Chest Range */}
+                      <div className="text-[11px] sm:text-xs text-white/90 text-center font-medium truncate">
+                        {chestRangeText}
+                      </div>
+
+                      {/* Ruler */}
+                      <div className="py-1">
+                        <RangeRuler
+                          userValueText={userValText}
+                          userDotPercent={ruler.userDotPercent}
+                          primaryBarLeftPercent={ruler.primaryBarLeftPercent}
+                          primaryBarWidthPercent={ruler.primaryBarWidthPercent}
+                          primaryBarColor={ruler.primaryBarColor}
+                          secondaryBarLeftPercent={ruler.secondaryBarLeftPercent}
+                          secondaryBarWidthPercent={ruler.secondaryBarWidthPercent}
+                          secondaryBarColor={ruler.secondaryBarColor}
+                          className="animate-expand-bar"
+                        />
+                      </div>
+
+                      {/* Compact Tip */}
+                      <div className="text-[11px] sm:text-xs text-[#D6D6DC] leading-snug line-clamp-2 bg-white/[0.03] p-2 rounded-lg">
+                        {tip}
+                      </div>
+
+                      {/* Details Link */}
                       <button
-                        onClick={() => onRemoveBrand(brandChart.id)}
-                        className="text-xs text-secText hover:text-red-400 transition-colors p-1 flex items-center gap-1 group"
-                        aria-label={`Remove ${brandChart.brand} from comparison`}
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          onOpenDetail(m);
+                        }}
+                        className="w-full h-[40px] min-h-[40px] px-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] active:bg-white/[0.15] text-[11px] sm:text-xs font-semibold text-[#4ADE80] flex items-center justify-center transition-colors mt-auto"
                       >
-                        <span className="group-hover:underline">Remove</span>
-                        <span className="text-sm font-bold">×</span>
+                        View details →
                       </button>
                     </div>
-
-                    {/* Size & Match Status Card Box */}
-                    <div className="flex items-center justify-between gap-3 bg-white/[0.03] p-3.5 rounded-xl border border-white/5">
-                      <div
-                        className="min-w-[68px] flex items-center justify-center animate-badge-pop"
-                        style={{ animationDelay: `${index * 80 + 140}ms` }}
-                      >
-                        {renderBrandSizeBadge(recommendedSize)}
-                      </div>
-                      <div className="text-right">
-                        {matchStatus === 'great' && (
-                          <span className="text-[#4ADE80] font-semibold text-xs sm:text-sm inline-flex items-center gap-1 bg-[#1DA84A]/15 px-2.5 py-1 rounded-full border border-[#4ADE80]/30">
-                            <CheckIcon size={14} /> Great match
-                          </span>
-                        )}
-                        {matchStatus === 'between' && (
-                          <span className="text-[#FBBF24] font-semibold text-xs sm:text-sm inline-flex items-center gap-1 bg-[#FBBF24]/15 px-2.5 py-1 rounded-full border border-[#FBBF24]/30">
-                            <WarningTriangleIcon size={14} /> Between sizes
-                          </span>
-                        )}
-                        {matchStatus === 'poor' && (
-                          <span className="text-[#F87171] font-semibold text-xs sm:text-sm inline-flex items-center gap-1 bg-[#F87171]/15 px-2.5 py-1 rounded-full border border-[#F87171]/30">
-                            <CrossCircleIcon size={14} /> Poor match
-                          </span>
-                        )}
-                        <div className="text-xs text-white font-semibold mt-1.5">
-                          {chestRangeText}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Range Ruler with dynamic bar expansion */}
-                    <div className="py-1">
-                      <RangeRuler
-                        userValueText={userValText}
-                        userDotPercent={ruler.userDotPercent}
-                        primaryBarLeftPercent={ruler.primaryBarLeftPercent}
-                        primaryBarWidthPercent={ruler.primaryBarWidthPercent}
-                        primaryBarColor={ruler.primaryBarColor}
-                        secondaryBarLeftPercent={ruler.secondaryBarLeftPercent}
-                        secondaryBarWidthPercent={ruler.secondaryBarWidthPercent}
-                        secondaryBarColor={ruler.secondaryBarColor}
-                        className="animate-expand-bar"
-                      />
-                    </div>
-
-                    {/* Fit Note */}
-                    <div className="text-xs text-[#D6D6DC] leading-relaxed bg-white/[0.04] p-3 rounded-xl border border-white/5">
-                      {tip}
-                    </div>
-
-                    {/* Confidence */}
-                    <div className="flex items-center gap-1.5 text-[11px] text-secText">
-                      <LockIcon size={12} className="text-[#4ADE80] flex-none" />
-                      <span className="truncate">
-                        Confidence: <strong className="text-white capitalize">{confidence}</strong>. {confidenceReason}
-                      </span>
-                    </div>
-
-                    {/* Action Link */}
-                    <button
-                      onClick={() => {
-                        onClose();
-                        onOpenDetail(m);
-                      }}
-                      className="pill-btn btn-press w-full text-center text-xs font-semibold !min-h-[40px] mt-auto hover:border-white/30 border-white/15"
-                    >
-                      View size chart & details →
-                    </button>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between border-t border-white/10 pt-3 text-xs text-secText">
-          <span>Comparing up to 3 brands simultaneously</span>
+        <div className="flex items-center justify-between border-t border-white/10 pt-2.5 text-xs text-secText flex-none">
+          <span>Comparing {matches.length}/3 brands</span>
           <button
             onClick={onClose}
-            className="pill-btn btn-press !min-h-[36px] !px-5 text-xs font-semibold !bg-white/10 hover:!bg-white/20 text-white"
+            className="pill-btn btn-press !min-h-[38px] !px-4 text-xs font-semibold !bg-white/10 hover:!bg-white/20 text-white"
           >
             Close
           </button>
@@ -221,4 +224,8 @@ export const BrandComparisonModal: React.FC<BrandComparisonModalProps> = ({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalContent, document.body)
+    : modalContent;
 };
